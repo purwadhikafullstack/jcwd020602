@@ -15,6 +15,11 @@ app.use(
 );
 
 app.use(express.json());
+const verify = require("./middlewares/verify");
+const router = require("./routes");
+const db = require("./models");
+// db.sequelize.sync({ alter: true });
+// db.sequelize.sync({ force: true });
 
 //#region API ROUTES
 
@@ -30,6 +35,10 @@ app.get("/api/greetings", (req, res, next) => {
     message: "Hello, Student !",
   });
 });
+
+app.use("/warehouse", verify, router.warehouseRouter);
+app.use("/province&city", verify, router.provinceCityRouter);
+app.use("/history", verify, router.stockHistory);
 
 // ===========================
 
