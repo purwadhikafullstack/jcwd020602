@@ -36,6 +36,7 @@ app.get("/api/greetings", (req, res, next) => {
   });
 });
 
+app.use("/address", verify, router.addressRouter);
 app.use("/warehouse", verify, router.warehouseRouter);
 app.use("/province&city", verify, router.provinceCityRouter);
 app.use("/history", verify, router.stockHistory);

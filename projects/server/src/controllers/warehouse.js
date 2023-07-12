@@ -1,12 +1,12 @@
 const db = require("../models");
 const axios = require("axios");
-const moment = require("moment");
 const warehouseControllers = {
   insertWarehouse: async (req, res) => {
-    const t = await db.sequelize.transaction();
     try {
+      const t = await db.sequelize.transaction();
       let { name, road, province, city, district, postcode, telephone_number } =
         req.body;
+      const nameChecker = await db.warehouses.findOne({ where: { name } });
       let response = await axios.get(
         "https://api.opencagedata.com/geocode/v1/json",
         {
