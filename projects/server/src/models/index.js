@@ -52,18 +52,20 @@ db.orderDetails = require("./orderDetail")(sequelize, Sequelize); //id; (order,s
 db.stockHistories = require("./stockHistory")(sequelize, Sequelize); //id; (stock)
 db.stocks = require("./stock")(sequelize, Sequelize); //id;(shoe_size, warehouse)
 db.orders = require("./order")(sequelize, Sequelize); //id; (user, address)
-db.shoes = require("./shoe")(sequelize, Sequelize); //id;(category, brand)
-db.shoeImgs = require("./shoeImg")(sequelize, Sequelize); //id;(shoe)
 db.addresses = require("./address")(sequelize, Sequelize); //id;(user)
 db.carts = require("./cart")(sequelize, Sequelize); //id;(shoe, user)
 db.users = require("./user")(sequelize, Sequelize); //id;(warehouse)
 db.cities = require("./city")(sequelize, Sequelize); //id;(province)
 db.warehouses = require("./warehouse")(sequelize, Sequelize);
 db.shoeSizes = require("./shoeSize")(sequelize, Sequelize);
-db.categories = require("./category")(sequelize, Sequelize);
 db.provinces = require("./province")(sequelize, Sequelize);
-db.brands = require("./brand")(sequelize, Sequelize);
 db.tokens = require("./token")(sequelize, Sequelize);
+
+db.Shoe = require("./shoe")(sequelize, Sequelize);
+db.Shoeimage = require("./shoeImage")(sequelize, Sequelize);
+db.Category = require("./category")(sequelize, Sequelize);
+db.Subcategory = require("./subCategory")(sequelize, Sequelize);
+db.Brand = require("./brand")(sequelize, Sequelize);
 
 // db.stock_Mutations foreignKey
 db.warehouses.hasMany(db.stockMutations, {
@@ -104,13 +106,12 @@ db.stocks.hasMany(db.stockHistories, {
 });
 
 //db.stocks foreignKey
-db.shoes.hasMany(db.stocks, {
-  foreignKey: "shoe_id",
-  targetKey: "id",
-});
 db.shoeSizes.hasMany(db.stocks, {
   foreignKey: "shoe_size_id",
   targetKey: "id",
+});
+db.Shoe.hasMany(db.stocks, {
+  foreignKey: "shoe_id",
 });
 db.warehouses.hasMany(db.stocks, {
   foreignKey: "warehouse_id",
@@ -121,27 +122,11 @@ db.warehouses.hasMany(db.stocks, {
 db.users.hasMany(db.orders, { foreignKey: "user_id", targetKey: "id" });
 db.addresses.hasMany(db.orders, { foreignKey: "address_id", targetKey: "id" });
 
-//db.Shoes foreignKey
-db.categories.hasMany(db.shoes, {
-  foreignKey: "category_id",
-  targetKey: "id",
-});
-db.brands.hasMany(db.shoes, {
-  foreignKey: "brand_id",
-  targetKey: "id",
-});
-
-//db.Shoe_Imgs foreignKey
-db.shoes.hasMany(db.shoeImgs, {
-  foreignKey: "shoe_id",
-  targetKey: "id",
-});
-
 //db.addresses foreignKey
 db.users.hasMany(db.addresses, { foreignKey: "user_id", targetKey: "id" });
 
 //db.Carts foreignKey
-db.shoes.hasMany(db.carts, { foreignKey: "shoe_id", targetKey: "id" });
+db.Shoe.hasMany(db.carts, { foreignKey: "shoe_id", targetKey: "id" });
 db.users.hasMany(db.carts, { foreignKey: "user_id", targetKey: "id" });
 
 //db.users foreignKey
@@ -154,6 +139,35 @@ db.warehouses.hasMany(db.users, {
 db.provinces.hasMany(db.cities, {
   foreignKey: "province_id",
   targetKey: "province_id",
+});
+
+//fahmi
+db.Shoe.belongsTo(db.Brand, {
+  foreignKey: "brand_id",
+});
+db.Shoe.belongsTo(db.Subcategory, {
+  foreignKey: "subcategory_id",
+});
+
+db.Brand.hasMany(db.Shoe, {
+  foreignKey: "brand_id",
+});
+
+db.Category.hasMany(db.Subcategory, {
+  foreignKey: "category_id",
+});
+db.Subcategory.belongsTo(db.Category, {
+  foreignKey: "category_id",
+});
+db.Subcategory.hasMany(db.Shoe, {
+  foreignKey: "subcategory_id",
+});
+
+db.Shoeimage.belongsTo(db.Shoe, {
+  foreignKey: "shoe_id",
+});
+db.Shoe.hasMany(db.Shoeimage, {
+  foreignKey: "shoe_id",
 });
 
 module.exports = db;

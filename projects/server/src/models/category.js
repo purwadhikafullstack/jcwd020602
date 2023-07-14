@@ -1,13 +1,18 @@
 module.exports = (sequelize, Sequelize) => {
-  const categories = sequelize.define(
-    "categories",
+  const Category = sequelize.define(
+    "Categories",
     {
-      name: Sequelize.STRING,
-      description: Sequelize.STRING,
+      name: {
+        type: Sequelize.STRING,
+      },
+
+      category_img: {
+        type: Sequelize.STRING,
+      },
     },
     {
       paranoid: true,
     }
   );
-  return categories;
+  return Category;
 };

@@ -1,4 +1,17 @@
 const warehouseRouter = require("./warehouse");
 const provinceCityRouter = require("./province&city");
 const stockHistory = require("./stock_history");
-module.exports = { provinceCityRouter, warehouseRouter, stockHistory };
+const shoeRoutes = require("./shoe");
+const categoryRoutes = require("./category");
+const brandRoutes = require("./brand");
+const shoeimageRoutes = require("./shoeimage");
+
+module.exports = {
+  provinceCityRouter,
+  warehouseRouter,
+  stockHistory,
+  shoeRoutes,
+  categoryRoutes,
+  brandRoutes,
+  shoeimageRoutes,
+};

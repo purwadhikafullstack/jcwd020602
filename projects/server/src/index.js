@@ -1,22 +1,24 @@
-require("dotenv/config");
+// require("dotenv/config");
+const dotenv = require("dotenv");
+dotenv.config();
 const express = require("express");
 const cors = require("cors");
 const { join } = require("path");
 
 const PORT = process.env.PORT || 8000;
 const app = express();
-app.use(
-  cors({
-    origin: [
-      process.env.WHITELISTED_DOMAIN &&
-        process.env.WHITELISTED_DOMAIN.split(","),
-    ],
-  })
-);
-
+// app.use(
+//   cors({
+//     origin: [
+//       process.env.WHITELISTED_DOMAIN &&
+//         process.env.WHITELISTED_DOMAIN.split(","),
+//     ],
+//   })
+// );
+app.use(cors());
 app.use(express.json());
 const verify = require("./middlewares/verify");
-const router = require("./routes");
+const routes = require("./routes");
 const db = require("./models");
 // db.sequelize.sync({ alter: true });
 // db.sequelize.sync({ force: true });
@@ -36,10 +38,16 @@ app.get("/api/greetings", (req, res, next) => {
   });
 });
 
-app.use("/warehouse", verify, router.warehouseRouter);
-app.use("/province&city", verify, router.provinceCityRouter);
-app.use("/history", verify, router.stockHistory);
+app.use("/warehouse", verify, routes.warehouseRouter);
+app.use("/province&city", verify, routes.provinceCityRouter);
+app.use("/history", verify, routes.stockHistory);
+app.use("/shoes", routes.shoeRoutes);
+app.use("/categories", routes.categoryRoutes);
+app.use("/brands", routes.brandRoutes);
+app.use("/shoeimages", routes.shoeimageRoutes);
 
+app.use("/category", express.static(`${__dirname}/public/category`));
+app.use("/brand", express.static(`${__dirname}/public/brand`));
 // ===========================
 
 // not found
