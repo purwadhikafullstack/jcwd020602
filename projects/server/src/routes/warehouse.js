@@ -2,7 +2,9 @@ const express = require("express");
 const router = express.Router();
 const warehouseController = require("../controllers").warehouseController;
 
-router.post("/add", warehouseController.insertWarehouse);
-router.post("/", warehouseController.getCostData);
+router.post("/", warehouseController.insertWarehouse);
 router.get("/", warehouseController.getAllWarehouses);
+router.patch("/", warehouseController.updateWarehouse);
+router.delete("/", warehouseController.deleteWarehouse);
+
 module.exports = router;

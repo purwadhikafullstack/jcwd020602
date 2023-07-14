@@ -8,7 +8,7 @@ const provinceCityControllers = {
       const response = await axios.get(
         "https://api.rajaongkir.com/starter/province",
         {
-          headers: { key: "c44434f326fbc4a4e77b699e76323c32" },
+          headers: { key: process.env.RajaOngkir_API_KEY },
         }
       );
       await db.provinces.bulkCreate(response.data.rajaongkir.results);
@@ -23,7 +23,7 @@ const provinceCityControllers = {
       const response = await axios.get(
         "https://api.rajaongkir.com/starter/city",
         {
-          headers: { key: "c44434f326fbc4a4e77b699e76323c32" },
+          headers: { key: process.env.RajaOngkir_API_KEY },
         }
       );
       await db.cities.bulkCreate(response.data.rajaongkir.results);
