@@ -1,21 +1,29 @@
 module.exports = (sequelize, Sequelize) => {
-  const shoes = sequelize.define(
-    "shoes",
+  const Shoe = sequelize.define(
+    "Shoes",
     {
-      name: Sequelize.STRING,
-      description: Sequelize.STRING,
-      price: Sequelize.INTEGER,
-      weight: Sequelize.INTEGER,
-      brand_id: {
+      name: {
+        type: Sequelize.STRING,
+      },
+      description: {
+        type: Sequelize.STRING,
+      },
+      price: {
         type: Sequelize.INTEGER,
       },
-      category_id: {
+      weight: {
         type: Sequelize.INTEGER,
       },
+      status: {
+        type: Sequelize.ENUM("BESTSELLER", "DISCOUNT"),
+      },
+      //brand_id
+      //category_id
+      //subcategory_id
     },
     {
       paranoid: true,
     }
   );
-  return shoes;
+  return Shoe;
 };

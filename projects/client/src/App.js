@@ -1,26 +1,28 @@
-import axios from "axios";
-import logo from "./logo.svg";
-import "./App.css";
 import { useEffect, useState } from "react";
-
+import Navbar from "./components/website/navbar";
+import routes from "./routes/routes";
+import { Routes } from "react-router-dom";
+import { Center, Spinner } from "@chakra-ui/react";
+import "./css/app.css";
 function App() {
-  const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    (async () => {
-      const { data } = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL}/greetings`
-      );
-      setMessage(data?.message || "");
-    })();
-  }, []);
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+  });
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        {message}
-      </header>
-    </div>
+    <>
+      <Navbar />
+      {isLoading ? (
+        <Center h={"100vh"}>
+          <Spinner />
+        </Center>
+      ) : (
+        <Routes>{routes.map((val) => val)}</Routes>
+      )}
+    </>
   );
 }
 

@@ -1,13 +1,20 @@
 module.exports = (sequelize, Sequelize) => {
-  const brands = sequelize.define(
+  const Brand = sequelize.define(
     "brands",
     {
-      name: Sequelize.STRING,
-      logo_img: Sequelize.STRING,
+      name: {
+        type: Sequelize.STRING,
+      },
+      logo_img: {
+        type: Sequelize.STRING,
+      },
+      brand_img: {
+        type: Sequelize.STRING,
+      },
     },
     {
       paranoid: true,
     }
   );
-  return brands;
+  return Brand;
 };
