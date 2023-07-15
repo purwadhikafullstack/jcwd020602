@@ -29,7 +29,13 @@ module.exports = {
       return err;
     }
   },
-  updateWarehouse: async (t, { name, telephone_number }, response) => {
+  updateWarehouse: async (
+    id,
+    t,
+    checkWarehouse,
+    { name, telephone_number },
+    response
+  ) => {
     return await db.warehouses.update(
       {
         name: name ? name : checkWarehouse.name,
@@ -52,7 +58,7 @@ module.exports = {
         latitude: response.data.results[0].geometry.lat,
         longitude: response.data.results[0].geometry.lng,
       },
-      { where: { id: req.params.id }, transaction: t }
+      { where: { id: id }, transaction: t }
     );
   },
   validWarehouse: async (id) => {
@@ -65,37 +71,51 @@ module.exports = {
       return err;
     }
   },
-  getAllWarehouse: async ({ limit, offset, sort, order, keyword }) => {
+  getAllWarehouse: async ({ sort, order, keyword, with_admin }) => {
     try {
-      return await db.warehousesfindAndCountAll({
-        limit,
-        offset,
+      let where = {
+        [Op.or]: [
+          {
+            name: {
+              [Op.like]: "%" + keyword + "%",
+            },
+          },
+          {
+            address: {
+              [Op.like]: "%" + keyword + "%",
+            },
+          },
+          {
+            city: {
+              [Op.like]: "%" + keyword + "%",
+            },
+          },
+          {
+            province: {
+              [Op.like]: "%" + keyword + "%",
+            },
+          },
+        ],
+      };
+      if (with_admin == "true" && with_admin != "") {
+        where["$users.warehouse_id$"] = {
+          [Op.ne]: null,
+        };
+      } else if (with_admin == "false" && with_admin != "") {
+        where["$users.warehouse_id$"] = null;
+      }
+      const data = await db.warehouses.findAndCountAll({
+        include: [
+          {
+            model: db.users,
+            required: false,
+          },
+        ],
+        distinct: true,
         order: [[sort, order]],
-        where: {
-          [Op.or]: [
-            {
-              name: {
-                [Op.like]: "%" + keyword + "%",
-              },
-            },
-            {
-              address: {
-                [Op.like]: "%" + keyword + "%",
-              },
-            },
-            {
-              city: {
-                [Op.like]: "%" + keyword + "%",
-              },
-            },
-            {
-              province: {
-                [Op.like]: "%" + keyword + "%",
-              },
-            },
-          ],
-        },
+        where: { ...where },
       });
+      return data;
     } catch (err) {
       return err;
     }

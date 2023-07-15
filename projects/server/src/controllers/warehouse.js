@@ -9,13 +9,13 @@ const {
 const { openCage } = require("../service/opencage.service");
 const warehouseControllers = {
   insertWarehouse: async (req, res) => {
+    const t = await db.sequelize.transaction();
     try {
-      const t = await db.sequelize.transaction();
       let { name, road, province, city, district, postcode, telephone_number } =
         req.body;
-      if (req?.user?.role == "SUPER_ADMIN") {
+      if (req?.user?.role != "SUPER_ADMIN") {
         return res.status(400).send({
-          message: `user ${req.user.full_name} is not a super admin, but a ${req.user.role}`,
+          message: `user ${req?.user?.full_name} is not a super admin, but a ${req?.user?.role}`,
         });
       } else {
         const nameChecker = await db.warehouses.findOne({ where: { name } });
@@ -38,13 +38,13 @@ const warehouseControllers = {
     }
   },
   updateWarehouse: async (req, res) => {
+    const t = await db.sequelize.transaction();
     try {
-      const t = await db.sequelize.transaction();
       let { name, road, province, city, district, postcode, telephone_number } =
         req.body;
-      if (req.user.role != "SUPER_ADMIN") {
+      if (req?.user?.role != "SUPER_ADMIN") {
         return res.status(400).send({
-          message: `user ${req.user.full_name} is not a super admin, but a ${req.user.role}`,
+          message: `user ${req?.user?.full_name} is not a super admin, but a ${req?.user?.role}`,
         });
       } else {
         const checkWarehouse = await validWarehouse(req.query.id);
@@ -53,9 +53,15 @@ const warehouseControllers = {
             where: { name },
             raw: true,
           });
-          if (checkName.id == checkWarehouse.id) {
+          if (checkName?.id != checkWarehouse?.id) {
             let response = await openCage(req.body);
-            await updateWarehouse(t, req.body, response);
+            await updateWarehouse(
+              req.query.id,
+              t,
+              checkWarehouse,
+              { name, telephone_number },
+              response
+            );
             await t.commit();
             return res.status(200).send({
               success: true,
@@ -73,34 +79,29 @@ const warehouseControllers = {
       }
     } catch (error) {
       await t.rollback();
+      console.log(error);
       return res.status(500).send({ message: error.message });
     }
   },
   deleteWarehouse: async (req, res) => {
+    const t = await db.sequelize.transaction();
     try {
-      const t = await db.sequelize.transaction();
-      if (req.user.role != "SUPER_ADMIN") {
+      if (req?.user?.role != "SUPER_ADMIN") {
         return res.status(400).send({
-          message: `user ${req.user.full_name} is not a super admin, but a ${req.user.role}`,
+          message: `user ${req?.user?.full_name} is not a super admin, but a ${req?.user?.role}`,
         });
       } else {
         const checkWarehouse = await validWarehouse(req.query.id);
         if (checkWarehouse) {
-          if (req.user.role == "SUPER_ADMIN") {
-            await db.warehouses.destroy({
-              where: { id: req.params.id },
-              transaction: t,
-            });
-            await t.commit();
-            return res.status(200).send({
-              success: true,
-              message: `Warehouse ${checkWarehouse} has been deleted!`,
-            });
-          } else {
-            return res.status(400).send({
-              message: "You are not a super admin.",
-            });
-          }
+          await db.warehouses.destroy({
+            where: { id: req.query.id },
+            transaction: t,
+          });
+          await t.commit();
+          return res.status(200).send({
+            success: true,
+            message: `Warehouse ${checkWarehouse.name} has been deleted!`,
+          });
         } else {
           return res.status(400).send({
             message: "Warehouse not found.",
@@ -114,9 +115,9 @@ const warehouseControllers = {
   },
   getAllWarehouses: async (req, res) => {
     try {
-      if (req?.user?.role == "SUPER_ADMIN") {
+      if (req?.user?.role != "SUPER_ADMIN") {
         return res.status(400).send({
-          message: `user ${req.user.full_name} is not a super admin, but a ${req.user.role}`,
+          message: `user ${req?.user?.full_name} is not a super admin, but a ${req?.user?.role}`,
         });
       } else {
         const page = parseInt(req.query.page) || 0;
@@ -125,14 +126,15 @@ const warehouseControllers = {
         const sort = req.query.sort || "id";
         const order = req.query.order || "ASC";
         const keyword = req.query.keyword || "";
+        const with_admin = req.query.with_admin || "";
 
         let WarehouseData = await getAllWarehouse({
-          limit,
-          offset,
           sort,
           order,
           keyword,
+          with_admin,
         });
+        WarehouseData.rows = WarehouseData.rows.slice(offset, offset + limit);
         res.status(200).send({
           ...WarehouseData,
           totalPage: Math.ceil(WarehouseData.count / limit),
@@ -148,23 +150,19 @@ const warehouseControllers = {
     try {
       let data = await validWarehouse(req.query.id);
       let adminAssigned = [];
-      if (idAdmin !== null) {
-        adminAssigned = await AdminsModel.findAll({
-          where: { id: idAdmin },
-        });
-      } else if (idAdmin == null) {
-        adminAssigned.push({
-          full_name: "This warehouse has no admin assigned yet",
+      if (data) {
+        adminAssigned = await db.users.findAll({
+          where: { warehouse_id: data.id },
         });
       }
-
-      res.status(200).send({
+      return res.status(200).send({
         success: true,
         message: "Ok",
         data,
         adminAssigned,
       });
     } catch (err) {
+      console.log(err);
       return res.status(500).send({ message: err.message });
     }
   },

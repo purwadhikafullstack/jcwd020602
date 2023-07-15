@@ -155,7 +155,7 @@ const addressControllers = {
     try {
       const t = await db.sequelize.transaction();
       let checkAddress = await db.addresses.findOne({
-        where: { id: req.query.id },
+        where: { id: req.user.id },
       });
       if (checkAddress) {
         if (checkAddress.is_primary) {
