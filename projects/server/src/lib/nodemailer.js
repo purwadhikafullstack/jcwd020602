@@ -13,7 +13,7 @@ const mailer = async ({ subject, html, to, text }) => {
     subject: subject || "change password",
     html: html || "",
     to: to || "",
-    text: text || "silahkan ganti password anda",
+    text: text || "hi this is from foothub",
   });
 };
 
