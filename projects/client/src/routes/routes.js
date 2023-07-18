@@ -2,6 +2,8 @@ import { Route } from "react-router-dom";
 import LandingPage from "../pages/landingPage";
 import ProtectedPage from "./protectedPage";
 import Dashboard from "../pages/dashboard";
+import AuthForm from "../pages/authPage";
+import Verify from "../components/auth/registerVerif";
 const routes = [
   <Route
     path="/"
@@ -11,14 +13,9 @@ const routes = [
       </ProtectedPage>
     }
   />,
-  <Route
-    path="/login"
-    element={<ProtectedPage>{/* loginpage */}</ProtectedPage>}
-  />,
-  <Route
-    path="/signup"
-    element={<ProtectedPage>{/* signuppage */}</ProtectedPage>}
-  />,
+
+  <Route path="/auth" element={<AuthForm />} />,
+  <Route path="/verify/:token" element={<Verify />} />,
   <Route
     path="/dashboard"
     element={
