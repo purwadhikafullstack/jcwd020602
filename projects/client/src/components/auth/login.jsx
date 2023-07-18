@@ -10,6 +10,7 @@ import {
   Input,
   InputGroup,
   InputLeftElement,
+  InputRightElement,
   Stack,
   Text,
   useToast,
@@ -85,7 +86,7 @@ export default function Login() {
           );
 
         await api
-          .get("/auth/v3", {
+          .get("/auth/userbytoken", {
             headers: {
               Authorization: `Bearer ${token}`,
             },

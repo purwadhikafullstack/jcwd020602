@@ -14,6 +14,10 @@ router.patch("/verify", validateVerification, userController.verify);
 
 router.post("/login", userController.login);
 
-router.get("/v3", userController.getByTokenV2, userController.getUserByToken);
+router.get(
+  "/userbytoken",
+  userController.getByTokenV2,
+  userController.getUserByToken
+);
 
 module.exports = router;
