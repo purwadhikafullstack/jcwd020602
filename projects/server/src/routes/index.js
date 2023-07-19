@@ -1,21 +1,21 @@
-const warehouseRouter = require("./warehouse");
-const provinceCityRouter = require("./province&city");
+const warehouseRoutes = require("./warehouse");
+const provinceCityRoutes = require("./province&city");
 const stockHistory = require("./stock_history");
 const shoeRoutes = require("./shoe");
 const categoryRoutes = require("./category");
 const brandRoutes = require("./brand");
 const shoeimageRoutes = require("./shoeimage");
-const addressRouter = require("./address");
-const userRouter = require("./user");
+const addressRoutes = require("./address");
+const userRoutes = require("./user");
 
 module.exports = {
-  provinceCityRouter,
-  warehouseRouter,
+  provinceCityRoutes,
+  warehouseRoutes,
   stockHistory,
   shoeRoutes,
   categoryRoutes,
   brandRoutes,
   shoeimageRoutes,
-  addressRouter,
-  userRouter,
+  addressRoutes,
+  userRoutes,
 };

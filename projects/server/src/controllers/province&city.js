@@ -11,7 +11,7 @@ const provinceCityControllers = {
           headers: { key: process.env.RajaOngkir_API_KEY },
         }
       );
-      await db.provinces.bulkCreate(response.data.rajaongkir.results);
+      await db.Province.bulkCreate(response.data.rajaongkir.results);
       return res.status(200).send(response.data.rajaongkir.results);
     } catch (error) {
       return res.status(500).send({ message: error.message });
@@ -26,7 +26,7 @@ const provinceCityControllers = {
           headers: { key: process.env.RajaOngkir_API_KEY },
         }
       );
-      await db.cities.bulkCreate(response.data.rajaongkir.results);
+      await db.City.bulkCreate(response.data.rajaongkir.results);
       return res.status(200).send(response.data.rajaongkir.results);
     } catch (error) {
       return res.status(500).send({ message: error.message });
@@ -34,7 +34,7 @@ const provinceCityControllers = {
   },
   getAllProv: async (req, res) => {
     try {
-      const getProv = await db.provinces.findAll({ raw: true });
+      const getProv = await db.Province.findAll({ raw: true });
       return res.status(200).send(getProv);
     } catch (error) {
       return res.status(500).send({ message: error.message });
@@ -42,7 +42,7 @@ const provinceCityControllers = {
   },
   getCityByProv: async (req, res) => {
     try {
-      const getCity = await db.cities.findAll({
+      const getCity = await db.City.findAll({
         where: {
           province_id: req.params.province_id,
         },

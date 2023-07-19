@@ -21,7 +21,7 @@ const verify = require("./middlewares/verify");
 const routes = require("./routes");
 const db = require("./models");
 // db.sequelize.sync({ alter: true });
-// db.sequelize.sync({ force: true });
+db.sequelize.sync({ force: true });
 
 //#region API ROUTES
 
@@ -38,15 +38,15 @@ app.get("/api/greetings", (req, res, next) => {
   });
 });
 
-app.use("/api/warehouses", verify, routes.warehouseRouter);
-app.use("/api/province&city", verify, routes.provinceCityRouter);
+app.use("/api/warehouses", verify, routes.warehouseRoutes);
+app.use("/api/province&city", verify, routes.provinceCityRoutes);
 app.use("/api/histories", verify, routes.stockHistory);
-app.use("/api/shoes", routes.shoeRoutes);
-app.use("/api/categories", routes.categoryRoutes);
-app.use("/api/brands", routes.brandRoutes);
-app.use("/api/shoeimages", routes.shoeimageRoutes);
-app.use("/api/address", verify, routes.addressRouter);
-app.use("/api/auth", routes.userRouter);
+app.use("/api/shoes", verify, routes.shoeRoutes);
+app.use("/api/categories", verify, routes.categoryRoutes);
+app.use("/api/brands", verify, routes.brandRoutes);
+app.use("/api/shoeimages", verify, routes.shoeimageRoutes);
+app.use("/api/address", verify, routes.addressRoutes);
+app.use("/api/auth", verify, routes.userRoutes);
 
 app.use("/api/category", express.static(`${__dirname}/public/category`));
 app.use("/api/brand", express.static(`${__dirname}/public/brand`));

@@ -80,7 +80,7 @@ const addressControllers = {
         req.body;
       const user_id = req.user.id;
       const { id } = req.query;
-      const checkAddress = await db.addresses.findOne({
+      const checkAddress = await db.Address.findOne({
         where: { id },
         raw: true,
       });
@@ -98,7 +98,7 @@ const addressControllers = {
                 .status(400)
                 .send({ message: "you must have a primary address" });
             }
-            let editAddress = await db.addresses.update(
+            let editAddress = await db.Address.update(
               {
                 title: title ? title : checkAddress.title,
                 address_details: address_details
@@ -154,7 +154,7 @@ const addressControllers = {
   deleteAddress: async (req, res) => {
     try {
       const t = await db.sequelize.transaction();
-      let checkAddress = await db.addresses.findOne({
+      let checkAddress = await db.Address.findOne({
         where: { id: req.query.id },
       });
       if (checkAddress) {
@@ -163,7 +163,7 @@ const addressControllers = {
             message: "can't delete primary address.",
           });
         } else if (checkAddress.user_id == req.user.id) {
-          await db.addresses.destroy({
+          await db.Address.destroy({
             where: { user_id: req.user.id, id: req.query.id },
             transaction: t,
           });
