@@ -5,6 +5,7 @@ const {
   validateRegister,
   validateVerification,
 } = require("../middlewares/validator");
+const { fileUploader } = require("../middlewares/multer");
 
 //REGISTER NEW USER ACCOUNT
 router.post("/register", validateRegister, userController.register);

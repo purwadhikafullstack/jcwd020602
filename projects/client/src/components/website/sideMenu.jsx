@@ -87,28 +87,31 @@ export default function SideMenu(props) {
                 </AccordionPanel>
               </AccordionItem>
 
-              {categories?.map((category, idx) => (
-                <AccordionItem key={idx}>
-                  <AccordionButton _expanded={{ bg: "black", color: "white" }}>
-                    <Box
-                      as="span"
-                      flex="1"
-                      textAlign="left"
-                      fontWeight={"bold"}
+              {categories &&
+                categories?.map((category, idx) => (
+                  <AccordionItem key={idx}>
+                    <AccordionButton
+                      _expanded={{ bg: "black", color: "white" }}
                     >
-                      {category.name}
-                    </Box>
-                    <AccordionIcon />
-                  </AccordionButton>
-                  <AccordionPanel pb={4}>
-                    {category?.subcategories.map((sub, idx) => (
-                      <Box id="option" key={idx} mb={1}>
-                        {sub.name}
+                      <Box
+                        as="span"
+                        flex="1"
+                        textAlign="left"
+                        fontWeight={"bold"}
+                      >
+                        {category.name}
                       </Box>
-                    ))}
-                  </AccordionPanel>
-                </AccordionItem>
-              ))}
+                      <AccordionIcon />
+                    </AccordionButton>
+                    <AccordionPanel pb={4}>
+                      {category?.subcategories.map((sub, idx) => (
+                        <Box id="option" key={idx} mb={1}>
+                          {sub.name}
+                        </Box>
+                      ))}
+                    </AccordionPanel>
+                  </AccordionItem>
+                ))}
             </Accordion>
           </DrawerBody>
         </DrawerContent>
