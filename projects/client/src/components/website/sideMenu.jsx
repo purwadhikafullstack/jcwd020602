@@ -18,11 +18,12 @@ import {
 import logo from "../../assets/newlogo.png";
 import { useFetchCategory } from "../../hooks/useFetchCategory";
 import { useFetchBrand } from "../../hooks/useFetchBrand";
+import { useSelector } from "react-redux";
 
 export default function SideMenu(props) {
   const { categories } = useFetchCategory();
   const { brands } = useFetchBrand();
-
+  const userSelector = useSelector((state) => state.auth);
   return (
     <>
       <Drawer isOpen={props.isOpen} placement={"left"} onClose={props.onClose}>
@@ -35,7 +36,7 @@ export default function SideMenu(props) {
 
           <DrawerBody p={0}>
             <Accordion allowToggle className="Accordion">
-              {props.user.name ? (
+              {userSelector.name ? (
                 <AccordionItem>
                   <AccordionButton _expanded={{ bg: "black", color: "white" }}>
                     <Flex
@@ -46,7 +47,7 @@ export default function SideMenu(props) {
                       gap={2}
                     >
                       <Avatar size={"sm"} />
-                      <Box>Hi, {props.user.name}</Box>
+                      <Box>Hi, {userSelector.name}</Box>
                     </Flex>
                     <AccordionIcon />
                   </AccordionButton>

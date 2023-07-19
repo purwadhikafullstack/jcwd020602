@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { api } from "../api/api";
 
-export const useFetchBrand = () => {
-  const [brands, setBrands] = useState();
+export const useFetchUser = () => {
+  const [users, setUsers] = useState();
   const fetch = async () => {
     try {
-      await api.get(`/brands`).then((res) => {
-        setBrands(res.data);
+      await api.get(`/users`).then((res) => {
+        setUsers(res.data);
       });
     } catch (err) {
       console.log(err);
@@ -15,5 +15,5 @@ export const useFetchBrand = () => {
   useEffect(() => {
     fetch();
   }, []);
-  return { brands, fetch };
+  return { users, fetch };
 };
