@@ -13,14 +13,15 @@ const userController = {
     try {
       const { email } = req.body;
 
-      const findEmail = await db.users.findOne({
-        where: { email, verified: true },
+      const findEmail = await db.User.findOne({
+        where: { email, status: true },
       });
       if (findEmail) {
         throw new Error("Email was registered");
       } else {
-        const createAccount = await db.users.create({
+        const createAccount = await db.User.create({
           email,
+          role: "USER",
         });
         const generateToken = nanoid();
         const token = await db.tokens.create({
@@ -42,7 +43,7 @@ const userController = {
         console.log(process.env.URL_REGISTER);
         mailer({
           subject: "email verification link",
-          to: "h72vaquejt@greencafe24.com",
+          to: email,
           text: registerTemplate,
         });
         t.commit();
@@ -59,11 +60,11 @@ const userController = {
   verify: async (req, res) => {
     const t = await sequelize.transaction();
     try {
-      const { email, password, full_name } = req.body;
+      const { email, password, name } = req.body;
       const hashPassword = await bcrypt.hash(password, 10);
 
-      await db.users.update(
-        { password: hashPassword, full_name, verified: 1 },
+      await db.User.update(
+        { password: hashPassword, name, status: "verified" },
         { where: { email } }
       );
       t.commit();
@@ -81,7 +82,7 @@ const userController = {
     try {
       const { email, password } = req.body;
 
-      const user = await db.users.findOne({
+      const user = await db.User.findOne({
         where: {
           email,
         },
@@ -91,7 +92,7 @@ const userController = {
         throw new Error("Username or email not found");
       }
 
-      if (!user.dataValues.verified) {
+      if (!user.dataValues.status) {
         throw new Error("email not verified");
       }
 
@@ -155,7 +156,7 @@ const userController = {
         throw new Error("token has expired");
       }
       console.log(p.dataValues);
-      user = await db.users.findOne({
+      user = await db.User.findOne({
         where: {
           id: JSON.parse(p.dataValues.userId).id,
         },

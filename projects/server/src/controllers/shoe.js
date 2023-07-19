@@ -40,11 +40,11 @@ const shoeController = {
             attributes: ["id", "name", "category_img"],
           },
           {
-            model: db.Subcategory,
+            model: db.SubCategory,
             attributes: ["id", "name"],
           },
           {
-            model: db.Shoeimage,
+            model: db.ShoeImage,
             attributes: ["id", "shoe_img"],
           },
         ],
@@ -68,11 +68,11 @@ const shoeController = {
             attributes: ["id", "name", "category_img"],
           },
           {
-            model: db.Subcategory,
+            model: db.SubCategory,
             attributes: ["id", "name"],
           },
           {
-            model: db.Shoeimage,
+            model: db.ShoeImage,
             attributes: ["id", "shoe_img"],
           },
         ],
@@ -104,11 +104,11 @@ const shoeController = {
             attributes: ["id", "name", "category_img"],
           },
           {
-            model: db.Subcategory,
+            model: db.SubCategory,
             attributes: ["id", "name"],
           },
           {
-            model: db.Shoeimage,
+            model: db.ShoeImage,
             attributes: ["id", "shoe_img"],
           },
         ],
@@ -140,11 +140,11 @@ const shoeController = {
             attributes: ["id", "name", "category_img"],
           },
           {
-            model: db.Subcategory,
+            model: db.SubCategory,
             attributes: ["id", "name"],
           },
           {
-            model: db.Shoeimage,
+            model: db.ShoeImage,
             attributes: ["id", "shoe_img"],
           },
         ],
