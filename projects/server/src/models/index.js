@@ -54,11 +54,11 @@ db.stocks = require("./stock")(sequelize, Sequelize); //id;(shoe_size, warehouse
 db.orders = require("./order")(sequelize, Sequelize); //id; (user, address)
 db.addresses = require("./address")(sequelize, Sequelize); //id;(user)
 db.carts = require("./cart")(sequelize, Sequelize); //id;(shoe, user)
-db.users = require("./user")(sequelize, Sequelize); //id;(warehouse)
-db.cities = require("./city")(sequelize, Sequelize); //id;(province)
-db.warehouses = require("./warehouse")(sequelize, Sequelize);
+db.User = require("./user")(sequelize, Sequelize); //id;(warehouse)
+db.City = require("./city")(sequelize, Sequelize); //id;(province)
+db.Warehouse = require("./warehouse")(sequelize, Sequelize);
 db.shoeSizes = require("./shoeSize")(sequelize, Sequelize);
-db.provinces = require("./province")(sequelize, Sequelize);
+db.Province = require("./province")(sequelize, Sequelize);
 db.tokens = require("./token")(sequelize, Sequelize);
 
 db.Shoe = require("./shoe")(sequelize, Sequelize);
@@ -66,6 +66,7 @@ db.Shoeimage = require("./shoeImage")(sequelize, Sequelize);
 db.Category = require("./category")(sequelize, Sequelize);
 db.Subcategory = require("./subCategory")(sequelize, Sequelize);
 db.Brand = require("./brand")(sequelize, Sequelize);
+db.Admin = require("./admin")(sequelize, Sequelize);
 
 // db.stock_Mutations foreignKey
 db.warehouses.hasMany(db.stockMutations, {
@@ -136,9 +137,8 @@ db.warehouses.hasMany(db.users, {
 });
 
 //db.cities foreignKey
-db.provinces.hasMany(db.cities, {
+db.Province.hasMany(db.City, {
   foreignKey: "province_id",
-  targetKey: "province_id",
 });
 
 //fahmi
@@ -148,11 +148,9 @@ db.Shoe.belongsTo(db.Brand, {
 db.Shoe.belongsTo(db.Subcategory, {
   foreignKey: "subcategory_id",
 });
-
 db.Brand.hasMany(db.Shoe, {
   foreignKey: "brand_id",
 });
-
 db.Category.hasMany(db.Subcategory, {
   foreignKey: "category_id",
 });
@@ -168,6 +166,15 @@ db.Shoeimage.belongsTo(db.Shoe, {
 });
 db.Shoe.hasMany(db.Shoeimage, {
   foreignKey: "shoe_id",
+});
+db.Warehouse.hasMany(db.Admin, {
+  foreignKey: "warehouse_id",
+});
+db.Admin.belongsTo(db.Warehouse, {
+  foreignKey: "warehouse_id",
+});
+db.Admin.belongsTo(db.User, {
+  foreignKey: "user_id",
 });
 
 module.exports = db;

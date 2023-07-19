@@ -23,6 +23,7 @@ import logo from "../../assets/newlogo.png";
 import { useFetchCategory } from "../../hooks/useFetchCategory";
 import { useFetchBrand } from "../../hooks/useFetchBrand";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 export default function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -31,7 +32,8 @@ export default function Navbar() {
   const [subCategory, setSubCategory] = useState({});
   const { brands } = useFetchBrand();
   const { categories } = useFetchCategory();
-  // console.log(brands);
+  const userSelector = useSelector((state) => state.auth);
+
   window.addEventListener("scroll", function () {
     var navbar = document.querySelector(".navbar");
     navbar.classList.toggle("sticky", window.scrollY > 550);
@@ -48,9 +50,7 @@ export default function Navbar() {
       [categoryId]: false,
     }));
   };
-  const user = {
-    name: "sadad",
-  };
+
   return (
     <>
       <Center
@@ -62,6 +62,7 @@ export default function Navbar() {
         zIndex={9}
         className="navbar"
         transition={"1s"}
+        color={"black"}
       >
         <Box w={"100vw"} maxW={"1550px"} m={3}>
           {/* atas */}
@@ -74,8 +75,8 @@ export default function Navbar() {
           >
             <text>Help</text>
             <text>
-              {user.name ? (
-                <text>Hi, {user.name}</text>
+              {userSelector?.role ? (
+                <text>Hi, {userSelector?.role}</text>
               ) : (
                 <Link to={"/login"}>
                   <text>Login/Signup</text>
@@ -89,7 +90,7 @@ export default function Navbar() {
             <Box className="burger" onClick={onOpen}>
               <Image as={BiMenuAltLeft} h={"auto"} w={"30px"} />
             </Box>
-            <SideMenu isOpen={isOpen} onClose={onClose} user={user} />
+            <SideMenu isOpen={isOpen} onClose={onClose} />
             <Image src={logo} w={"115px"} />
             <Box h={"30px"} className="menu" transform={"translateY(7px)"}>
               {/* brands */}
@@ -182,7 +183,7 @@ export default function Navbar() {
                 </InputGroup>
               </Box>
 
-              {user.name ? (
+              {userSelector?.name ? (
                 <Box
                   className="cart"
                   display={"flex"}

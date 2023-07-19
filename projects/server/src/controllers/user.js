@@ -173,10 +173,39 @@ const userController = {
       return res.status(500).send({ message: err.message });
     }
   },
-
   getUserByToken: async (req, res) => {
     // delete user.dataValues.password;
     res.send(req.user);
+  },
+  addAdmin: async (req, res) => {
+    try {
+      const { name, email, phone, password } = req.body;
+      const { filename } = req.file;
+      const hashPassword = await bcrypt.hash(password, 10);
+
+      const checkEmail = await db.User.findOne({
+        where: {
+          email,
+        },
+      });
+      if (checkEmail) {
+        throw new Error("Email alredy exists");
+      }
+
+      await db.User.create({
+        name,
+        email,
+        phone,
+        password: hashPassword,
+        avatar_url: AVATAR_URL + filename,
+        role: "ADMIN",
+        status: "verified",
+      });
+      return res.send({ message: "success add admin" });
+    } catch (err) {
+      console.log(err.message);
+      return res.status(500).send(err.message);
+    }
   },
 };
 module.exports = userController;

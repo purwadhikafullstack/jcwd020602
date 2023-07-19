@@ -42,6 +42,8 @@ export default function LandingPage() {
           justifyContent={"center"}
           zIndex={1}
           overflow={"hidden"}
+          // bg={"white"}
+          // color={"black"}
         >
           <Image
             src={adidas}

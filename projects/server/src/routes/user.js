@@ -20,4 +20,15 @@ router.get(
   userController.getUserByToken
 );
 
+router.post(
+  "/admin",
+  fileUploader({
+    destinationFolder: "avatar",
+    fileType: "image",
+  }).single("avatar"),
+  userController.addAdmin
+);
+
+router.get("/", userController.getAllUser);
+
 module.exports = router;
