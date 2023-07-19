@@ -21,7 +21,7 @@ const verify = require("./middlewares/verify");
 const routes = require("./routes");
 const db = require("./models");
 // db.sequelize.sync({ alter: true });
-db.sequelize.sync({ force: true });
+// db.sequelize.sync({ force: true });
 
 //#region API ROUTES
 

@@ -208,5 +208,14 @@ const userController = {
       return res.status(500).send(err.message);
     }
   },
+  getAllUser: async (req, res) => {
+    try {
+      await db.User.findAll().then((result) => res.status(200).send(result));
+    } catch (err) {
+      res.status(500).send({
+        message: err.message,
+      });
+    }
+  },
 };
 module.exports = userController;

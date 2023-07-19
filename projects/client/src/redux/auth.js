@@ -1,7 +1,7 @@
 const init = {
   email: "",
   password: "",
-  role: "ADMIN",
+  role: "SUPERADMIN",
 };
 
 function userReducer(state = init, action) {

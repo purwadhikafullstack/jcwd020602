@@ -20,11 +20,11 @@ export const useFetchProv = () => {
 
 export const useFetchCity = (id) => {
   const [cities, setCities] = useState();
-  const provId = id;
+  const province = id;
 
   const fetch = async () => {
     try {
-      await api.get("/province&city/city/" + provId).then((res) => {
+      await api.get("/province&city/city/" + province).then((res) => {
         setCities(res.data);
       });
     } catch (err) {
@@ -34,7 +34,7 @@ export const useFetchCity = (id) => {
 
   useEffect(() => {
     fetch();
-  }, [provId]);
+  }, [province]);
 
   return { cities, fetch };
 };
