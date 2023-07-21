@@ -47,6 +47,7 @@ app.use("/api/brands", verify, routes.brandRoutes);
 app.use("/api/shoeimages", verify, routes.shoeimageRoutes);
 app.use("/api/address", verify, routes.addressRoutes);
 app.use("/api/auth", verify, routes.userRoutes);
+app.use("/api/stock", verify, routes.stockRoutes);
 
 app.use("/api/category", express.static(`${__dirname}/public/category`));
 app.use("/api/brand", express.static(`${__dirname}/public/brand`));

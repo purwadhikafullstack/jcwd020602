@@ -7,6 +7,7 @@ const brandRoutes = require("./brand");
 const shoeimageRoutes = require("./shoeimage");
 const addressRoutes = require("./address");
 const userRoutes = require("./user");
+const stockRoutes = require("./stock");
 
 module.exports = {
   provinceCityRoutes,
@@ -18,4 +19,5 @@ module.exports = {
   shoeimageRoutes,
   addressRoutes,
   userRoutes,
+  stockRoutes,
 };

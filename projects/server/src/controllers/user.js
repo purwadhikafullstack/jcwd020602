@@ -24,7 +24,7 @@ const userController = {
           role: "USER",
         });
         const generateToken = nanoid();
-        const token = await db.tokens.create({
+        const token = await db.Token.create({
           expired: moment().add(1, "days").format(),
           token: generateToken,
           userId: JSON.stringify({ id: createAccount.dataValues.id }),
@@ -104,7 +104,7 @@ const userController = {
 
       const userId = { id: user.dataValues.id };
 
-      let token = await db.tokens.findOne({
+      let token = await db.Token.findOne({
         where: {
           userId: JSON.stringify(userId),
           expired: {
@@ -116,18 +116,29 @@ const userController = {
       });
 
       if (!token) {
-        token = await db.tokens.create({
+        token = await db.Token.create({
           expired: moment().add(1, "h").format(),
           token: nanoid(),
           userId: JSON.stringify(userId),
           status: "LOGIN",
-          // userId: user.dataValues.id,
         });
+      } else {
+        token = await db.Token.update(
+          {
+            expired: moment().add(1, "h").format(),
+            token: nanoid(),
+          },
+          {
+            where: { userId: JSON.stringify(userId), status: "LOGIN" },
+          }
+        );
       }
       t.commit();
+      delete user.dataValues.password;
+      delete user.dataValues.id;
       return res.status(200).send({
         message: "Success login",
-        token: token.dataValues.token,
+        token: nanoid(),
         data: user.dataValues,
       });
     } catch (err) {
@@ -142,7 +153,7 @@ const userController = {
       const token = req.headers.authorization.split(" ")[1];
 
       console.log(token);
-      let p = await db.tokens.findOne({
+      let p = await db.Token.findOne({
         where: {
           token,
           expired: {
@@ -210,7 +221,8 @@ const userController = {
   },
   getAllUser: async (req, res) => {
     try {
-      await db.User.findAll().then((result) => res.status(200).send(result));
+      const result = await db.User.findAll();
+      return res.status(200).send(result.dataValues);
     } catch (err) {
       res.status(500).send({
         message: err.message,

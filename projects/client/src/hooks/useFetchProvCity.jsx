@@ -24,9 +24,13 @@ export const useFetchCity = (id) => {
 
   const fetch = async () => {
     try {
-      await api.get("/province&city/city/" + province).then((res) => {
-        setCities(res.data);
-      });
+      if (province) {
+        await api.get("/province&city/city/" + province).then((res) => {
+          setCities(res.data);
+        });
+      } else {
+        setCities([]);
+      }
     } catch (err) {
       console.log(err);
     }

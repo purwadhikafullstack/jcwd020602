@@ -9,6 +9,7 @@ import NavbarDashboard from "../components/dashboard/navbarDashboard";
 import Sidebar from "../components/dashboard/sidebar";
 import UserSettingsPage from "../pages/userSettingsPage";
 import WarehousePage from "../pages/warehousePage";
+import InventoryPage from "../pages/inventoryPage";
 const routes = [
   <Route
     path="/"
@@ -84,7 +85,7 @@ const routes = [
       <ProtectedPage needLogin={true} guestOnly={false}>
         <NavbarDashboard />
         <Sidebar />
-        {/*  */}
+        <InventoryPage />
       </ProtectedPage>
     }
   />,

@@ -50,7 +50,7 @@ db.Sequelize = Sequelize;
 db.StockMutation = require("./stockMutation")(sequelize, Sequelize); //id; (from_warehouse, to_warehouse, req_admin, res_admin, stock)
 db.OrderDetail = require("./orderDetail")(sequelize, Sequelize); //id; (order,stock)
 db.StockHistory = require("./stockHistory")(sequelize, Sequelize); //id; (stock)
-db.Stock = require("./stock")(sequelize, Sequelize); //id;(shoe_size, warehouse)
+db.Stock = require("./stock")(sequelize, Sequelize); //id;(shoe, shoe_size, warehouse)
 db.Order = require("./order")(sequelize, Sequelize); //id; (user, address)
 db.Address = require("./address")(sequelize, Sequelize); //id;(user)
 db.Cart = require("./cart")(sequelize, Sequelize); //id;(shoe, user)
@@ -111,10 +111,22 @@ db.ShoeSize.hasMany(db.Stock, {
   foreignKey: "shoe_size_id",
   targetKey: "id",
 });
+db.Stock.belongsTo(db.ShoeSize, {
+  foreignKey: "shoe_size_id",
+  targetKey: "id",
+});
 db.Shoe.hasMany(db.Stock, {
+  foreignKey: "shoe_id",
+  targetKey: "id",
+});
+db.Stock.belongsTo(db.Shoe, {
   foreignKey: "shoe_id",
 });
 db.Warehouse.hasMany(db.Stock, {
+  foreignKey: "warehouse_id",
+  targetKey: "id",
+});
+db.Stock.belongsTo(db.Warehouse, {
   foreignKey: "warehouse_id",
   targetKey: "id",
 });
