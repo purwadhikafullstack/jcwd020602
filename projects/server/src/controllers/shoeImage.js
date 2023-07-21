@@ -8,7 +8,7 @@ const shoeimageController = {
 
       // Membuat array promise untuk setiap penciptaan gambar
       const createImagePromises = filenames.map((filename) =>
-        db.Shoeimage.create({
+        db.ShoeImage.create({
           shoe_id,
           shoe_img: SHOE_URL + filename,
         })

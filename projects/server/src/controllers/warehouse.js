@@ -1,171 +1,188 @@
 const db = require("../models");
 const axios = require("axios");
-const {
-  addWarehouse,
-  updateWarehouse,
-  validWarehouse,
-  getAllWarehouse,
-} = require("../service/warehouse.service");
-const { openCage } = require("../service/opencage.service");
+const opencage = async (address, city, province) => {
+  return await axios.get("https://api.opencagedata.com/geocode/v1/json", {
+    params: {
+      q: `${address}, ${city},${province}`,
+      countrycode: "id",
+      limit: 1,
+      key: process.env.OpenCage_API_KEY,
+    },
+  });
+};
+
 const warehouseControllers = {
-  insertWarehouse: async (req, res) => {
+  addWarehouse: async (req, res) => {
+    const t = await db.sequelize.transaction();
     try {
-      const t = await db.sequelize.transaction();
-      let { name, road, province, city, district, postcode, telephone_number } =
-        req.body;
-      if (req?.user?.role == "SUPER_ADMIN") {
-        return res.status(400).send({
-          message: `user ${req.user.full_name} is not a super admin, but a ${req.user.role}`,
-        });
-      } else {
-        const nameChecker = await db.warehouses.findOne({ where: { name } });
-        if (!nameChecker) {
-          let response = await openCage(req.body);
-          let createNewWarehouse = await addWarehouse(t, req.body, response);
-          await t.commit();
-          return res.status(200).send({
-            success: true,
-            message: "New warehouse data added",
-            dataAPI: response.data.results[0],
-          });
-        } else {
-          return res.status(400).send({ message: "name already used" });
-        }
-      }
-    } catch (error) {
+      const { name, phone, province, city, address } = req.body;
+      const response = await opencage(address, city, province);
+      console.log(response.data.results[0]);
+      const warehouse = await db.Warehouse.create(
+        {
+          name,
+          phone,
+          address: response.data.results[0].formatted,
+          province:
+            response.data.results[0].components?.state ||
+            response.data.results[0].components?.region ||
+            province,
+          city:
+            response.data.results[0].components.city ||
+            response.data.results[0].components.city_district ||
+            city,
+          postcode: response.data.results[0].components.postcode,
+          latitude: response.data.results[0].geometry.lat,
+          longitude: response.data.results[0].geometry.lng,
+        },
+        { transaction: t }
+      );
+      await t.commit();
+      return res.status(200).send({
+        data: warehouse,
+        message: "success create new Warehouse",
+      });
+    } catch (err) {
       await t.rollback();
-      return res.status(500).send({ message: error.message });
+      return res.status(500).send(err.message);
     }
   },
-  updateWarehouse: async (req, res) => {
+  getAll: async (req, res) => {
     try {
-      const t = await db.sequelize.transaction();
-      let { name, road, province, city, district, postcode, telephone_number } =
-        req.body;
-      if (req.user.role != "SUPER_ADMIN") {
-        return res.status(400).send({
-          message: `user ${req.user.full_name} is not a super admin, but a ${req.user.role}`,
-        });
-      } else {
-        const checkWarehouse = await validWarehouse(req.query.id);
-        if (checkWarehouse) {
-          const checkName = await db.warehouses.findOne({
-            where: { name },
-            raw: true,
-          });
-          if (checkName.id == checkWarehouse.id) {
-            let response = await openCage(req.body);
-            await updateWarehouse(t, req.body, response);
-            await t.commit();
-            return res.status(200).send({
-              success: true,
-              message: `Warehouse ${checkWarehouse.name} has been updated `,
-              dataAPI: response.data.results[0],
-            });
-          } else {
-            return res
-              .status(400)
-              .send({ message: `warehouse named ${name} already exist` });
-          }
-        } else {
-          return res.status(400).send({ message: "warehouse not found" });
-        }
-      }
-    } catch (error) {
-      await t.rollback();
-      return res.status(500).send({ message: error.message });
+      await db.Warehouse.findAll({
+        include: [
+          {
+            model: db.Admin,
+            attributes: ["user_id"],
+            include: [db.User],
+          },
+        ],
+      }).then((result) => res.status(200).send(result));
+    } catch (err) {
+      return res.status(500).send(err.message);
     }
   },
   deleteWarehouse: async (req, res) => {
     try {
-      const t = await db.sequelize.transaction();
-      if (req.user.role != "SUPER_ADMIN") {
-        return res.status(400).send({
-          message: `user ${req.user.full_name} is not a super admin, but a ${req.user.role}`,
-        });
-      } else {
-        const checkWarehouse = await validWarehouse(req.query.id);
-        if (checkWarehouse) {
-          if (req.user.role == "SUPER_ADMIN") {
-            await db.warehouses.destroy({
-              where: { id: req.params.id },
-              transaction: t,
-            });
-            await t.commit();
-            return res.status(200).send({
-              success: true,
-              message: `Warehouse ${checkWarehouse} has been deleted!`,
-            });
-          } else {
-            return res.status(400).send({
-              message: "You are not a super admin.",
-            });
-          }
-        } else {
-          return res.status(400).send({
-            message: "Warehouse not found.",
-          });
-        }
-      }
-    } catch (error) {
-      await t.rollback();
-      return res.status(500).send({ message: error.message });
-    }
-  },
-  getAllWarehouses: async (req, res) => {
-    try {
-      if (req?.user?.role == "SUPER_ADMIN") {
-        return res.status(400).send({
-          message: `user ${req.user.full_name} is not a super admin, but a ${req.user.role}`,
-        });
-      } else {
-        const page = parseInt(req.query.page) || 0;
-        const limit = 5;
-        const offset = limit * page;
-        const sort = req.query.sort || "id";
-        const order = req.query.order || "ASC";
-        const keyword = req.query.keyword || "";
-
-        let WarehouseData = await getAllWarehouse({
-          limit,
-          offset,
-          sort,
-          order,
-          keyword,
-        });
-        res.status(200).send({
-          ...WarehouseData,
-          totalPage: Math.ceil(WarehouseData.count / limit),
-        });
-      }
-    } catch (error) {
-      res.status(500).send({
-        message: error.message,
+      await db.Warehouse.destroy({
+        where: {
+          id: req.params.id,
+        },
       });
+      return res.status(200).send({ message: "warehouse has been deleted" });
+    } catch (err) {
+      return res.status(500).send(err.message);
     }
   },
-  getWarehouseDetails: async (req, res) => {
+  editWarehouse: async (req, res) => {
+    const t = await db.sequelize.transaction();
     try {
-      let data = await validWarehouse(req.query.id);
-      let adminAssigned = [];
-      if (idAdmin !== null) {
-        adminAssigned = await AdminsModel.findAll({
-          where: { id: idAdmin },
-        });
-      } else if (idAdmin == null) {
-        adminAssigned.push({
-          full_name: "This warehouse has no admin assigned yet",
-        });
-      }
-
-      res.status(200).send({
-        success: true,
-        message: "Ok",
-        data,
-        adminAssigned,
+      const { name, phone, province, city, address } = req.body;
+      const response = await opencage(address, city, province);
+      console.log(response.data.results[0]);
+      const warehouse = await db.Warehouse.update(
+        {
+          name,
+          phone,
+          address:
+            response?.data?.results[0]?.formatted == null
+              ? address
+              : response?.data?.results[0]?.formatted,
+          province:
+            response.data.results[0].components.state ||
+            response.data.results[0].components.region,
+          city:
+            response.data.results[0].components.city ||
+            response.data.results[0].components.city_district,
+          postcode: response.data.results[0].components.postcode,
+          latitude: response.data.results[0].geometry.lat,
+          longitude: response.data.results[0].geometry.lng,
+        },
+        {
+          where: {
+            id: req.params.id,
+          },
+        },
+        { transaction: t }
+      );
+      await t.commit();
+      return res.status(200).send({
+        data: warehouse,
+        message: "success update Warehouse",
       });
     } catch (err) {
-      return res.status(500).send({ message: err.message });
+      await t.rollback();
+      return res.status(500).send(err.message);
+    }
+  },
+  addAdminWarehouse: async (req, res) => {
+    try {
+      const { user_id } = req.params;
+      const admin = await db.Admin.create({
+        warehouse_id: req.body.warehouse_id,
+        user_id,
+      });
+
+      const user = await db.User.findOne({
+        where: {
+          id: user_id,
+        },
+      });
+
+      if (user) {
+        user.assign = true;
+        await user.save();
+      }
+
+      return res
+        .status(200)
+        .send({ data: admin, message: "success assign admin" });
+    } catch (err) {
+      return res.status(500).send(err.message);
+    }
+  },
+  updateAdminWarehouse: async (req, res) => {
+    try {
+      const { user_id } = req.params;
+      const { warehouse_id } = req.body;
+
+      await db.Admin.update(
+        {
+          warehouse_id,
+        },
+        {
+          where: {
+            user_id,
+          },
+        }
+      );
+      return res.status(200).send({ message: "success reassign admin" });
+    } catch (err) {
+      return res.status(500).send(err.message);
+    }
+  },
+  deleteAdminWarehouse: async (req, res) => {
+    const { user_id } = req.params;
+    try {
+      await db.Admin.destroy({
+        where: {
+          user_id,
+        },
+      });
+
+      const user = await db.User.findOne({
+        where: {
+          id: user_id,
+        },
+      });
+
+      if (user) {
+        user.assign = false;
+        await user.save();
+      }
+      return res.status(200).send({ message: "success unassign admin" });
+    } catch (err) {
+      return res.status(500).send(err.message);
     }
   },
   getCostData: async (req, res) => {
@@ -193,4 +210,5 @@ const warehouseControllers = {
     }
   },
 };
+
 module.exports = warehouseControllers;

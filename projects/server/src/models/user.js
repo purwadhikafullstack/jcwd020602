@@ -4,19 +4,34 @@ module.exports = (sequelize, Sequelize) => {
     {
       email: {
         type: Sequelize.STRING,
-        unique: true,
+        // unique: "email",
       },
-      password: Sequelize.STRING,
-      full_name: Sequelize.STRING,
-      profile_picture: Sequelize.STRING,
-      verified: {
+      password: {
+        type: Sequelize.STRING,
+      },
+      name: {
+        type: Sequelize.STRING,
+      },
+      phone: {
+        type: Sequelize.STRING,
+      },
+      avatar_url: {
+        type: Sequelize.STRING,
+      },
+      status: {
+        type: Sequelize.ENUM("verified", "unverified"),
+        defaultValue: "unverified",
+      },
+      assign: {
         type: Sequelize.BOOLEAN,
         defaultValue: false,
       },
-      role: Sequelize.ENUM("USER", "WAREHOUSE_ADMIN", "SUPER_ADMIN"),
-      warehouse_id: {
-        type: Sequelize.INTEGER,
+      role: {
+        type: Sequelize.ENUM("USER", "ADMIN", "SUPERADMIN"),
       },
+    },
+    {
+      indexes: [{ unique: true, fields: ["email"] }],
     },
     {
       paranoid: true,
