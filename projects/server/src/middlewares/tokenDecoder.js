@@ -8,7 +8,7 @@ const getByToken = async (req, res, next) => {
     const token = req.headers.authorization.split(" ")[1];
 
     console.log(token);
-    let p = await db.tokens.findOne({
+    let p = await db.Token.findOne({
       where: {
         token,
         expired: {
@@ -22,7 +22,7 @@ const getByToken = async (req, res, next) => {
       throw new Error("token has expired");
     }
     console.log(p.dataValues);
-    user = await db.users.findOne({
+    user = await db.User.findOne({
       where: {
         id: JSON.parse(p.dataValues.userId).id,
       },

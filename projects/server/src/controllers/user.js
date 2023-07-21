@@ -12,13 +12,14 @@ const userController = {
     const t = await sequelize.transaction();
     try {
       const { email } = req.body;
-      const findEmail = await db.users.findOne({
+
+      const findEmail = await db.User.findOne({
         where: { email },
       });
       if (findEmail) {
         throw new Error("Email was registered");
       } else {
-        const createAccount = await db.User.create({
+        const createAccount = await db.users.create({
           email,
           role: "USER",
         });
