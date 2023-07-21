@@ -21,7 +21,6 @@ export default function AddWarehouse(props) {
   const { provinces } = useFetchProv();
   const [provid, setProvid] = useState(0);
   const { cities } = useFetchCity(provid);
-  console.log(provid);
   const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [warehouse, setWarehouse] = useState({

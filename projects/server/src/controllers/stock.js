@@ -3,30 +3,43 @@ const db = require("../models");
 const stockController = {
   getStock: async (req, res) => {
     try {
-      const limit = 10;
-      let offset = 0;
+      const limit = 1;
+      const page = req?.query?.page || 1;
+      let offset = (parseInt(page) - 1) * limit;
+      const sort = req?.query?.sort || "id";
+      const order = req?.query?.order || "ASC";
+      const search = req?.query?.search || "";
+      const province = req?.query?.province || "";
+      const city = req?.query?.city || "";
 
-      if (page && parseInt(page) > 1) {
-        offset = (parseInt(page) - 1) * limit;
-      }
-
-      await db.Stock.findAll({
+      db.Stock.findAndCountAll({
         where: {
           [Op.and]: [
+            { "$sho.name$": { [Op.like]: `%${search}%` } },
             {
-              warehouse_id: {
-                [Op.like]: `%${req.query.warehouse_id || ""}%`,
-              },
-            },
-            {
-              "$product.product_name$": {
-                [Op.like]: `%${req.query.product_name || ""}%`,
-              },
+              [Op.or]: [
+                { "$warehouse.city$": { [Op.like]: `%${city}%` } },
+                { "$warehouse.province$": { [Op.like]: `%${province}%` } },
+              ],
             },
           ],
         },
-        include: [{ model: db.products }, { model: db.warehouses }],
-      }).then((result) => res.status(200).send(result));
+        include: [
+          {
+            model: db.Shoe,
+            include: [{ model: db.Brand }],
+          },
+          { model: db.ShoeSize },
+          { model: db.Warehouse },
+        ],
+        limit,
+        offset,
+        order: [[sort, order]],
+      }).then((result) =>
+        res
+          .status(200)
+          .send({ ...result, totalPages: Math.ceil(result.count / limit) })
+      );
     } catch (err) {
       console.log(err);
       res.status(500).send({ message: err.message });
