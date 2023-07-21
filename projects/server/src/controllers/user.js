@@ -12,9 +12,8 @@ const userController = {
     const t = await sequelize.transaction();
     try {
       const { email } = req.body;
-
-      const findEmail = await db.User.findOne({
-        where: { email, status: true },
+      const findEmail = await db.users.findOne({
+        where: { email },
       });
       if (findEmail) {
         throw new Error("Email was registered");
@@ -43,6 +42,7 @@ const userController = {
         console.log(process.env.URL_REGISTER);
         mailer({
           subject: "email verification link",
+
           to: email,
           text: registerTemplate,
         });
@@ -147,44 +147,7 @@ const userController = {
       return res.status(500).send(err.message);
     }
   },
-  getByTokenV2: async (req, res, next) => {
-    try {
-      // console.log(req.body);
-      const token = req.headers.authorization.split(" ")[1];
 
-      console.log(token);
-      let p = await db.Token.findOne({
-        where: {
-          token,
-          expired: {
-            [db.Sequelize.Op.gte]: moment().format(),
-          },
-          valid: true,
-        },
-      });
-
-      if (!p) {
-        throw new Error("token has expired");
-      }
-      console.log(p.dataValues);
-      user = await db.User.findOne({
-        where: {
-          id: JSON.parse(p.dataValues.userId).id,
-        },
-      });
-      //id,email,nama,password,dll
-
-      delete user.dataValues.password;
-      delete user.dataValues.id;
-
-      req.user = user;
-
-      next();
-    } catch (err) {
-      console.log(err);
-      return res.status(500).send({ message: err.message });
-    }
-  },
   getUserByToken: async (req, res) => {
     // delete user.dataValues.password;
     res.send(req.user);
