@@ -14,7 +14,7 @@ const userController = {
       const { email } = req.body;
 
       const findEmail = await db.users.findOne({
-        where: { email, verified: true },
+        where: { email },
       });
       if (findEmail) {
         throw new Error("Email was registered");
@@ -42,7 +42,7 @@ const userController = {
         console.log(process.env.URL_REGISTER);
         mailer({
           subject: "email verification link",
-          to: "h72vaquejt@greencafe24.com",
+          to: "femlibuydo@gufum.com",
           text: registerTemplate,
         });
         t.commit();
@@ -133,44 +133,6 @@ const userController = {
       t.rollback();
       console.log(err.message);
       return res.status(500).send(err.message);
-    }
-  },
-  getByTokenV2: async (req, res, next) => {
-    try {
-      // console.log(req.body);
-      const token = req.headers.authorization.split(" ")[1];
-
-      console.log(token);
-      let p = await db.tokens.findOne({
-        where: {
-          token,
-          expired: {
-            [db.Sequelize.Op.gte]: moment().format(),
-          },
-          valid: true,
-        },
-      });
-
-      if (!p) {
-        throw new Error("token has expired");
-      }
-      console.log(p.dataValues);
-      user = await db.users.findOne({
-        where: {
-          id: JSON.parse(p.dataValues.userId).id,
-        },
-      });
-      //id,email,nama,password,dll
-
-      delete user.dataValues.password;
-      delete user.dataValues.id;
-
-      req.user = user;
-
-      next();
-    } catch (err) {
-      console.log(err);
-      return res.status(500).send({ message: err.message });
     }
   },
 

@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const userController = require("../controllers").userController;
+const tokenDecoder = require("../middlewares/tokenDecoder");
 const {
   validateRegister,
   validateVerification,
@@ -14,10 +15,6 @@ router.patch("/verify", validateVerification, userController.verify);
 
 router.post("/login", userController.login);
 
-router.get(
-  "/userbytoken",
-  userController.getByTokenV2,
-  userController.getUserByToken
-);
+router.get("/userbytoken", tokenDecoder, userController.getUserByToken);
 
 module.exports = router;
