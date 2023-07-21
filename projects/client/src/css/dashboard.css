@@ -1,0 +1,102 @@
+/*--------------------- light ---------------------*/
+/* #light html {
+  background: white;
+} */
+/* #light {
+  background: white;
+  color: black;
+  transition: 0.5s;
+} */
+
+#light #navbarDash {
+  background: white;
+  color: black;
+  transition: 0.5s;
+}
+#light #sidebar {
+  background-color: white;
+  color: black;
+  transition: 0.5s;
+}
+#dark #content {
+  background-color: white;
+  transition: 0.5s;
+  color: black;
+}
+
+/*--------------------- dark ---------------------*/
+/* html #dark {
+  background: black;
+} */
+
+#dark #navbarDash {
+  background: black;
+  transition: 0.5s;
+  color: white;
+}
+
+#dark #sidebar {
+  background-color: black;
+  transition: 0.5s;
+  color: white;
+}
+#dark #content {
+  background-color: black;
+  transition: 0.5s;
+  color: white;
+}
+
+/*--------------------- navbar ---------------------*/
+#navbarDash {
+  padding-left: 188px;
+}
+
+/*--------------------- sidebar ---------------------*/
+/* #icon {
+  borderradius
+} */
+.tooltip {
+  display: none;
+}
+.logo-admin {
+  margin-bottom: 10px;
+}
+/*--------------------- content ---------------------*/
+#content {
+  padding-left: 180px;
+  /* height: 100vh; */
+}
+/*--------------------- @media ---------------------*/
+@media (max-width: 700px) {
+  #tulisan-sidebar {
+    display: none;
+  }
+  .logo-admin img {
+    display: none;
+  }
+  #navbarDash {
+    padding-left: 65px;
+  }
+  .tooltip {
+    display: block;
+  }
+  .logo-admin {
+    margin-bottom: 0px;
+  }
+  #content {
+    padding-left: 57px;
+    /* height: auto; */
+  }
+  #table-content {
+    display: none;
+  }
+  #card-content {
+    display: block;
+  }
+}
+
+@media (max-width: 450px) {
+  #button-add {
+    display: none;
+  }
+}

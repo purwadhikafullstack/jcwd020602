@@ -19,7 +19,7 @@ const categoryController = {
   addSubcategory: async (req, res) => {
     try {
       const { name } = req.body;
-      await db.Subcategory.create({
+      await db.SubCategory.create({
         name,
       }).then((result) => res.status(200).send(result));
     } catch (err) {
@@ -31,14 +31,14 @@ const categoryController = {
     await db.Category.findAll({
       include: [
         {
-          model: db.Subcategory,
+          model: db.SubCategory,
           include: [db.Shoe],
         },
       ],
     }).then((result) => res.status(200).send(result));
   },
   getAllSubcategory: async (req, res) => {
-    await db.Subcategory.findAll({
+    await db.SubCategory.findAll({
       include: [db.Shoe],
     }).then((result) => res.status(200).send(result));
   },

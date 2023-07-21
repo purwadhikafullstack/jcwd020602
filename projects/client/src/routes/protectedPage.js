@@ -2,23 +2,30 @@ import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-export default function ProtectedPage({ children, needLogin, guestOnly }) {
+export default function ProtectedPage({ children, guestOnly, needLogin }) {
   const userSelector = useSelector((state) => state.auth);
-  // console.log(userSelector);
   const nav = useNavigate();
   const token = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
-    if (
-      !guestOnly &&
-      needLogin &&
+    if (needLogin && (userSelector.role == "USER" || !userSelector.role)) {
+      return nav("/");
+    } else if (
+      guestOnly &&
       (userSelector.role == "ADMIN" || userSelector.role == "SUPERADMIN")
     ) {
       return nav("/dashboard");
-    } else {
+    } else if (
+      !(
+        userSelector.role == "ADMIN" ||
+        userSelector.role == "SUPERADMIN" ||
+        userSelector.role == "" ||
+        userSelector.role == "USER"
+      )
+    ) {
       return nav("/");
     }
-  }, [userSelector]);
+  }, [userSelector, guestOnly, needLogin]);
 
   return children;
 }

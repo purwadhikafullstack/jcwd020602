@@ -1,6 +1,6 @@
 import { Box, Flex, Text, Image, Center } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-
+import { api } from "../../api/api";
 import { useFetchCategory } from "../../hooks/useFetchCategory";
 
 export default function Category() {

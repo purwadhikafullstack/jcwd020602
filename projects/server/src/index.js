@@ -38,23 +38,20 @@ app.get("/api/greetings", (req, res, next) => {
   });
 });
 
-app.use("/warehouse", verify, routes.warehouseRouter);
-app.use("/province&city", verify, routes.provinceCityRouter);
-app.use("/history", verify, routes.stockHistory);
-app.use("/shoes", routes.shoeRoutes);
-app.use("/categories", routes.categoryRoutes);
-app.use("/brands", routes.brandRoutes);
-app.use("/shoeimages", routes.shoeimageRoutes);
+app.use("/api/warehouses", verify, routes.warehouseRoutes);
+app.use("/api/province&city", verify, routes.provinceCityRoutes);
+app.use("/api/histories", verify, routes.stockHistory);
+app.use("/api/shoes", verify, routes.shoeRoutes);
+app.use("/api/categories", verify, routes.categoryRoutes);
+app.use("/api/brands", verify, routes.brandRoutes);
+app.use("/api/shoeimages", verify, routes.shoeimageRoutes);
+app.use("/api/address", verify, routes.addressRoutes);
+app.use("/api/auth", verify, routes.userRoutes);
+app.use("/api/stock", verify, routes.stockRoutes);
 
-app.use("/address", verify, routes.addressRouter);
-app.use("/warehouse", verify, routes.warehouseRouter);
-app.use("/province&city", verify, routes.provinceCityRouter);
-app.use("/history", verify, routes.stockHistory);
-
-app.use("/category", express.static(`${__dirname}/public/category`));
-app.use("/brand", express.static(`${__dirname}/public/brand`));
-
-app.use("/api/auth", routes.userRouter);
+app.use("/api/category", express.static(`${__dirname}/public/category`));
+app.use("/api/brand", express.static(`${__dirname}/public/brand`));
+app.use("/api/avatar", express.static(`${__dirname}/public/avatar`));
 // ===========================
 
 // not found

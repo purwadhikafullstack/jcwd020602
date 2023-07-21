@@ -19,11 +19,12 @@ const userController = {
       if (findEmail) {
         throw new Error("Email was registered");
       } else {
-        const createAccount = await db.User.create({
+        const createAccount = await db.users.create({
           email,
+          role: "USER",
         });
         const generateToken = nanoid();
-        const token = await db.tokens.create({
+        const token = await db.Token.create({
           expired: moment().add(1, "days").format(),
           token: generateToken,
           userId: JSON.stringify({ id: createAccount.dataValues.id }),
@@ -42,7 +43,8 @@ const userController = {
         console.log(process.env.URL_REGISTER);
         mailer({
           subject: "email verification link",
-          to: "femlibuydo@gufum.com",
+
+          to: email,
           text: registerTemplate,
         });
         t.commit();
@@ -63,7 +65,7 @@ const userController = {
       const hashPassword = await bcrypt.hash(password, 10);
 
       await db.User.update(
-        { password: hashPassword, name, verified: "verified" },
+        { password: hashPassword, name, status: "verified" },
         { where: { email } }
       );
       t.commit();
@@ -91,7 +93,7 @@ const userController = {
         throw new Error("Username or email not found");
       }
 
-      if (!user.dataValues.verified) {
+      if (!user.dataValues.status) {
         throw new Error("email not verified");
       }
 
@@ -120,13 +122,24 @@ const userController = {
           token: nanoid(),
           userId: JSON.stringify(userId),
           status: "LOGIN",
-          // userId: user.dataValues.id,
         });
+      } else {
+        token = await db.Token.update(
+          {
+            expired: moment().add(1, "h").format(),
+            token: nanoid(),
+          },
+          {
+            where: { userId: JSON.stringify(userId), status: "LOGIN" },
+          }
+        );
       }
       t.commit();
+      delete user.dataValues.password;
+      delete user.dataValues.id;
       return res.status(200).send({
         message: "Success login",
-        token: token.dataValues.token,
+        token: nanoid(),
         data: user.dataValues,
       });
     } catch (err) {
@@ -139,6 +152,46 @@ const userController = {
   getUserByToken: async (req, res) => {
     // delete user.dataValues.password;
     res.send(req.user);
+  },
+  addAdmin: async (req, res) => {
+    try {
+      const { name, email, phone, password } = req.body;
+      const { filename } = req.file;
+      const hashPassword = await bcrypt.hash(password, 10);
+
+      const checkEmail = await db.User.findOne({
+        where: {
+          email,
+        },
+      });
+      if (checkEmail) {
+        throw new Error("Email alredy exists");
+      }
+
+      await db.User.create({
+        name,
+        email,
+        phone,
+        password: hashPassword,
+        avatar_url: AVATAR_URL + filename,
+        role: "ADMIN",
+        status: "verified",
+      });
+      return res.send({ message: "success add admin" });
+    } catch (err) {
+      console.log(err.message);
+      return res.status(500).send(err.message);
+    }
+  },
+  getAllUser: async (req, res) => {
+    try {
+      const result = await db.User.findAll();
+      return res.status(200).send(result.dataValues);
+    } catch (err) {
+      res.status(500).send({
+        message: err.message,
+      });
+    }
   },
 };
 module.exports = userController;
