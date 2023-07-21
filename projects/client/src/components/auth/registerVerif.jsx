@@ -66,7 +66,7 @@ export default function Verify() {
 
   const formik = useFormik({
     initialValues: {
-      full_name: "",
+      name: "",
       password: "",
       confirmPassword: "",
     },
@@ -77,12 +77,12 @@ export default function Verify() {
   });
 
   async function verif(values) {
-    const { password, full_name } = values;
+    const { password, name } = values;
     try {
       await api.patch("/auth/verify", {
         email,
         password,
-        full_name,
+        name,
       });
       toast({
         title: "Verification Succes, now you can log in",
