@@ -34,6 +34,7 @@ import { useFetchStock } from "../hooks/useFetchStock";
 import AssignAdmin, {
   ReassignAdmin,
 } from "../components/dashboard/assignAdmin";
+import Pagination from "../components/dashboard/pagination";
 
 export default function InventoryPage() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -44,8 +45,6 @@ export default function InventoryPage() {
   const { provinces } = useFetchProv();
   const [provid, setProvid] = useState(0);
   const { cities } = useFetchCity(provid);
-  const [pages, setPages] = useState([]);
-  const [shown, setShown] = useState({ page: 1 });
   const [filter, setFilter] = useState({
     page: 1,
     sort: "",
@@ -54,21 +53,10 @@ export default function InventoryPage() {
     province: "",
     city: "",
   });
+  //pagination ------------------------------------------------------
+  const [pages, setPages] = useState([]);
+  const [shown, setShown] = useState({ page: 1 });
   const { stocks, fetch } = useFetchStock(filter);
-  const [adminId, setAdminId] = useState();
-
-  useEffect(() => {
-    fetch();
-    pageHandler();
-  }, [filter]);
-
-  useEffect(() => {
-    console.log(shown);
-    if (shown.page > 0 && shown.page <= stocks.totalPages) {
-      setFilter({ ...filter, page: shown.page });
-    }
-  }, [shown]);
-
   function pageHandler() {
     const output = [];
     for (let i = 1; i <= stocks.totalPages; i++) {
@@ -76,6 +64,20 @@ export default function InventoryPage() {
     }
     setPages(output);
   }
+  useEffect(() => {
+    pageHandler();
+  }, [stocks]);
+  useEffect(() => {
+    console.log(shown);
+    if (shown.page > 0 && shown.page <= stocks.totalPages) {
+      setFilter({ ...filter, page: shown.page });
+    }
+  }, [shown]);
+  //-------------------------------------------------------------
+
+  useEffect(() => {
+    fetch();
+  }, [filter]);
   return (
     <>
       <Box id="content" pt={"52px"} maxW={"1536px"}>
@@ -293,123 +295,12 @@ export default function InventoryPage() {
             fontSize={"12px"}
             lineHeight={"14px"}
           >
-            <Flex
-              cursor={"pointer"}
-              alignItems={"center"}
-              onClick={() => {
-                if (shown.page > 1) {
-                  setShown({ ...shown, page: shown.page - 1 });
-                }
-              }}
-              display={shown.page > 1 ? "flex" : "none"}
-            >
-              <Icon as={MdOutlineArrowBackIos} /> Back
-            </Flex>
-            <Flex flexDir={"row"} gap={"8px"}>
-              {pages.length <= 4 ? (
-                pages.map((val) => (
-                  <Flex
-                    cursor={"pointer"}
-                    bgColor={Math.ceil(shown.page) == val ? "black" : "white"}
-                    color={Math.ceil(shown.page) == val ? "white" : "black"}
-                    borderRadius={"3px"}
-                    w={"16px"}
-                    h={"16px"}
-                    justifyContent={"center"}
-                    alignItems={"center"}
-                    onClick={() => setShown({ ...shown, page: val })}
-                    key={val}
-                  >
-                    {val}
-                  </Flex>
-                ))
-              ) : (
-                <>
-                  {Math.ceil(shown.page) < 4 && (
-                    <>
-                      {pages.slice(0, 4).map((val) => (
-                        <Flex
-                          cursor={"pointer"}
-                          bgColor={shown.page == val ? "black" : "white"}
-                          color={shown.page == val ? "white" : "black"}
-                          borderRadius={"3px"}
-                          w={"16px"}
-                          h={"16px"}
-                          justifyContent={"center"}
-                          alignItems={"center"}
-                          onClick={() => setShown({ ...shown, page: val })}
-                          key={val}
-                        >
-                          {val}
-                        </Flex>
-                      ))}
-                      <Flex>...</Flex>
-                    </>
-                  )}
-                  {shown.page >= 4 && shown.page < pages.length && (
-                    <>
-                      <Flex>...</Flex>
-                      {pages
-                        .slice(shown.page - 1, shown.page + 3)
-                        .map((val) => (
-                          <Flex
-                            cursor={"pointer"}
-                            bgColor={shown.page == val ? "black" : "white"}
-                            color={shown.page == val ? "white" : "black"}
-                            borderRadius={"3px"}
-                            w={"16px"}
-                            h={"16px"}
-                            justifyContent={"center"}
-                            alignItems={"center"}
-                            onClick={() =>
-                              setShown({
-                                ...shown,
-                                page: val,
-                              })
-                            }
-                            key={val}
-                          >
-                            {val}
-                          </Flex>
-                        ))}
-                      <Flex>...</Flex>
-                    </>
-                  )}
-                  {shown.page >= pages.length - 4 && (
-                    <>
-                      <Flex>...</Flex>
-                      {pages.slice(-4).map((val) => (
-                        <Flex
-                          cursor={"pointer"}
-                          bgColor={shown.page == val ? "black" : "white"}
-                          color={shown.page == val ? "white" : "black"}
-                          borderRadius={"3px"}
-                          w={"16px"}
-                          h={"16px"}
-                          justifyContent={"center"}
-                          alignItems={"center"}
-                          onClick={() => setShown({ ...shown, page: val })}
-                          key={val}
-                        >
-                          {val}
-                        </Flex>
-                      ))}
-                    </>
-                  )}
-                </>
-              )}
-            </Flex>
-            <Flex
-              cursor={"pointer"}
-              alignItems={"center"}
-              onClick={() => {
-                setShown({ ...shown, page: shown.page + 1 });
-              }}
-              display={shown.page < stocks.totalPages ? "flex" : "none"}
-            >
-              Next
-              <Icon as={MdOutlineArrowForwardIos} />
-            </Flex>
+            <Pagination
+              shown={shown}
+              setShown={setShown}
+              stocks={stocks}
+              pages={pages}
+            />
           </Flex>
         </Box>
       </Box>
