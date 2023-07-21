@@ -13,13 +13,13 @@ const userController = {
     try {
       const { email } = req.body;
 
-      const findEmail = await db.users.findOne({
+      const findEmail = await db.User.findOne({
         where: { email },
       });
       if (findEmail) {
         throw new Error("Email was registered");
       } else {
-        const createAccount = await db.users.create({
+        const createAccount = await db.User.create({
           email,
         });
         const generateToken = nanoid();
@@ -59,11 +59,11 @@ const userController = {
   verify: async (req, res) => {
     const t = await sequelize.transaction();
     try {
-      const { email, password, full_name } = req.body;
+      const { email, password, name } = req.body;
       const hashPassword = await bcrypt.hash(password, 10);
 
-      await db.users.update(
-        { password: hashPassword, full_name, verified: 1 },
+      await db.User.update(
+        { password: hashPassword, name, verified: "verified" },
         { where: { email } }
       );
       t.commit();
@@ -81,7 +81,7 @@ const userController = {
     try {
       const { email, password } = req.body;
 
-      const user = await db.users.findOne({
+      const user = await db.User.findOne({
         where: {
           email,
         },
@@ -103,7 +103,7 @@ const userController = {
 
       const userId = { id: user.dataValues.id };
 
-      let token = await db.tokens.findOne({
+      let token = await db.Token.findOne({
         where: {
           userId: JSON.stringify(userId),
           expired: {
@@ -115,7 +115,7 @@ const userController = {
       });
 
       if (!token) {
-        token = await db.tokens.create({
+        token = await db.Token.create({
           expired: moment().add(1, "h").format(),
           token: nanoid(),
           userId: JSON.stringify(userId),
