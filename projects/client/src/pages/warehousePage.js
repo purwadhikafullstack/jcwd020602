@@ -19,8 +19,13 @@ import {
   Td,
   TableContainer,
   Select,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
 } from "@chakra-ui/react";
 import { AiOutlinePlus } from "react-icons/ai";
+import { GrClose, GrMenu } from "react-icons/gr";
 import { FaSearch } from "react-icons/fa";
 import AddWarehouse from "../components/dashboard/addWarehouse";
 import { useSelector } from "react-redux";
@@ -30,22 +35,27 @@ import EditWarehouse from "../components/dashboard/editWarehouse";
 import DeleteWarehouse from "../components/dashboard/deleteWarehouse";
 
 export default function WarehousePage() {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const deleteW = useDisclosure();
-  const editW = useDisclosure();
+  const addModal = useDisclosure();
+  const deleteModal = useDisclosure();
+  const editModal = useDisclosure();
   const userSelector = useSelector((state) => state.auth);
   const inputFileRef = useRef(null);
   const [search, setSearch] = useState();
   const { warehouses, fetch } = useFetchWarehouse();
+  const [warehouseId, setWarehouseId] = useState();
 
   return (
     <>
-      <Box id="content" pt={"52px"} maxW={"1536px"}>
-        <Box m={2}>
+      <Box id="content" pt={"52px"}>
+        <Box mx={2} my={3}>
           <Flex justify={"space-between"} flexWrap={"wrap"}>
             <Box fontSize={"30px"}>Warehouse</Box>
             {userSelector.role == "SUPERADMIN" ? (
-              <ButtonGroup onClick={onOpen} isAttached variant="outline">
+              <ButtonGroup
+                onClick={addModal.onOpen}
+                isAttached
+                variant="outline"
+              >
                 <IconButton
                   icon={<AiOutlinePlus />}
                   bg={"black"}
@@ -56,7 +66,11 @@ export default function WarehousePage() {
                 </Button>
               </ButtonGroup>
             ) : null}
-            <AddWarehouse isOpen={isOpen} onClose={onClose} fetch={fetch} />
+            <AddWarehouse
+              isOpen={addModal.isOpen}
+              onClose={addModal.onClose}
+              fetch={fetch}
+            />
           </Flex>
 
           <Flex flexWrap={"wrap"} gap={2} my={2} justify={"space-between"}>
@@ -103,9 +117,40 @@ export default function WarehousePage() {
                     border={"solid"}
                     gap={1}
                   >
-                    <Box bg={"white"} color={"black"}>
-                      #{idx + 1}
-                    </Box>
+                    <Flex justify={"space-between"} align={"center"}>
+                      <Box bg={"white"} color={"black"}>
+                        #{idx + 1}
+                      </Box>
+                      {userSelector.role == "SUPERADMIN" ? (
+                        <Menu>
+                          {({ isOpen }) => (
+                            <>
+                              <MenuButton isActive={isOpen} as={Button} p={0}>
+                                <Icon as={isOpen ? GrClose : GrMenu} />
+                              </MenuButton>
+                              <MenuList>
+                                <MenuItem
+                                  onClick={() => {
+                                    setWarehouseId(warehouse.id);
+                                    editModal.onOpen();
+                                  }}
+                                >
+                                  Edit
+                                </MenuItem>
+                                <MenuItem
+                                  onClick={() => {
+                                    setWarehouseId(warehouse.id);
+                                    deleteModal.onOpen();
+                                  }}
+                                >
+                                  Delete
+                                </MenuItem>
+                              </MenuList>
+                            </>
+                          )}
+                        </Menu>
+                      ) : null}
+                    </Flex>
                     <Box>name: {warehouse.name}</Box>
                     <Divider />
                     <Box>phone: {warehouse.phone}</Box>
@@ -122,25 +167,6 @@ export default function WarehousePage() {
                     )}
                     <Divider />
                     <Box>address: {warehouse.address}</Box>
-                    <Divider />
-                    {userSelector.role == "SUPERADMIN" ? (
-                      <Flex gap={1}>
-                        <Button
-                          size={"sm"}
-                          colorScheme={"green"}
-                          onClick={editW.onOpen}
-                        >
-                          Edit
-                        </Button>
-                        <Button
-                          size={"sm"}
-                          colorScheme={"red"}
-                          onClick={deleteW.onOpen}
-                        >
-                          Delete
-                        </Button>
-                      </Flex>
-                    ) : null}
                   </Flex>
                 ))}
             </Flex>
@@ -176,41 +202,52 @@ export default function WarehousePage() {
                         </Td>
                       )}
                       <Td>{warehouse.address}</Td>
-                      <Td>
+                      <Td w={"5%"}>
                         {userSelector.role == "SUPERADMIN" ? (
-                          <Flex gap={1}>
-                            <Button
-                              size={"sm"}
-                              colorScheme={"green"}
-                              onClick={editW.onOpen}
-                            >
-                              Edit
-                            </Button>
-                            <EditWarehouse
-                              data={warehouse}
-                              isOpen={editW.isOpen}
-                              onClose={editW.onClose}
-                              fetch={fetch}
-                            />
-                            <Button
-                              size={"sm"}
-                              colorScheme={"red"}
-                              onClick={deleteW.onOpen}
-                            >
-                              Delete
-                            </Button>
-                            <DeleteWarehouse
-                              data={warehouse}
-                              isOpen={deleteW.isOpen}
-                              onClose={deleteW.onClose}
-                              fetch={fetch}
-                            />
-                          </Flex>
+                          <Menu>
+                            {({ isOpen }) => (
+                              <>
+                                <MenuButton isActive={isOpen} as={Button} p={0}>
+                                  <Icon as={isOpen ? GrClose : GrMenu} />
+                                </MenuButton>
+                                <MenuList>
+                                  <MenuItem
+                                    onClick={() => {
+                                      setWarehouseId(warehouse.id);
+                                      editModal.onOpen();
+                                    }}
+                                  >
+                                    Edit
+                                  </MenuItem>
+                                  <MenuItem
+                                    onClick={() => {
+                                      setWarehouseId(warehouse.id);
+                                      deleteModal.onOpen();
+                                    }}
+                                  >
+                                    Delete
+                                  </MenuItem>
+                                </MenuList>
+                              </>
+                            )}
+                          </Menu>
                         ) : null}
                       </Td>
                     </Tr>
                   ))}
               </Tbody>
+              <EditWarehouse
+                id={warehouseId}
+                isOpen={editModal.isOpen}
+                onClose={editModal.onClose}
+                fetch={fetch}
+              />
+              <DeleteWarehouse
+                id={warehouseId}
+                isOpen={deleteModal.isOpen}
+                onClose={deleteModal.onClose}
+                fetch={fetch}
+              />
             </Table>
           </TableContainer>
         </Box>

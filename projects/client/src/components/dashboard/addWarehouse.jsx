@@ -38,8 +38,8 @@ export default function AddWarehouse(props) {
     setWarehouse(temp);
   }
 
-  const uploadWarehouse = async () => {
-    await api
+  const uploadWarehouse = () => {
+    api
       .post("/warehouses", warehouse)
       .then((res) => {
         toast({

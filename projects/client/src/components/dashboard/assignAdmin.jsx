@@ -23,8 +23,8 @@ export default function AssignAdmin(props) {
   const [warehouse_id, setWarehouse_id] = useState(0);
   const user_id = props.id;
 
-  const assignAdmin = async () => {
-    await api
+  const assignAdmin = () => {
+    api
       .post("/warehouses/admin/" + user_id, { warehouse_id: warehouse_id })
       .then((res) => {
         toast({
@@ -37,7 +37,7 @@ export default function AssignAdmin(props) {
         props.onClose();
         setWarehouse_id(0);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.log(err.data.message));
   };
 
   return (
@@ -92,8 +92,8 @@ export function ReassignAdmin(props) {
   const [warehouse_id, setWarehouse_id] = useState(0);
   const user_id = props.id;
 
-  const reassignAdmin = async () => {
-    await api
+  const reassignAdmin = () => {
+    api
       .patch("/warehouses/admin/" + user_id, { warehouse_id: warehouse_id })
       .then((res) => {
         toast({
@@ -109,8 +109,8 @@ export function ReassignAdmin(props) {
       .catch((err) => console.log(err));
   };
 
-  const unassignAdmin = async () => {
-    await api
+  const unassignAdmin = () => {
+    api
       .delete("/warehouses/admin/" + user_id)
       .then((res) => {
         toast({

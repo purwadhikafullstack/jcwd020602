@@ -21,6 +21,7 @@ router.get(
   userController.getUserByToken
 );
 
+// ------------- admin
 router.post(
   "/admin",
   fileUploader({
@@ -29,7 +30,17 @@ router.post(
   }).single("avatar"),
   userController.addAdmin
 );
+router.patch(
+  "/admin/:id",
+  fileUploader({
+    destinationFolder: "avatar",
+    fileType: "image",
+  }).single("avatar"),
+  userController.editAdminById
+);
 
 router.get("/", userController.getAllUser);
+router.get("/:id", userController.getAdminById);
+router.delete("/:id", userController.deleteAdmin);
 
 module.exports = router;

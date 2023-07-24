@@ -1,35 +1,43 @@
 const db = require("../models");
+SHOE_URL = process.env.SHOE_URL;
 
 const shoeController = {
   addShoe: async (req, res) => {
+    const t = await db.sequelize.transaction();
     try {
-      const {
-        name,
-        description,
-        price,
-        weight,
-        brand_id,
-        category_id,
-        subcategory_id,
-      } = req.body;
+      const shoe = await db.Shoe.create(
+        {
+          name: req.body.name,
+          description: req.body.description,
+          price: req.body.price,
+          weight: req.body.weight,
+          brand_id: req.body.brand_id,
+          category_id: req.body.category_id,
+          subcategory_id: req.body.subcategory_id,
+        },
+        { transaction: t }
+      );
+      await shoe.save();
 
-      await db.Shoe.create({
-        name,
-        description,
-        price,
-        weight,
-        brand_id,
-        category_id,
-        subcategory_id,
-      }).then((result) => res.status(200).send(result));
+      const imageArr = [];
+      for (const file of req.files) {
+        const { filename } = file;
+        const imageUrl = SHOE_URL + filename;
+        imageArr.push({ shoe_id: shoe.id, shoe_img: imageUrl });
+      }
+
+      await db.ShoeImage.bulkCreate(imageArr, { transaction: t });
+
+      await t.commit();
+      return res.status(200).send({ message: "success add shoe" });
     } catch (err) {
-      console.log(err.message);
+      await t.rollback();
       return res.status(500).send(err.message);
     }
   },
   getAll: async (req, res) => {
     try {
-      await db.Shoe.findAll({
+      const shoes = await db.Shoe.findAll({
         include: [
           {
             model: db.Brand,
@@ -48,9 +56,9 @@ const shoeController = {
             attributes: ["id", "shoe_img"],
           },
         ],
-      }).then((result) => res.status(200).send(result));
+      });
+      return res.status(200).send(shoes);
     } catch (err) {
-      console.log(err.message);
       return res.status(500).send(err.message);
     }
   },
@@ -76,9 +84,7 @@ const shoeController = {
             attributes: ["id", "shoe_img"],
           },
         ],
-        where: {
-          id,
-        },
+        where: { id },
       });
 
       if (!shoe) {
@@ -86,7 +92,6 @@ const shoeController = {
       }
       return res.status(200).send(shoe);
     } catch (err) {
-      console.log(err.message);
       return res.status(500).send(err.message);
     }
   },
@@ -112,9 +117,7 @@ const shoeController = {
             attributes: ["id", "shoe_img"],
           },
         ],
-        where: {
-          category_id,
-        },
+        where: { category_id },
       });
 
       if (!shoe) {
@@ -122,7 +125,6 @@ const shoeController = {
       }
       return res.status(200).send(shoe);
     } catch (err) {
-      console.log(err.message);
       return res.status(500).send(err.message);
     }
   },
@@ -148,9 +150,7 @@ const shoeController = {
             attributes: ["id", "shoe_img"],
           },
         ],
-        where: {
-          subcategory_id,
-        },
+        where: { subcategory_id },
       });
 
       if (!shoe) {
@@ -158,7 +158,39 @@ const shoeController = {
       }
       return res.status(200).send(shoe);
     } catch (err) {
-      console.log(err.message);
+      return res.status(500).send(err.message);
+    }
+  },
+  getByBrand: async (req, res) => {
+    try {
+      const { brand_id } = req.params;
+      const shoe = await db.Shoe.findOne({
+        include: [
+          {
+            model: db.Brand,
+            attributes: ["id", "name", "logo_img", "brand_img"],
+          },
+          {
+            model: db.Category,
+            attributes: ["id", "name", "category_img"],
+          },
+          {
+            model: db.SubCategory,
+            attributes: ["id", "name"],
+          },
+          {
+            model: db.ShoeImage,
+            attributes: ["id", "shoe_img"],
+          },
+        ],
+        where: { brand_id },
+      });
+
+      if (!shoe) {
+        throw new Error("shoe not found");
+      }
+      return res.status(200).send(shoe);
+    } catch (err) {
       return res.status(500).send(err.message);
     }
   },

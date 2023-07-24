@@ -5,7 +5,7 @@ export const useFetchUser = () => {
   const [users, setUsers] = useState();
   const fetch = async () => {
     try {
-      await api.get(`/users`).then((res) => {
+      await api.get(`/auth`).then((res) => {
         setUsers(res.data);
       });
     } catch (err) {

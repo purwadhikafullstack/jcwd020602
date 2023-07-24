@@ -1,0 +1,177 @@
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  Button,
+  Input,
+  useToast,
+  Box,
+} from "@chakra-ui/react";
+import { useEffect, useState } from "react";
+import { api } from "../../api/api";
+
+export function EditCategory(props) {
+  const [isLoading, setIsLoading] = useState(false);
+  const toast = useToast();
+  const [name, setName] = useState();
+
+  useEffect(() => {
+    if (props.id) {
+      fetchCatId();
+    }
+  }, [props.id]);
+
+  const fetchCatId = async () => {
+    const res = await api.get("/categories/" + props.id);
+    setName(res.data.name);
+  };
+
+  const updateCategory = () => {
+    api
+      .patch("/categories/" + props.id, { name })
+      .then((res) => {
+        toast({
+          title: res.data.message,
+          status: "success",
+          position: "top",
+        });
+        props.fetch();
+        clearS();
+        props.onClose();
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const clearS = () => {
+    setName({});
+    props.setId(null);
+  };
+  return (
+    <>
+      <Modal
+        isOpen={props.isOpen}
+        onClose={() => {
+          props.onClose();
+          clearS();
+        }}
+        closeOnOverlayClick={false}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader p={2}>Edit Category</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody display={"flex"} flexDir={"column"} gap={2}>
+            <Box>
+              name:{" "}
+              <Input
+                id="name"
+                type="text"
+                onChange={(e) => setName(e.target.value)}
+                defaultValue={name}
+              />
+            </Box>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              isLoading={isLoading}
+              onClick={() => {
+                setIsLoading(true);
+                setTimeout(() => {
+                  setIsLoading(false);
+                  updateCategory();
+                }, 2000);
+              }}
+            >
+              confirm
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
+  );
+}
+
+export function EditSubcategory(props) {
+  const [isLoading, setIsLoading] = useState(false);
+  const toast = useToast();
+  const [name, setName] = useState();
+
+  useEffect(() => {
+    if (props.id) {
+      fetchSubId();
+    }
+  }, [props.id]);
+
+  const fetchSubId = async () => {
+    const res = await api.get("/subcategories/" + props.id);
+    setName(res.data.name);
+  };
+
+  const updateSubcategory = () => {
+    api
+      .patch("/subcategories/" + props.id, { name })
+      .then((res) => {
+        toast({
+          title: res.data.message,
+          status: "success",
+          position: "top",
+        });
+        props.fetch();
+        clearS();
+        props.onClose();
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const clearS = () => {
+    setName({});
+    props.setId(null);
+  };
+  return (
+    <>
+      <Modal
+        isOpen={props.isOpen}
+        onClose={() => {
+          props.onClose();
+          clearS();
+        }}
+        closeOnOverlayClick={false}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader p={2}>Edit Subcategory</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody display={"flex"} flexDir={"column"} gap={2}>
+            <Box>
+              name:{" "}
+              <Input
+                id="name"
+                type="text"
+                onChange={(e) => setName(e.target.value)}
+                defaultValue={name}
+              />
+            </Box>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              isLoading={isLoading}
+              onClick={() => {
+                setIsLoading(true);
+                setTimeout(() => {
+                  setIsLoading(false);
+                  updateSubcategory();
+                }, 2000);
+              }}
+            >
+              confirm
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
+  );
+}

@@ -11,7 +11,8 @@ router.post(
   categoryController.addCategory
 );
 router.get("/", categoryController.getAllCategory);
+router.get("/:id", categoryController.getCategoryById);
+router.patch("/:id", categoryController.editCategory);
+router.delete("/:id", categoryController.deleteCategory);
 
-router.post("/sub", categoryController.addSubcategory);
-router.get("/sub", categoryController.getAllSubcategory);
 module.exports = router;

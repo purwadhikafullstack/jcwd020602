@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { api } from "../api/api";
 
 export const useFetchCategory = () => {
-  const [categories, setCategories] = useState();
+  const [categories, setCategories] = useState([]);
   const fetch = async () => {
     try {
       await api.get(`/categories`).then((res) => {
@@ -19,10 +19,10 @@ export const useFetchCategory = () => {
 };
 
 export const useFetchSubcategory = () => {
-  const [sub, setSub] = useState();
+  const [sub, setSub] = useState([]);
   const fetch = async () => {
     try {
-      await api.get("/categories/sub").then((res) => {
+      await api.get("/subcategories").then((res) => {
         setSub(res.data);
       });
     } catch (err) {

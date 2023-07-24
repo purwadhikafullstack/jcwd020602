@@ -4,10 +4,10 @@ const stockHistory = require("./stock_history");
 const shoeRoutes = require("./shoe");
 const categoryRoutes = require("./category");
 const brandRoutes = require("./brand");
-const shoeimageRoutes = require("./shoeimage");
 const addressRoutes = require("./address");
 const userRoutes = require("./user");
 const stockRoutes = require("./stock");
+const subcategoryRoutes = require("./subCategory");
 
 module.exports = {
   provinceCityRoutes,
@@ -16,8 +16,8 @@ module.exports = {
   shoeRoutes,
   categoryRoutes,
   brandRoutes,
-  shoeimageRoutes,
   addressRoutes,
   userRoutes,
   stockRoutes,
+  subcategoryRoutes,
 };

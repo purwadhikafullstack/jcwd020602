@@ -10,6 +10,9 @@ import Sidebar from "../components/dashboard/sidebar";
 import UserSettingsPage from "../pages/userSettingsPage";
 import WarehousePage from "../pages/warehousePage";
 import InventoryPage from "../pages/inventoryPage";
+import CategoryPage from "../pages/categoryPage";
+import SubcategoryPage from "../pages/Subcategory";
+import ProductPage from "../pages/productPage";
 const routes = [
   <Route
     path="/"
@@ -39,6 +42,7 @@ const routes = [
     }
   />,
   //------------------------------------- admin
+
   <Route
     path="/dashboard"
     element={
@@ -55,17 +59,27 @@ const routes = [
       <ProtectedPage needLogin={true} guestOnly={false}>
         <NavbarDashboard />
         <Sidebar />
-        {/*  */}
+        <ProductPage />
       </ProtectedPage>
     }
   />,
   <Route
-    path="/categories"
+    path="/category"
     element={
       <ProtectedPage needLogin={true} guestOnly={false}>
         <NavbarDashboard />
         <Sidebar />
-        {/*  */}
+        <CategoryPage />
+      </ProtectedPage>
+    }
+  />,
+  <Route
+    path="/subcategory"
+    element={
+      <ProtectedPage needLogin={true} guestOnly={false}>
+        <NavbarDashboard />
+        <Sidebar />
+        <SubcategoryPage />
       </ProtectedPage>
     }
   />,

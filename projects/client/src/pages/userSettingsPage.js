@@ -19,16 +19,23 @@ import {
   TableContainer,
   Select,
   Avatar,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
 } from "@chakra-ui/react";
 import { AiOutlinePlus } from "react-icons/ai";
 import { FaSearch } from "react-icons/fa";
-import AddWarehouse from "../components/dashboard/addWarehouse";
+import { GrClose, GrMenu } from "react-icons/gr";
 import { useSelector } from "react-redux";
 import { useEffect, useRef, useState } from "react";
 import { useFetchUser } from "../hooks/useFetchUser";
 import AssignAdmin, {
   ReassignAdmin,
 } from "../components/dashboard/assignAdmin";
+import AddAdmin from "../components/dashboard/addAdmin";
+import EditAdmin from "../components/dashboard/editAdmin";
+import DeleteAdmin from "../components/dashboard/deleteAdmin";
 
 export default function UserSettingsPage() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -43,8 +50,8 @@ export default function UserSettingsPage() {
   const [adminId, setAdminId] = useState();
   return (
     <>
-      <Box id="content" pt={"52px"} maxW={"1536px"}>
-        <Box m={2}>
+      <Box id="content" pt={"52px"}>
+        <Box mx={2} my={3}>
           <Flex justify={"space-between"} flexWrap={"wrap"}>
             <Box fontSize={"30px"}>User</Box>
             {userSelector.role == "SUPERADMIN" ? (
@@ -55,11 +62,11 @@ export default function UserSettingsPage() {
                   color={"white"}
                 />
                 <Button id="button-add" bg={"white"}>
-                  User
+                  ADMIN
                 </Button>
               </ButtonGroup>
             ) : null}
-            {/* <AddWarehouse isOpen={isOpen} onClose={onClose} fetch={fetch} /> */}
+            <AddAdmin isOpen={isOpen} onClose={onClose} fetch={fetch} />
           </Flex>
 
           <Flex flexWrap={"wrap"} gap={2} my={2} justify={"space-between"}>
@@ -105,8 +112,57 @@ export default function UserSettingsPage() {
                     gap={1}
                   >
                     <Flex justifyContent={"space-between"} align={"center"}>
-                      <Box>#{idx + 1}</Box>
                       <Avatar src={user.avatar_url} />
+                      {userSelector.role == "SUPERADMIN" ? (
+                        user.role == "ADMIN" ? (
+                          <Menu>
+                            {({ isOpen }) => (
+                              <>
+                                <MenuButton isActive={isOpen} as={Button} p={0}>
+                                  <Icon as={isOpen ? GrClose : GrMenu} />
+                                </MenuButton>
+                                <MenuList>
+                                  {!user.assign ? (
+                                    <MenuItem
+                                      onClick={() => {
+                                        assignModal.onOpen();
+                                        setAdminId(user.id);
+                                      }}
+                                    >
+                                      Assign
+                                    </MenuItem>
+                                  ) : (
+                                    <MenuItem
+                                      onClick={() => {
+                                        reassignModal.onOpen();
+                                        setAdminId(user.id);
+                                      }}
+                                    >
+                                      Reassign
+                                    </MenuItem>
+                                  )}
+                                  <MenuItem
+                                    onClick={() => {
+                                      editModal.onOpen();
+                                      setAdminId(user.id);
+                                    }}
+                                  >
+                                    Edit
+                                  </MenuItem>
+                                  <MenuItem
+                                    onClick={() => {
+                                      deleteModal.onOpen();
+                                      setAdminId(user.id);
+                                    }}
+                                  >
+                                    Delete
+                                  </MenuItem>
+                                </MenuList>
+                              </>
+                            )}
+                          </Menu>
+                        ) : null
+                      ) : null}
                     </Flex>
                     <Box>Name: {user.name}</Box>
                     <Divider />
@@ -115,51 +171,6 @@ export default function UserSettingsPage() {
                     <Box>Email: {user.email}</Box>
                     <Divider />
                     <Box>Role: {user.role}</Box>
-                    <Divider />
-
-                    {userSelector.role != "ADMIN" ? (
-                      <Flex gap={1}>
-                        <Button
-                          size={"sm"}
-                          colorScheme={"green"}
-                          onClick={editModal.onOpen}
-                        >
-                          Edit
-                        </Button>
-                        {user.role == "ADMIN" ? (
-                          !user.assign ? (
-                            <Button
-                              size={"sm"}
-                              colorScheme={"blue"}
-                              onClick={() => {
-                                assignModal.onOpen();
-                                setAdminId(user.id);
-                              }}
-                            >
-                              Assign
-                            </Button>
-                          ) : (
-                            <Button
-                              size={"sm"}
-                              colorScheme={"blue"}
-                              onClick={() => {
-                                reassignModal.onOpen();
-                                setAdminId(user.id);
-                              }}
-                            >
-                              Reassign
-                            </Button>
-                          )
-                        ) : null}
-                        <Button
-                          size={"sm"}
-                          colorScheme={"red"}
-                          onClick={deleteModal.onOpen}
-                        >
-                          Delete
-                        </Button>
-                      </Flex>
-                    ) : null}
                   </Flex>
                 ))}
             </Flex>
@@ -189,66 +200,90 @@ export default function UserSettingsPage() {
                       <Td>{user.name}</Td>
                       <Td>{user.phone}</Td>
                       <Td>{user.email}</Td>
-                      <Td w={"10%"}>{user.role}</Td>
-                      <Td w={"15%"}>
+                      <Td w={"5%"}>{user.role}</Td>
+                      <Td w={"5%"}>
                         {userSelector.role == "SUPERADMIN" ? (
-                          <Flex justify={"space-between"} gap={1}>
-                            <Button
-                              size={"sm"}
-                              colorScheme={"green"}
-                              onClick={editModal.onOpen}
-                            >
-                              Edit
-                            </Button>
-                            {user.role == "ADMIN" ? (
-                              !user.assign ? (
-                                <Button
-                                  size={"sm"}
-                                  colorScheme={"blue"}
-                                  onClick={() => {
-                                    assignModal.onOpen();
-                                    setAdminId(user.id);
-                                  }}
-                                >
-                                  Assign
-                                </Button>
-                              ) : (
-                                <Button
-                                  size={"sm"}
-                                  colorScheme={"blue"}
-                                  onClick={() => {
-                                    reassignModal.onOpen();
-                                    setAdminId(user.id);
-                                  }}
-                                >
-                                  Reassign
-                                </Button>
-                              )
-                            ) : null}
-                            <AssignAdmin
-                              isOpen={assignModal.isOpen}
-                              onClose={assignModal.onClose}
-                              id={adminId}
-                              fetch={fetch}
-                            />
-                            <ReassignAdmin
-                              isOpen={reassignModal.isOpen}
-                              onClose={reassignModal.onClose}
-                              id={adminId}
-                              fetch={fetch}
-                            />
-                            <Button
-                              size={"sm"}
-                              colorScheme={"red"}
-                              onClick={deleteModal.onOpen}
-                            >
-                              Delete
-                            </Button>
-                          </Flex>
+                          user.role == "ADMIN" ? (
+                            <Menu>
+                              {({ isOpen }) => (
+                                <>
+                                  <MenuButton
+                                    isActive={isOpen}
+                                    as={Button}
+                                    p={0}
+                                  >
+                                    <Icon as={isOpen ? GrClose : GrMenu} />
+                                  </MenuButton>
+                                  <MenuList>
+                                    {!user.assign ? (
+                                      <MenuItem
+                                        onClick={() => {
+                                          assignModal.onOpen();
+                                          setAdminId(user.id);
+                                        }}
+                                      >
+                                        Assign
+                                      </MenuItem>
+                                    ) : (
+                                      <MenuItem
+                                        onClick={() => {
+                                          reassignModal.onOpen();
+                                          setAdminId(user.id);
+                                        }}
+                                      >
+                                        Reassign
+                                      </MenuItem>
+                                    )}
+                                    <MenuItem
+                                      onClick={() => {
+                                        editModal.onOpen();
+                                        setAdminId(user.id);
+                                      }}
+                                    >
+                                      Edit
+                                    </MenuItem>
+                                    <MenuItem
+                                      onClick={() => {
+                                        deleteModal.onOpen();
+                                        setAdminId(user.id);
+                                      }}
+                                    >
+                                      Delete
+                                    </MenuItem>
+                                  </MenuList>
+                                </>
+                              )}
+                            </Menu>
+                          ) : null
                         ) : null}
                       </Td>
                     </Tr>
                   ))}
+                <AssignAdmin
+                  isOpen={assignModal.isOpen}
+                  onClose={assignModal.onClose}
+                  id={adminId}
+                  fetch={fetch}
+                />
+                <ReassignAdmin
+                  isOpen={reassignModal.isOpen}
+                  onClose={reassignModal.onClose}
+                  id={adminId}
+                  fetch={fetch}
+                />
+                <EditAdmin
+                  isOpen={editModal.isOpen}
+                  onClose={editModal.onClose}
+                  id={adminId}
+                  fetch={fetch}
+                  setAdminId={setAdminId}
+                />
+                <DeleteAdmin
+                  isOpen={deleteModal.isOpen}
+                  onClose={deleteModal.onClose}
+                  id={adminId}
+                  fetch={fetch}
+                />
               </Tbody>
             </Table>
           </TableContainer>

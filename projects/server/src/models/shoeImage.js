@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-  const Shoeimage = sequelize.define(
+  const ShoeImage = sequelize.define(
     "ShoeImages",
     {
       shoe_img: {
@@ -11,5 +11,5 @@ module.exports = (sequelize, Sequelize) => {
       paranoid: true,
     }
   );
-  return Shoeimage;
+  return ShoeImage;
 };

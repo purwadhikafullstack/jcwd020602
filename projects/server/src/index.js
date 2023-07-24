@@ -43,16 +43,17 @@ app.use("/api/province&city", verify, routes.provinceCityRoutes);
 app.use("/api/histories", verify, routes.stockHistory);
 app.use("/api/shoes", verify, routes.shoeRoutes);
 app.use("/api/categories", verify, routes.categoryRoutes);
+app.use("/api/subcategories", verify, routes.subcategoryRoutes);
 app.use("/api/brands", verify, routes.brandRoutes);
-app.use("/api/shoeimages", verify, routes.shoeimageRoutes);
 app.use("/api/address", verify, routes.addressRoutes);
 app.use("/api/auth", verify, routes.userRoutes);
 app.use("/api/stock", verify, routes.stockRoutes);
 
+// ===========================
 app.use("/api/category", express.static(`${__dirname}/public/category`));
 app.use("/api/brand", express.static(`${__dirname}/public/brand`));
 app.use("/api/avatar", express.static(`${__dirname}/public/avatar`));
-// ===========================
+app.use("/api/shoe", express.static(`${__dirname}/public/shoe`));
 
 // not found
 app.use((req, res, next) => {

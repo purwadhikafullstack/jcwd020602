@@ -9,7 +9,7 @@ import {
   Button,
   useToast,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { api } from "../../api/api";
 
 export default function DeleteWarehouse(props) {
@@ -17,16 +17,19 @@ export default function DeleteWarehouse(props) {
   const cancelRef = React.useRef();
   const toast = useToast();
 
-  const deleteWarehouse = async () => {
-    await api.delete("/warehouses/" + props.data.id).then((res) => {
-      toast({
-        title: res.data.message,
-        status: "success",
-        position: "top",
-      });
-      props.fetch();
-      props.onClose();
-    });
+  const deleteWarehouse = () => {
+    api
+      .delete("/warehouses/" + props.id)
+      .then((res) => {
+        toast({
+          title: res.data.message,
+          status: "success",
+          position: "top",
+        });
+        props.fetch();
+        props.onClose();
+      })
+      .catch((err) => console.log(err));
   };
 
   return (
@@ -39,14 +42,12 @@ export default function DeleteWarehouse(props) {
         isCentered
       >
         <AlertDialogOverlay />
-
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogCloseButton />
           </AlertDialogHeader>
-
           <AlertDialogBody>
-            Are you sure you want to delete {props.data.name}?
+            Are you sure you want to delete {props.id}?
           </AlertDialogBody>
           <AlertDialogFooter>
             <Button ref={cancelRef} onClick={props.onClose}>

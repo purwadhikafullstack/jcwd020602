@@ -6,7 +6,7 @@ const mailer = require("../lib/nodemailer");
 const fs = require("fs").promises;
 const handlebars = require("handlebars");
 const { sequelize } = require("../models");
-
+const AVATAR_URL = process.env.AVATAR_URL;
 const userController = {
   register: async (req, res) => {
     const t = await sequelize.transaction();
@@ -190,6 +190,7 @@ const userController = {
     res.send(req.user);
   },
   addAdmin: async (req, res) => {
+    const t = await db.sequelize.transaction();
     try {
       const { name, email, phone, password } = req.body;
       const { filename } = req.file;
@@ -204,29 +205,83 @@ const userController = {
         throw new Error("Email alredy exists");
       }
 
-      await db.User.create({
-        name,
-        email,
-        phone,
-        password: hashPassword,
-        avatar_url: AVATAR_URL + filename,
-        role: "ADMIN",
-        status: "verified",
-      });
+      await db.User.create(
+        {
+          name,
+          email,
+          phone,
+          password: hashPassword,
+          avatar_url: AVATAR_URL + filename,
+          role: "ADMIN",
+          status: "verified",
+        },
+        { transaction: t }
+      );
+      await t.commit();
       return res.send({ message: "success add admin" });
     } catch (err) {
-      console.log(err.message);
+      await t.rollback();
       return res.status(500).send(err.message);
     }
   },
   getAllUser: async (req, res) => {
     try {
       const result = await db.User.findAll();
-      return res.status(200).send(result.dataValues);
+      return res.status(200).send(result);
     } catch (err) {
       res.status(500).send({
         message: err.message,
       });
+    }
+  },
+  getAdminById: async (req, res) => {
+    const user = await db.User.findOne({
+      where: { id: req.params.id },
+    });
+    return res.status(200).send(user);
+  },
+  editAdminById: async (req, res) => {
+    const t = await db.sequelize.transaction();
+    try {
+      const { name, email, phone, password, avatar } = req.body;
+      const filename = req?.file?.filename || avatar;
+      const hashPassword = await bcrypt.hash(password, 10);
+
+      await db.User.update(
+        {
+          name,
+          email,
+          phone,
+          password: hashPassword,
+          avatar_url: !req?.file?.filename ? avatar : AVATAR_URL + filename,
+        },
+        { where: { id: req.params.id } },
+        { transaction: t }
+      );
+      await t.commit();
+      return res.send({ message: "success update admin" });
+    } catch (err) {
+      await t.rollback();
+      return res.status(500).send(err.message);
+    }
+  },
+  deleteAdmin: async (req, res) => {
+    const t = await db.sequelize.transaction();
+    try {
+      await db.Admin.destroy(
+        { where: { user_id: req.params.id } },
+        { transaction: t }
+      );
+
+      await db.User.destroy(
+        { where: { id: req.params.id } },
+        { transaction: t }
+      );
+      await t.commit();
+      return res.status(200).send({ message: "success delete admin" });
+    } catch (err) {
+      await t.rollback();
+      return res.status(500).send(err.message);
     }
   },
 };

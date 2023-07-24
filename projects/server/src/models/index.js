@@ -143,10 +143,10 @@ db.Shoe.hasMany(db.Cart, { foreignKey: "shoe_id", targetKey: "id" });
 db.User.hasMany(db.Cart, { foreignKey: "user_id", targetKey: "id" });
 
 //db.User foreignKey
-db.Warehouse.hasMany(db.User, {
-  foreignKey: "warehouse_id",
-  targetKey: "id",
-});
+// db.Warehouse.hasMany(db.User, {
+//   foreignKey: "warehouse_id",
+//   targetKey: "id",
+// });
 
 //db.cities foreignKey
 db.Province.hasMany(db.City, {
@@ -160,10 +160,16 @@ db.Shoe.belongsTo(db.Brand, {
 db.Shoe.belongsTo(db.SubCategory, {
   foreignKey: "subcategory_id",
 });
+db.Shoe.belongsTo(db.Category, {
+  foreignKey: "category_id",
+});
 db.Brand.hasMany(db.Shoe, {
   foreignKey: "brand_id",
 });
 db.Category.hasMany(db.SubCategory, {
+  foreignKey: "category_id",
+});
+db.Category.hasMany(db.Shoe, {
   foreignKey: "category_id",
 });
 db.SubCategory.belongsTo(db.Category, {

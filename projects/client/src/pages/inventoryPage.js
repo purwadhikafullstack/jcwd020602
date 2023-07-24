@@ -80,8 +80,8 @@ export default function InventoryPage() {
   }, [filter]);
   return (
     <>
-      <Box id="content" pt={"52px"} maxW={"1536px"}>
-        <Box m={2}>
+      <Box id="content" pt={"52px"}>
+        <Box mx={2} my={3}>
           <Flex justify={"space-between"} flexWrap={"wrap"}>
             <Box fontSize={"30px"}>Inventory</Box>
             {userSelector.role == "SUPERADMIN" ? (
@@ -111,7 +111,7 @@ export default function InventoryPage() {
                 <Icon as={FaSearch} color={"black"} />
               </InputRightAddon>
             </InputGroup>
-            <Flex gap={2}>
+            <Flex gap={2} flexWrap={"wrap"}>
               <Flex align={"center"} gap={1}>
                 <Box whiteSpace={"nowrap"}>province:</Box>
                 <Select
