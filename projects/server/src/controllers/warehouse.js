@@ -201,6 +201,27 @@ const warehouseControllers = {
       });
     }
   },
+  getProv: async (req, res) => {
+    try {
+      db.Warehouse.findAll({
+        attributes: ["province"],
+      }).then((result) => res.status(200).send(result));
+    } catch (err) {
+      return res.status(500).send(err.message);
+    }
+  },
+  getCity: async (req, res) => {
+    try {
+      db.Warehouse.findAll({
+        attributes: ["city", "id"],
+        where: {
+          province: req.query.province,
+        },
+      }).then((result) => res.status(200).send(result));
+    } catch (err) {
+      return res.status(500).send(err.message);
+    }
+  },
 };
 
 module.exports = warehouseControllers;

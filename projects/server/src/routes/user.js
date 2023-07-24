@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const userController = require("../controllers").userController;
+const tokenDecoder = require("../middlewares/tokenDecoder");
 const {
   validateRegister,
   validateVerification,
@@ -20,6 +21,12 @@ router.get(
   userController.getByTokenV2,
   userController.getUserByToken
 );
+router.get(
+  "/warehousebytoken",
+  userController.getByTokenV2,
+  userController.getWarehouseCity
+);
+router.get("/userbytoken", tokenDecoder, userController.getUserByToken);
 
 // ------------- admin
 router.post(

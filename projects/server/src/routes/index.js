@@ -8,6 +8,7 @@ const addressRoutes = require("./address");
 const userRoutes = require("./user");
 const stockRoutes = require("./stock");
 const subcategoryRoutes = require("./subCategory");
+const shoeSizeRoutes = require("./shoeSize");
 
 module.exports = {
   provinceCityRoutes,
@@ -20,4 +21,5 @@ module.exports = {
   userRoutes,
   stockRoutes,
   subcategoryRoutes,
+  shoeSizeRoutes,
 };
