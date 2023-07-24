@@ -149,10 +149,7 @@ const userController = {
   },
   getByTokenV2: async (req, res, next) => {
     try {
-      // console.log(req.body);
       const token = req.headers.authorization.split(" ")[1];
-
-      console.log(token);
       let p = await db.Token.findOne({
         where: {
           token,
@@ -162,23 +159,16 @@ const userController = {
           valid: true,
         },
       });
-
       if (!p) {
         throw new Error("token has expired");
       }
-      console.log(p.dataValues);
       user = await db.User.findOne({
         where: {
           id: JSON.parse(p.dataValues.userId).id,
         },
       });
-      //id,email,nama,password,dll
-
       delete user.dataValues.password;
-      delete user.dataValues.id;
-
       req.user = user;
-
       next();
     } catch (err) {
       console.log(err);
@@ -186,7 +176,7 @@ const userController = {
     }
   },
   getUserByToken: async (req, res) => {
-    // delete user.dataValues.password;
+    delete req.user.id;
     res.send(req.user);
   },
   addAdmin: async (req, res) => {
@@ -227,6 +217,20 @@ const userController = {
       res.status(500).send({
         message: err.message,
       });
+    }
+  },
+  getWarehouseCity: async (req, res, next) => {
+    try {
+      const result = await db.User.findOne({
+        where: { ...req.user },
+        include: [{ model: db.Warehouse }],
+      });
+      delete result.dataValues.password;
+      delete result.dataValues.id;
+      res.status(200).send(result);
+    } catch (err) {
+      console.log(err);
+      return res.status(500).send({ message: err.message });
     }
   },
 };

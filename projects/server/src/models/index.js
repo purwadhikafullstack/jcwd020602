@@ -172,6 +172,12 @@ db.SubCategory.belongsTo(db.Category, {
 db.SubCategory.hasMany(db.Shoe, {
   foreignKey: "subcategory_id",
 });
+db.Shoe.belongsTo(db.Category, {
+  foreignKey: "category_id"
+})
+db.Category.hasMany(db.Shoe, {
+  foreignKey: "category_id"
+})
 
 db.ShoeImage.belongsTo(db.Shoe, {
   foreignKey: "shoe_id",

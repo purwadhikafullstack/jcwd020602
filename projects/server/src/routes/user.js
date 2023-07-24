@@ -20,6 +20,11 @@ router.get(
   userController.getByTokenV2,
   userController.getUserByToken
 );
+router.get(
+  "/warehousebytoken",
+  userController.getByTokenV2,
+  userController.getWarehouseCity
+);
 
 router.post(
   "/admin",

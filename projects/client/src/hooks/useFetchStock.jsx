@@ -6,7 +6,7 @@ export const useFetchStock = (filter) => {
   const fetch = async () => {
     try {
       await api
-        .get(`/stock`, {
+        .get(`/stocks`, {
           params: {
             ...filter,
           },
@@ -20,7 +20,9 @@ export const useFetchStock = (filter) => {
     }
   };
   useEffect(() => {
-    fetch();
-  }, []);
+    if (filter.city != "") {
+      fetch();
+    }
+  }, [filter]);
   return { stocks, fetch };
 };

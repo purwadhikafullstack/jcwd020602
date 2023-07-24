@@ -4,6 +4,24 @@ import {
   MdOutlineArrowForwardIos,
 } from "react-icons/md";
 export default function Pagination({ shown, setShown, stocks, pages }) {
+  const PageCard = ({ val }) => {
+    return (
+      <Flex
+        cursor={"pointer"}
+        bgColor={Math.ceil(shown.page) == val ? "black" : "white"}
+        color={Math.ceil(shown.page) == val ? "white" : "black"}
+        borderRadius={"3px"}
+        w={"16px"}
+        h={"16px"}
+        justifyContent={"center"}
+        alignItems={"center"}
+        onClick={() => setShown({ ...shown, page: val })}
+        key={val}
+      >
+        {val}
+      </Flex>
+    );
+  };
   return (
     <>
       <Flex
@@ -20,90 +38,32 @@ export default function Pagination({ shown, setShown, stocks, pages }) {
       </Flex>
       <Flex flexDir={"row"} gap={"8px"}>
         {pages.length <= 4 ? (
-          pages.map((val) => (
-            <Flex
-              cursor={"pointer"}
-              bgColor={Math.ceil(shown.page) == val ? "black" : "white"}
-              color={Math.ceil(shown.page) == val ? "white" : "black"}
-              borderRadius={"3px"}
-              w={"16px"}
-              h={"16px"}
-              justifyContent={"center"}
-              alignItems={"center"}
-              onClick={() => setShown({ ...shown, page: val })}
-              key={val}
-            >
-              {val}
-            </Flex>
-          ))
+          pages.map((val) => <PageCard val={val} />)
         ) : (
           <>
-            {Math.ceil(shown.page) < 4 && (
+            {shown.page < Math.ceil(pages.length / 3) && (
               <>
                 {pages.slice(0, 4).map((val) => (
-                  <Flex
-                    cursor={"pointer"}
-                    bgColor={shown.page == val ? "black" : "white"}
-                    color={shown.page == val ? "white" : "black"}
-                    borderRadius={"3px"}
-                    w={"16px"}
-                    h={"16px"}
-                    justifyContent={"center"}
-                    alignItems={"center"}
-                    onClick={() => setShown({ ...shown, page: val })}
-                    key={val}
-                  >
-                    {val}
-                  </Flex>
+                  <PageCard val={val} />
                 ))}
                 <Flex>...</Flex>
               </>
             )}
-            {shown.page >= 4 && shown.page < pages.length && (
-              <>
-                <Flex>...</Flex>
-                {pages.slice(shown.page - 1, shown.page + 3).map((val) => (
-                  <Flex
-                    cursor={"pointer"}
-                    bgColor={shown.page == val ? "black" : "white"}
-                    color={shown.page == val ? "white" : "black"}
-                    borderRadius={"3px"}
-                    w={"16px"}
-                    h={"16px"}
-                    justifyContent={"center"}
-                    alignItems={"center"}
-                    onClick={() =>
-                      setShown({
-                        ...shown,
-                        page: val,
-                      })
-                    }
-                    key={val}
-                  >
-                    {val}
-                  </Flex>
-                ))}
-                <Flex>...</Flex>
-              </>
-            )}
-            {shown.page >= pages.length - 4 && (
+            {shown.page >= Math.ceil(pages.length / 3) &&
+              shown.page < Math.ceil((pages.length / 3) * 2) && (
+                <>
+                  <Flex>...</Flex>
+                  {pages.slice(shown.page - 1, shown.page + 2).map((val) => (
+                    <PageCard val={val} />
+                  ))}
+                  <Flex>...</Flex>
+                </>
+              )}
+            {shown.page >= Math.ceil((pages.length / 3) * 2) && (
               <>
                 <Flex>...</Flex>
                 {pages.slice(-4).map((val) => (
-                  <Flex
-                    cursor={"pointer"}
-                    bgColor={shown.page == val ? "black" : "white"}
-                    color={shown.page == val ? "white" : "black"}
-                    borderRadius={"3px"}
-                    w={"16px"}
-                    h={"16px"}
-                    justifyContent={"center"}
-                    alignItems={"center"}
-                    onClick={() => setShown({ ...shown, page: val })}
-                    key={val}
-                  >
-                    {val}
-                  </Flex>
+                  <PageCard val={val} />
                 ))}
               </>
             )}
