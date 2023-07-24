@@ -4,18 +4,17 @@ import {
   Center,
   Flex,
   Icon,
+  Image,
   Switch,
   Text,
+  useDisclosure,
 } from "@chakra-ui/react";
-import moment from "moment/moment";
-import { useContext } from "react";
-import { ThemeContext } from "../../App";
-import { FiSun, FiMoon } from "react-icons/fi";
+import { BiMenuAltLeft } from "react-icons/bi";
 import { useSelector } from "react-redux";
+import Sidebar from "./sidebar";
 export default function NavbarDashboard() {
-  const { theme, toggleTheme } = useContext(ThemeContext);
   const userSelector = useSelector((state) => state.auth);
-
+  const { isOpen, onClose, onOpen } = useDisclosure();
   return (
     <>
       <Box
@@ -28,15 +27,16 @@ export default function NavbarDashboard() {
         p={2}
       >
         <Flex align="center" justify="space-between">
-          <Flex id="switch" align={"center"} gap={3}>
-            <Icon as={FiSun} />
-            <Switch
-              colorScheme="gray"
-              onChange={toggleTheme}
-              defaultChecked={theme === "dark" ? true : false}
-            />
-            <Icon as={FiMoon} />
-          </Flex>
+          <Box
+            _hover={{ bg: "#e8e8e8" }}
+            cursor={"pointer"}
+            borderRadius={"full"}
+            p={1}
+            onClick={onOpen}
+          >
+            <Image as={BiMenuAltLeft} h={"auto"} w={"30px"} />
+          </Box>
+          <Sidebar isOpen={isOpen} onClose={onClose} />
 
           <Flex gap={2}>
             <Box

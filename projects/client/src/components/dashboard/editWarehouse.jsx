@@ -13,7 +13,7 @@ import {
   useToast,
   Box,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { api } from "../../api/api";
 import { useFetchCity, useFetchProv } from "../../hooks/useFetchProvCity";
 
@@ -23,9 +23,18 @@ export default function EditWarehouse(props) {
   const [provid, setProvid] = useState(0);
   const { cities } = useFetchCity(provid);
   const toast = useToast();
-  const [warehouse, setWarehouse] = useState({
-    ...props.data,
-  });
+  const [warehouse, setWarehouse] = useState({});
+
+  useEffect(() => {
+    if (props.id) {
+      fetchWarehouseById();
+    }
+  }, [props.id]);
+
+  const fetchWarehouseById = async () => {
+    const res = await api.get("/warehouses/" + props.id);
+    setWarehouse(res.data);
+  };
 
   function inputHandler(e) {
     const { id, value } = e.target;
@@ -34,8 +43,8 @@ export default function EditWarehouse(props) {
     setWarehouse(temp);
   }
 
-  const updateWarehouse = async () => {
-    await api
+  const updateWarehouse = () => {
+    api
       .patch("/warehouses/" + warehouse.id, warehouse)
       .then((res) => {
         toast({
@@ -48,12 +57,20 @@ export default function EditWarehouse(props) {
       })
       .catch((err) => console.log(err));
   };
+
+  const clearWarehouse = () => {
+    setWarehouse({});
+  };
   return (
     <>
       <Modal
         scrollBehavior="inside"
         isOpen={props.isOpen}
-        onClose={props.onClose}
+        onClose={() => {
+          props.onClose();
+          clearWarehouse();
+        }}
+        closeOnOverlayClick={false}
       >
         <ModalOverlay />
         <ModalContent>
@@ -88,7 +105,9 @@ export default function EditWarehouse(props) {
               >
                 {provinces &&
                   provinces.map((val, idx) => (
-                    <option value={val.province}>{val.province}</option>
+                    <option key={val.id} value={val.province}>
+                      {val.province}
+                    </option>
                   ))}
               </Select>
             </Box>
@@ -126,6 +145,7 @@ export default function EditWarehouse(props) {
                 setTimeout(() => {
                   setIsLoading(false);
                   updateWarehouse();
+                  clearWarehouse();
                 }, 2000);
               }}
             >

@@ -17,7 +17,6 @@ const warehouseControllers = {
     try {
       const { name, phone, province, city, address } = req.body;
       const response = await opencage(address, city, province);
-      console.log(response.data.results[0]);
       const warehouse = await db.Warehouse.create(
         {
           name,
@@ -49,7 +48,7 @@ const warehouseControllers = {
   },
   getAll: async (req, res) => {
     try {
-      await db.Warehouse.findAll({
+      const warehouses = await db.Warehouse.findAll({
         include: [
           {
             model: db.Admin,
@@ -57,20 +56,29 @@ const warehouseControllers = {
             include: [db.User],
           },
         ],
-      }).then((result) => res.status(200).send(result));
+      });
+      return res.status(200).send(warehouses);
     } catch (err) {
       return res.status(500).send(err.message);
     }
   },
+  getById: async (req, res) => {
+    const warehouse = await db.Warehouse.findOne({
+      where: { id: req.params.id },
+    });
+    return res.status(200).send(warehouse);
+  },
   deleteWarehouse: async (req, res) => {
+    const t = await db.sequelize.transaction();
     try {
-      await db.Warehouse.destroy({
-        where: {
-          id: req.params.id,
-        },
-      });
+      await db.Warehouse.destroy(
+        { where: { id: req.params.id } },
+        { transaction: t }
+      );
+      await t.commit();
       return res.status(200).send({ message: "warehouse has been deleted" });
     } catch (err) {
+      await t.rollback();
       return res.status(500).send(err.message);
     }
   },
@@ -79,8 +87,8 @@ const warehouseControllers = {
     try {
       const { name, phone, province, city, address } = req.body;
       const response = await opencage(address, city, province);
-      console.log(response.data.results[0]);
-      const warehouse = await db.Warehouse.update(
+
+      await db.Warehouse.update(
         {
           name,
           phone,
@@ -98,90 +106,74 @@ const warehouseControllers = {
           latitude: response.data.results[0].geometry.lat,
           longitude: response.data.results[0].geometry.lng,
         },
-        {
-          where: {
-            id: req.params.id,
-          },
-        },
+        { where: { id: req.params.id } },
         { transaction: t }
       );
       await t.commit();
-      return res.status(200).send({
-        data: warehouse,
-        message: "success update Warehouse",
-      });
+      return res.status(200).send({ message: "success update Warehouse" });
     } catch (err) {
       await t.rollback();
       return res.status(500).send(err.message);
     }
   },
   addAdminWarehouse: async (req, res) => {
+    const t = await db.sequelize.transaction();
     try {
       const { user_id } = req.params;
-      const admin = await db.Admin.create({
-        warehouse_id: req.body.warehouse_id,
-        user_id,
-      });
+      await db.Admin.create(
+        { warehouse_id: req.body.warehouse_id, user_id },
+        { transaction: t }
+      );
 
       const user = await db.User.findOne({
-        where: {
-          id: user_id,
-        },
+        where: { id: user_id },
       });
 
       if (user) {
         user.assign = true;
         await user.save();
       }
-
-      return res
-        .status(200)
-        .send({ data: admin, message: "success assign admin" });
+      await t.commit();
+      return res.status(200).send({ message: "success assign admin" });
     } catch (err) {
+      await t.rollback();
       return res.status(500).send(err.message);
     }
   },
   updateAdminWarehouse: async (req, res) => {
+    const t = await db.sequelize.transaction();
     try {
       const { user_id } = req.params;
       const { warehouse_id } = req.body;
 
       await db.Admin.update(
-        {
-          warehouse_id,
-        },
-        {
-          where: {
-            user_id,
-          },
-        }
+        { warehouse_id },
+        { where: { user_id } },
+        { transaction: t }
       );
+      await t.commit();
       return res.status(200).send({ message: "success reassign admin" });
     } catch (err) {
+      await t.rollback();
       return res.status(500).send(err.message);
     }
   },
   deleteAdminWarehouse: async (req, res) => {
     const { user_id } = req.params;
+    const t = await db.sequelize.transaction();
     try {
-      await db.Admin.destroy({
-        where: {
-          user_id,
-        },
-      });
+      await db.Admin.destroy({ where: { user_id } }, { transaction: t });
 
-      const user = await db.User.findOne({
-        where: {
-          id: user_id,
-        },
-      });
+      const user = await db.User.findOne({ where: { id: user_id } });
 
       if (user) {
         user.assign = false;
         await user.save();
       }
+      await t.commit();
       return res.status(200).send({ message: "success unassign admin" });
     } catch (err) {
+      await t.rollback();
       return res.status(500).send(err.message);
     }
   },

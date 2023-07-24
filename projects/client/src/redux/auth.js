@@ -1,4 +1,5 @@
 const init = {
+  name: "fahmi",
   email: "",
   password: "",
   role: "SUPERADMIN",

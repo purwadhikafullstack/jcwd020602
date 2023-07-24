@@ -15,7 +15,8 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.INTEGER,
       },
       status: {
-        type: Sequelize.ENUM("BESTSELLER", "DISCOUNT"),
+        type: Sequelize.ENUM("BESTSELLER", "DISCOUNT", "NORMAL"),
+        defaultValue: "NORMAL",
       },
       //brand_id
       //category_id
