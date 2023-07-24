@@ -14,12 +14,12 @@ const userController = {
       const { email } = req.body;
 
       const findEmail = await db.User.findOne({
-        where: { email, status: true },
+        where: { email },
       });
       if (findEmail) {
         throw new Error("Email was registered");
       } else {
-        const createAccount = await db.User.create({
+        const createAccount = await db.users.create({
           email,
           role: "USER",
         });
@@ -43,6 +43,7 @@ const userController = {
         console.log(process.env.URL_REGISTER);
         mailer({
           subject: "email verification link",
+
           to: email,
           text: registerTemplate,
         });
