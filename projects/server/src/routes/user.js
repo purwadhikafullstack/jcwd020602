@@ -16,6 +16,16 @@ router.patch("/verify", validateVerification, userController.verify);
 
 router.post("/login", userController.login);
 
+router.get(
+  "/userbytoken",
+  userController.getByTokenV2,
+  userController.getUserByToken
+);
+router.get(
+  "/warehousebytoken",
+  userController.getByTokenV2,
+  userController.getWarehouseCity
+);
 router.get("/userbytoken", tokenDecoder, userController.getUserByToken);
 
 router.post(

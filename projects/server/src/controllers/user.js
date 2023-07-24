@@ -148,9 +148,36 @@ const userController = {
       return res.status(500).send(err.message);
     }
   },
-
+  getByTokenV2: async (req, res, next) => {
+    try {
+      const token = req.headers.authorization.split(" ")[1];
+      let p = await db.Token.findOne({
+        where: {
+          token,
+          expired: {
+            [db.Sequelize.Op.gte]: moment().format(),
+          },
+          valid: true,
+        },
+      });
+      if (!p) {
+        throw new Error("token has expired");
+      }
+      user = await db.User.findOne({
+        where: {
+          id: JSON.parse(p.dataValues.userId).id,
+        },
+      });
+      delete user.dataValues.password;
+      req.user = user;
+      next();
+    } catch (err) {
+      console.log(err);
+      return res.status(500).send({ message: err.message });
+    }
+  },
   getUserByToken: async (req, res) => {
-    // delete user.dataValues.password;
+    delete req.user.id;
     res.send(req.user);
   },
   addAdmin: async (req, res) => {
@@ -191,6 +218,20 @@ const userController = {
       res.status(500).send({
         message: err.message,
       });
+    }
+  },
+  getWarehouseCity: async (req, res, next) => {
+    try {
+      const result = await db.User.findOne({
+        where: { ...req.user },
+        include: [{ model: db.Warehouse }],
+      });
+      delete result.dataValues.password;
+      delete result.dataValues.id;
+      res.status(200).send(result);
+    } catch (err) {
+      console.log(err);
+      return res.status(500).send({ message: err.message });
     }
   },
 };
