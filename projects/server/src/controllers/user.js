@@ -19,7 +19,7 @@ const userController = {
       if (findEmail) {
         throw new Error("Email was registered");
       } else {
-        const createAccount = await db.users.create({
+        const createAccount = await db.User.create({
           email,
           role: "USER",
         });
