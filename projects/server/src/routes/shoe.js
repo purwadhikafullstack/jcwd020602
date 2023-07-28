@@ -15,5 +15,15 @@ router.get("/:id", shoeController.getById);
 router.get("/category/:category_id", shoeController.getByCategory);
 router.get("/subcategory/:subcategory_id", shoeController.getBySubcategory);
 router.get("/brand/:brand_id", shoeController.getByBrand);
+router.patch(
+  "/:id",
+  fileUploader({
+    destinationFolder: "shoe",
+    fileType: "image",
+  }).array("shoe", 4),
+  shoeController.editShoe
+);
+
+router.delete("/:id", shoeController.deleteShoe);
 
 module.exports = router;

@@ -12,7 +12,14 @@ router.post(
 );
 router.get("/", categoryController.getAllCategory);
 router.get("/:id", categoryController.getCategoryById);
-router.patch("/:id", categoryController.editCategory);
+router.patch(
+  "/:id",
+  fileUploader({
+    destinationFolder: "category",
+    fileType: "image",
+  }).single("category"),
+  categoryController.editCategory
+);
 router.delete("/:id", categoryController.deleteCategory);
 
 module.exports = router;

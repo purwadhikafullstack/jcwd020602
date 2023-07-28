@@ -27,7 +27,7 @@ const editWarehouseSchema = Joi.object({
 
 const verifySchema = Joi.object({
   email: Joi.string().email(),
-  full_name: Joi.string().min(6).required(),
+  name: Joi.string().min(6).required(),
   password: Joi.string()
     .min(8)
     .required()

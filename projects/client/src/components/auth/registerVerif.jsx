@@ -29,7 +29,7 @@ import { AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai";
 import axios from "axios";
 import { useState } from "react";
 import * as Yup from "yup";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import React from "react";
 import { api } from "../../api/api";
@@ -45,7 +45,7 @@ export default function Verify() {
   const handleClick1 = () => setShow1(!show1);
 
   const validationSchema = Yup.object().shape({
-    full_name: Yup.string()
+    name: Yup.string()
       .min(6, "Full name min 6 character")
       .required("Email is required"),
     password: Yup.string()
@@ -115,24 +115,23 @@ export default function Verify() {
         <Heading> Verification </Heading>
         <form onSubmit={formik.handleSubmit} style={{ width: "100%" }}>
           <FormControl
-            id="full_name"
             mt={"10px"}
             isRequired
-            isInvalid={formik.touched.full_name && formik.errors.full_name}
+            isInvalid={formik.touched.name && formik.errors.name}
           >
             <InputGroup>
               <InputLeftElement children={<Icon as={FaUser} />} />
               <Input
                 type="text"
                 placeholder="Full Name"
-                id="full_name"
+                id="name"
                 onChange={formik.handleChange}
-                value={formik.values.full_name}
+                value={formik.values.name}
               />
             </InputGroup>
             <Box h={"20px"}>
               <FormErrorMessage fontSize={"2xs"}>
-                {formik.errors.full_name}
+                {formik.errors.name}
               </FormErrorMessage>
             </Box>
           </FormControl>

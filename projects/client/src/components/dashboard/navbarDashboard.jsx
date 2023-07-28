@@ -25,6 +25,7 @@ export default function NavbarDashboard() {
         zIndex="1"
         borderBottom=" #c2c2c2 solid"
         p={2}
+        bg={"white"}
       >
         <Flex align="center" justify="space-between">
           <Box
