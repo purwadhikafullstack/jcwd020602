@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const userController = require("../controllers").userController;
-const tokenDecoder = require("../middlewares/tokenDecoder");
 const {
   validateRegister,
   validateVerification,
@@ -14,19 +13,30 @@ router.post("/register", validateRegister, userController.register);
 // VERIFICATION BY EMAIL
 router.patch("/verify", validateVerification, userController.verify);
 
+//login
 router.post("/login", userController.login);
 
 router.get(
   "/userbytoken",
-  userController.getByTokenV2,
+  userController.tokenDecoder,
   userController.getUserByToken
 );
+
 router.get(
   "/warehousebytoken",
-  userController.getByTokenV2,
+  userController.tokenDecoder,
   userController.getWarehouseCity
 );
-router.get("/userbytoken", tokenDecoder, userController.getUserByToken);
+
+//token forgot password
+router.get("/generate-token/email", userController.generateTokenByEmail);
+
+//forgot password
+router.patch(
+  "/forgot-password",
+  userController.tokenDecoder,
+  userController.forgotPassword
+);
 
 // ------------- admin
 router.post(

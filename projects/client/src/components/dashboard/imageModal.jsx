@@ -13,9 +13,9 @@ export default function ImageModal(props) {
       <Modal size={"xl"} isOpen={props.isOpen} onClose={props.onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalCloseButton />
+          <ModalCloseButton bg={"black"} color={"white"} />
           <ModalBody p={0}>
-            <Image src={props.image} />
+            <Image src={props.image} w={"100%"} />
           </ModalBody>
         </ModalContent>
       </Modal>
