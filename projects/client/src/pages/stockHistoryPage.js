@@ -24,28 +24,21 @@ import {
   MenuItem,
 } from "@chakra-ui/react";
 import { AiOutlinePlus } from "react-icons/ai";
-import { GrClose, GrMenu } from "react-icons/gr";
 import { FaSearch } from "react-icons/fa";
-import AddStock from "../components/dashboard/addStock";
 import { useSelector } from "react-redux";
 import { useEffect, useRef, useState } from "react";
 import { useFetchWareProv, useFetchWareCity } from "../hooks/useFetchWarehouse";
-import { useFetchStock } from "../hooks/useFetchStock";
 import Pagination from "../components/dashboard/pagination";
-import DeleteStock from "../components/dashboard/deleteStock";
-import EditStock from "../components/dashboard/editStock";
 import { api } from "../api/api";
+import { useFetchStockHistory } from "../hooks/useFetchStockHistory";
+import moment from "moment";
 
-export default function InventoryPage() {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const deleteS = useDisclosure();
-  const editS = useDisclosure();
+export default function StockHistoryPage() {
   const userSelector = useSelector((state) => state.auth);
   const inputFileRef = useRef(null);
   const { provinces } = useFetchWareProv();
   const [province, setprovince] = useState(0);
   const { cities } = useFetchWareCity(province);
-  const [stockId, setStockId] = useState();
   const [filter, setFilter] = useState({
     page: 1,
     sort: "",
@@ -56,19 +49,19 @@ export default function InventoryPage() {
   //pagination ------------------------------------------------------
   const [pages, setPages] = useState([]);
   const [shown, setShown] = useState({ page: 1 });
-  const { stocks, fetch } = useFetchStock(filter);
+  const { stockHistories } = useFetchStockHistory(filter);
   function pageHandler() {
     const output = [];
-    for (let i = 1; i <= stocks.totalPages; i++) {
+    for (let i = 1; i <= stockHistories.totalPages; i++) {
       output.push(i);
     }
     setPages(output);
   }
   useEffect(() => {
     pageHandler();
-  }, [stocks]);
+  }, [stockHistories]);
   useEffect(() => {
-    if (shown.page > 0 && shown.page <= stocks.totalPages) {
+    if (shown.page > 0 && shown.page <= stockHistories.totalPages) {
       setFilter({ ...filter, page: shown.page });
     }
   }, [shown]);
@@ -90,31 +83,14 @@ export default function InventoryPage() {
         Authorization: `Bearer ${token}`,
       },
     });
-    setFilter({ ...filter, city: warehouse?.data?.city?.city_name });
+    setFilter({ ...filter, city: warehouse.data.city });
   }
   return (
     <>
       <Box id="content" pt={"52px"}>
         <Box mx={2} my={3}>
           <Flex justify={"space-between"} flexWrap={"wrap"}>
-            <Box fontSize={"30px"}>Stock</Box>
-            <ButtonGroup onClick={onOpen} isAttached variant="outline">
-              <IconButton
-                icon={<AiOutlinePlus />}
-                bg={"black"}
-                color={"white"}
-              />
-              <Button id="button-add" bg={"white"}>
-                Stock
-              </Button>
-            </ButtonGroup>
-            <AddStock
-              isOpen={isOpen}
-              onClose={onClose}
-              fetch={fetch}
-              city={filter.city}
-              setShown={setShown}
-            />
+            <Box fontSize={"30px"}>Stock History</Box>
           </Flex>
 
           <Flex flexWrap={"wrap"} gap={2} my={2} justify={"space-between"}>
@@ -148,14 +124,13 @@ export default function InventoryPage() {
                       {provinces &&
                         provinces.map((val, idx) => (
                           <option
-                            key={val?.city?.province}
-                            value={val?.city?.province}
+                            key={val.city.province}
+                            value={val.city.province}
                           >
-                            {val?.city?.province}
+                            {val.city.province}
                           </option>
                         ))}
                     </Select>
-
                     <Box whiteSpace={"nowrap"}>city:</Box>
                     <Select
                       onChange={(e) => {
@@ -195,7 +170,9 @@ export default function InventoryPage() {
                   size={"sm"}
                 >
                   <option value={""}>select..</option>
-                  <option value={"stock"}>Stock</option>
+                  <option value={"createdAt"}>Datetime</option>
+                  <option value={"status"}>Quantity</option>
+                  <option value={"reference"}>Reference</option>
                   <option value={`brand`}>Brand</option>
                   <option value={"name"}>Name</option>
                   <option value={"size"}>Size</option>
@@ -221,59 +198,41 @@ export default function InventoryPage() {
           {/* tampilan mobile card */}
           <Box id="card-content" display={"none"}>
             <Flex flexDir={"column"} py={1}>
-              {stocks &&
-                stocks.rows.map((stock, idx) => (
+              {stockHistories &&
+                stockHistories.rows.map((stockHistory, idx) => (
                   <Flex
                     p={1}
                     m={1}
                     flexDir={"column"}
-                    key={stock.id}
+                    key={stockHistory?.id}
                     border={"solid"}
                     gap={1}
                   >
-                    <Flex justify={"space-between"}>
-                      <Box>#{idx + 1}</Box>{" "}
-                      {userSelector.role != "ADMIN" ? (
-                        <Flex gap={1}>
-                          <Menu>
-                            {({ isOpen }) => (
-                              <>
-                                <MenuButton isActive={isOpen} as={Button} p={0}>
-                                  <Icon as={isOpen ? GrClose : GrMenu} />
-                                </MenuButton>
-                                <MenuList>
-                                  <MenuItem
-                                    onClick={() => {
-                                      setStockId(stock.id);
-                                      editS.onOpen();
-                                    }}
-                                  >
-                                    Edit
-                                  </MenuItem>
-                                  <MenuItem
-                                    onClick={() => {
-                                      setStockId(stock.id);
-                                      deleteS.onOpen();
-                                    }}
-                                  >
-                                    Delete
-                                  </MenuItem>
-                                </MenuList>
-                              </>
-                            )}
-                          </Menu>
-                        </Flex>
-                      ) : null}
-                    </Flex>
-                    <Box>Stock: {stock.stock}</Box>
+                    <Box>#{idx + 1}</Box>
+                    <Box>Reference: {stockHistory?.reference}</Box>
                     <Divider />
-                    <Box>Size: {stock.shoeSize.size}</Box>
+                    <Box>Stock Before: {stockHistory?.stock_before}</Box>
+                    <Divider />
+                    <Box>Stock After: {stockHistory?.stock_after}</Box>
                     <Divider />
                     <Box>
-                      Shoe: {`${stock.Sho.name} (${stock.Sho.brand.name})`}
+                      Quantity:{" "}
+                      {`${stockHistory.status == "ADDED" ? "+ " : "- "}${
+                        stockHistory?.qty
+                      }`}
                     </Box>
                     <Divider />
-                    <Box>Warehouse: {stock.warehouse.name}</Box>
+                    <Box>
+                      Shoe:{" "}
+                      {`${stockHistory?.stock?.Sho?.name} (${stockHistory?.stock?.Sho?.brand?.name})`}
+                    </Box>
+                    <Divider />
+                    <Box>
+                      Datetime:{" "}
+                      {moment(stockHistory?.createdAt).format(
+                        "DD/MM/YYYY, HH:MM"
+                      )}
+                    </Box>
                     <Divider />
                   </Flex>
                 ))}
@@ -284,74 +243,39 @@ export default function InventoryPage() {
             <Table size="sm">
               <Thead>
                 <Tr>
-                  <Th>#</Th>
-                  <Th>Stock</Th>
-                  <Th>Size</Th>
-                  <Th>Shoe</Th>
-                  <Th>Warehouse</Th>
-                  <Th>Action</Th>
+                  <Th textAlign={"center"}>#</Th>
+                  <Th textAlign={"center"}>Reference</Th>
+                  <Th textAlign={"center"}>Stock Before</Th>
+                  <Th textAlign={"center"}>Stock After</Th>
+                  <Th textAlign={"center"}>Quantity</Th>
+                  <Th textAlign={"center"}>Shoe</Th>
+                  <Th textAlign={"center"}>Size</Th>
+                  <Th textAlign={"center"}>Datetime</Th>
                 </Tr>
               </Thead>
               <Tbody>
-                {stocks &&
-                  stocks.rows.map((stock, idx) => (
+                {stockHistories &&
+                  stockHistories.rows.map((stockHistory, idx) => (
                     <Tr>
-                      <Td w={"5%"}>{idx + 1}</Td>
-                      <Td>{stock.stock}</Td>
-                      <Td>{stock.shoeSize.size}</Td>
-                      <Td>{`${stock.Sho.name} (${stock.Sho.brand.name})`}</Td>
-                      <Td w={"10%"}>{stock.warehouse.name}</Td>
-                      <Td w={"5%"}>
-                        {userSelector.role == "SUPERADMIN" ? (
-                          <Flex justify={"space-between"} gap={1}>
-                            <Menu>
-                              {({ isOpen }) => (
-                                <>
-                                  <MenuButton
-                                    isActive={isOpen}
-                                    as={Button}
-                                    p={0}
-                                  >
-                                    <Icon as={isOpen ? GrClose : GrMenu} />
-                                  </MenuButton>
-                                  <MenuList>
-                                    <MenuItem
-                                      onClick={() => {
-                                        setStockId(stock.id);
-                                        editS.onOpen();
-                                      }}
-                                    >
-                                      Edit
-                                    </MenuItem>
-                                    <MenuItem
-                                      onClick={() => {
-                                        setStockId(stock.id);
-                                        deleteS.onOpen();
-                                      }}
-                                    >
-                                      Delete
-                                    </MenuItem>
-                                  </MenuList>
-                                </>
-                              )}
-                            </Menu>
-                            <EditStock
-                              id={stockId}
-                              isOpen={editS.isOpen}
-                              onClose={editS.onClose}
-                              fetch={fetch}
-                              setId={setStockId}
-                            />
-                            <DeleteStock
-                              id={stockId}
-                              setShown={setShown}
-                              isOpen={deleteS.isOpen}
-                              onClose={deleteS.onClose}
-                              fetch={fetch}
-                              setId={setStockId}
-                            />
-                          </Flex>
-                        ) : null}
+                      <Td textAlign={"center"} w={"5%"}>
+                        {idx + 1}
+                      </Td>
+                      <Td textAlign={"center"}>{stockHistory?.reference}</Td>
+                      <Td textAlign={"center"}>{stockHistory?.stock_before}</Td>
+                      <Td textAlign={"center"}>{stockHistory?.stock_after}</Td>
+                      <Td textAlign={"center"}>{`${
+                        stockHistory.status == "ADDED" ? "+ " : "- "
+                      }${stockHistory?.qty}`}</Td>
+                      <Td
+                        textAlign={"center"}
+                      >{`${stockHistory?.stock?.Sho?.name} (${stockHistory?.stock?.Sho.brand?.name})`}</Td>
+                      <Td textAlign={"center"}>
+                        {stockHistory?.stock?.shoeSize?.size}
+                      </Td>
+                      <Td textAlign={"center"}>
+                        {moment(stockHistory?.createdAt).format(
+                          "DD/MM/YYYY, HH:MM"
+                        )}
                       </Td>
                     </Tr>
                   ))}
@@ -372,7 +296,7 @@ export default function InventoryPage() {
             <Pagination
               shown={shown}
               setShown={setShown}
-              datas={stocks.totalPages}
+              datas={stockHistories.totalPages}
               pages={pages}
             />
           </Flex>

@@ -3,12 +3,16 @@ module.exports = (sequelize, Sequelize) => {
     "addresses",
     {
       title: Sequelize.STRING,
-      address: Sequelize.STRING,
       address_details: Sequelize.STRING,
-      road: Sequelize.STRING,
-      district: Sequelize.STRING,
-      city: Sequelize.STRING,
-      province: Sequelize.STRING,
+      address: {
+        type: Sequelize.STRING,
+      },
+      city_id: {
+        type: Sequelize.INTEGER,
+      },
+      province_id: {
+        type: Sequelize.INTEGER,
+      },
       postcode: Sequelize.INTEGER,
       latitude: Sequelize.STRING,
       longitude: Sequelize.STRING,

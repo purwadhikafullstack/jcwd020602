@@ -1,5 +1,16 @@
 const { Op } = require("sequelize");
 const db = require("../models");
+const { addStockHistory } = require("../service/stockHistory.service");
+const {
+  CustomError,
+  ValidationError,
+  UnauthorizedError,
+  NotFoundError,
+  ConflictError,
+  InternalServerError,
+  BadGatewayError,
+  ServiceUnavailableError,
+} = require("../utils/customErrors");
 const stockController = {
   getStock: async (req, res) => {
     try {
@@ -31,7 +42,7 @@ const stockController = {
       db.Stock.findAndCountAll({
         where: {
           [Op.and]: [
-            { "$warehouse.city$": { [Op.like]: `%${city}%` } },
+            { "$warehouse.city.city_name$": { [Op.like]: `%${city}%` } },
             {
               [Op.or]: [
                 { "$sho.name$": { [Op.like]: `%${search}%` } },
@@ -46,7 +57,10 @@ const stockController = {
             include: [{ model: db.Brand }],
           },
           { model: db.ShoeSize },
-          { model: db.Warehouse },
+          {
+            model: db.Warehouse,
+            include: [{ model: db.City, attributes: ["city_id", "city_name"] }],
+          },
         ],
         limit,
         offset,
@@ -65,7 +79,13 @@ const stockController = {
     const t = await db.sequelize.transaction();
     try {
       const { stock, shoe_id, shoe_size_id, warehouse_id } = req.body;
-      await db.Stock.create(
+      const stockChecker = await db.Stock.findOne({
+        where: { shoe_id, shoe_size_id, warehouse_id },
+      });
+      if (stockChecker) {
+        throw new ConflictError("stock already exist");
+      }
+      const add = await db.Stock.create(
         {
           stock,
           shoe_id,
@@ -73,35 +93,49 @@ const stockController = {
           warehouse_id,
         },
         { transaction: t }
-      ).then((result) => res.status(200).send(result));
+      );
+      const addHistory = await addStockHistory({
+        stock_before: 0,
+        stock_after: stock,
+        stock_id: add.dataValues.id,
+        reference: "manual",
+        t,
+      });
       await t.commit();
+      return res.status(200).send({ message: "stock added", add });
     } catch (err) {
       await t.rollback();
-      res.status(500).send({
-        message: err.message,
-      });
+      if (err instanceof CustomError) {
+        return res.status(err.statusCode).send({ message: err.message });
+      } else {
+        return res.status(500).send({ message: "Internal Server Error" });
+      }
     }
   },
   editStock: async (req, res) => {
     const t = await db.sequelize.transaction();
     try {
-      const { stock, shoe_id, shoe_size_id, warehouse_id } = req.body;
-      const { id } = req.params;
-
+      const { stock } = req.body;
       await db.Stock.update(
         {
           stock,
-          shoe_id,
-          shoe_size_id,
-          warehouse_id,
         },
         {
-          where: { id },
+          where: {
+            id: req?.params?.id,
+          },
           transaction: t,
         }
       );
+      const addHistory = await addStockHistory({
+        stock_before: req?.stock?.dataValues?.stock,
+        stock_after: stock,
+        stock_id: req?.params?.id,
+        reference: "manual",
+        t,
+      });
       await t.commit();
-      res.send({ message: "Stock updated successfully" });
+      return res.status(200).send({ message: "Stock updated successfully" });
     } catch (err) {
       await t.rollback();
       return res.status(500).send({ message: err.message });
@@ -110,8 +144,18 @@ const stockController = {
   deleteStock: async (req, res) => {
     const t = await db.sequelize.transaction();
     try {
-      await db.Stock.destroy({ where: { id: req.params.id } });
+      const stock = await db.Stock.destroy({
+        where: { id: req?.params?.id },
+      });
+      const addHistory = await addStockHistory({
+        stock_before: req?.stock?.dataValues?.stock,
+        stock_after: 0,
+        stock_id: req?.params?.id,
+        reference: "manual",
+        t,
+      });
       await t.commit();
+      console.log(stock);
       return res.status(200).send({
         message: "Stock deleted successfully",
       });
@@ -120,7 +164,7 @@ const stockController = {
       res.status(500).send({ message: err.message });
     }
   },
-  getStockById: async (req, res) => {
+  getStockById: async (req, res, next) => {
     try {
       const stock = await db.Stock.findOne({
         where: { id: req.params.id },
@@ -133,7 +177,15 @@ const stockController = {
           { model: db.Warehouse },
         ],
       });
-      return res.status(200).send(stock);
+      req.stock = stock;
+      next();
+    } catch (err) {
+      return res.status(500).send({ message: err.message });
+    }
+  },
+  getStockFromId: async (req, res) => {
+    try {
+      return res.status(200).send(req.stock);
     } catch (err) {
       return res.status(500).send({ message: err.message });
     }

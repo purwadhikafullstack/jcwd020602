@@ -40,7 +40,6 @@ app.get("/api/greetings", (req, res, next) => {
 
 app.use("/api/warehouses", verify, routes.warehouseRoutes);
 app.use("/api/province&city", verify, routes.provinceCityRoutes);
-app.use("/api/histories", verify, routes.stockHistory);
 app.use("/api/shoes", verify, routes.shoeRoutes);
 app.use("/api/shoeSizes", verify, routes.shoeSizeRoutes);
 app.use("/api/categories", verify, routes.categoryRoutes);
@@ -49,6 +48,8 @@ app.use("/api/brands", verify, routes.brandRoutes);
 app.use("/api/address", verify, routes.addressRoutes);
 app.use("/api/auth", verify, routes.userRoutes);
 app.use("/api/stocks", verify, routes.stockRoutes);
+app.use("/api/stockHistories", verify, routes.stockHistoryRoutes);
+app.use("/api/stockMutations", verify, routes.stockMutationRoutes);
 
 // ===========================
 app.use("/api/category", express.static(`${__dirname}/public/category`));

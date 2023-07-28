@@ -27,7 +27,6 @@ export default function EditStock(props) {
   const [stock, setStock] = useState({});
 
   useEffect(() => {
-    console.log(props.id);
     if (props.id) {
       fetch();
     }
@@ -35,7 +34,6 @@ export default function EditStock(props) {
 
   async function fetch() {
     const response = await api.get(`/stocks/${props.id}`);
-    console.log(response.data);
     setStock(response.data);
   }
 
@@ -87,13 +85,11 @@ export default function EditStock(props) {
                 id="shoe_id"
                 onChange={inputHandler}
                 value={stock?.shoe_id}
+                disabled
               >
-                {shoes &&
-                  shoes.map((val) => (
-                    <option key={val.id} value={val.id}>
-                      {val.name}
-                    </option>
-                  ))}
+                <option key={stock?.Sho?.id} value={stock?.Sho?.id}>
+                  {stock?.Sho?.name}
+                </option>
               </Select>
             </Box>
             <Box>
@@ -102,18 +98,16 @@ export default function EditStock(props) {
                 onChange={inputHandler}
                 id="shoe_size_id"
                 value={stock.shoeSize?.id}
+                disabled
               >
-                {sizes &&
-                  sizes.map((val, idx) => (
-                    <option key={val.id} value={val.id}>
-                      {val.size}
-                    </option>
-                  ))}
+                <option key={stock.shoeSize?.id} value={stock.shoeSize?.id}>
+                  {stock.shoeSize?.size}
+                </option>
               </Select>
             </Box>
             <Box>
               warehouse:
-              <Select value={stock.warehouse?.id}>
+              <Select value={stock.warehouse?.id} disabled>
                 <option key={stock.warehouse?.id} value={stock.warehouse?.id}>
                   {stock.warehouse?.name}
                 </option>

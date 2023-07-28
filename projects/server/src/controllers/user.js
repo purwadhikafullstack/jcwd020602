@@ -193,7 +193,7 @@ const userController = {
         },
       });
       if (checkEmail) {
-        throw new Error("Email alredy exists");
+        throw new ValidationError("Email alredy exists");
       }
 
       await db.User.create(
@@ -273,12 +273,13 @@ const userController = {
     } catch (err) {
       await t.rollback();
       return res.status(500).send(err.message);
-
+    }
+  },
   getWarehouseCity: async (req, res, next) => {
     try {
       const result = await db.User.findOne({
         where: { ...req.user },
-        include: [{ model: db.Warehouse }],
+        include: [{ model: db.Warehouse, include: [{ model: db.City }] }],
       });
       delete result.dataValues.password;
       delete result.dataValues.id;

@@ -44,8 +44,7 @@ const provinceCityControllers = {
     try {
       const getCity = await db.City.findAll({
         where: {
-          province: req.params.province,
-          type: "kota",
+          province_id: req.params.province_id,
         },
         raw: true,
       });
