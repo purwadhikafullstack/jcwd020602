@@ -56,11 +56,7 @@ export function AddCategory(props) {
               <Input id="name" onChange={(e) => setName(e.target.value)} />
             </Box>
 
-            <input
-              accept="image/png, image/jpeg"
-              onChange={handleFile}
-              type="file"
-            />
+            <input accept="image" onChange={handleFile} type="file" />
           </ModalBody>
 
           <ModalFooter>
@@ -131,6 +127,102 @@ export function AddSubCategory(props) {
                 setTimeout(() => {
                   setIsLoading(false);
                   addSub();
+                }, 2000);
+              }}
+            >
+              Confirm
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
+  );
+}
+
+export function AddBrand(props) {
+  const toast = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const [name, setName] = useState("");
+  const [selectedFiles, setSelectedFiles] = useState([]);
+
+  const addBrand = () => {
+    const formData = new FormData();
+    formData.append("name", name);
+    for (const files of selectedFiles) {
+      formData.append("brand", files);
+    }
+
+    api
+      .post("/brands", formData)
+      .then((res) => {
+        toast({
+          title: res.data.message,
+          status: "success",
+          position: "top",
+        });
+        props.fetch();
+        clearB();
+      })
+      .catch((err) => console.log(err));
+  };
+  const handleFile = (event) => {
+    const files = event.target.files;
+    if (!selectedFiles) {
+      setSelectedFiles(files);
+    } else {
+      setSelectedFiles((prev) => [...prev, ...files]);
+    }
+  };
+
+  const clearB = () => {
+    setSelectedFiles([]);
+    setName("");
+    props.onClose();
+  };
+  return (
+    <>
+      <Modal isOpen={props.isOpen} onClose={clearB}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Add Category</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody display={"flex"} gap={2} flexDir={"column"}>
+            <Box>
+              Name:
+              <Input id="name" onChange={(e) => setName(e.target.value)} />
+            </Box>
+            <Box>
+              Logo:
+              <br />
+              <input
+                accept="image"
+                onChange={handleFile}
+                type="file"
+                name="logo_img"
+              />
+            </Box>
+            <Box>
+              Image:
+              <br />
+              <input
+                accept="image"
+                onChange={handleFile}
+                type="file"
+                name="brnad_img"
+              />
+            </Box>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button
+              isLoading={isLoading}
+              colorScheme="blue"
+              mr={3}
+              onClick={() => {
+                setIsLoading(true);
+                setTimeout(() => {
+                  setIsLoading(false);
+                  addBrand();
                 }, 2000);
               }}
             >

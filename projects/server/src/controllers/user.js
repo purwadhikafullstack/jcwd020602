@@ -5,31 +5,31 @@ const moment = require("moment");
 const mailer = require("../lib/nodemailer");
 const fs = require("fs").promises;
 const handlebars = require("handlebars");
-const { sequelize } = require("../models");
+const {
+  findUser,
+  createToken,
+  updateToken,
+  findToken,
+  updateUser,
+} = require("../service/user.service");
 const AVATAR_URL = process.env.AVATAR_URL;
+
 const userController = {
   register: async (req, res) => {
-    const t = await sequelize.transaction();
+    const t = await db.sequelize.transaction();
     try {
       const { email } = req.body;
-
-      const findEmail = await db.User.findOne({
-        where: { email },
-      });
+      const findEmail = await findUser(email);
       if (findEmail) {
         throw new Error("Email was registered");
       } else {
-        const createAccount = await db.User.create({
+        const user = await db.User.create({
           email,
           role: "USER",
         });
+        const id = JSON.stringify({ id: user.dataValues.id });
         const generateToken = nanoid();
-        const token = await db.Token.create({
-          expired: moment().add(1, "days").format(),
-          token: generateToken,
-          userId: JSON.stringify({ id: createAccount.dataValues.id }),
-          status: "VERIFY",
-        });
+        await createToken(id, generateToken, true, "VERIFY", t);
 
         const template = await fs.readFile(
           "./src/template/register.html",
@@ -37,15 +37,13 @@ const userController = {
         );
         let compiledTemplate = handlebars.compile(template);
         let registerTemplate = compiledTemplate({
-          registrationLink: `${process.env.URL_REGISTER}/verify/${token.dataValues.token}`,
+          registrationLink: `${process.env.URL}/verify/${generateToken}`,
           email,
         });
-        console.log(process.env.URL_REGISTER);
         mailer({
           subject: "email verification link",
-
           to: email,
-          text: registerTemplate,
+          html: registerTemplate,
         });
         t.commit();
         return res.status(201).send({
@@ -54,43 +52,27 @@ const userController = {
       }
     } catch (err) {
       t.rollback();
-      console.log(err.message);
       return res.status(500).send(err.message);
     }
   },
   verify: async (req, res) => {
-    const t = await sequelize.transaction();
+    const t = await db.sequelize.transaction();
     try {
-      const { email, password, name } = req.body;
-      const hashPassword = await bcrypt.hash(password, 10);
-
-      await db.User.update(
-        { password: hashPassword, name, status: "verified" },
-        { where: { email } }
-      );
+      await updateUser(req.body, "", t); //req.body: pass, name, email
       t.commit();
-      return res.status(201).send({
-        message: "email registered succesfully",
-      });
+      return res.status(201).send({ message: "Success create account" });
     } catch (err) {
       t.rollback();
-      console.log(err.message);
       return res.status(500).send(err.message);
     }
   },
   login: async (req, res) => {
-    const t = await sequelize.transaction();
+    const t = await db.sequelize.transaction();
     try {
       const { email, password } = req.body;
-
-      const user = await db.User.findOne({
-        where: {
-          email,
-        },
-      });
-
+      const user = await findUser(email);
       if (!user) {
-        throw new Error("Username or email not found");
+        throw new Error("email not found");
       }
 
       if (!user.dataValues.status) {
@@ -102,72 +84,37 @@ const userController = {
       if (!match) {
         throw new Error("Wrong password");
       }
-
-      const userId = { id: user.dataValues.id };
-
-      let token = await db.Token.findOne({
-        where: {
-          userId: JSON.stringify(userId),
-          expired: {
-            [db.Sequelize.Op.gte]: moment().format(),
-          },
-          valid: true,
-          status: "LOGIN",
-        },
-      });
-
+      const id = JSON.stringify({ id: user.dataValues.id });
+      const generateToken = nanoid();
+      let token = await findToken({ userId: id, valid: 1, status: "LOGIN" });
       if (!token) {
-        token = await db.Token.create({
-          expired: moment().add(1, "h").format(),
-          token: nanoid(),
-          userId: JSON.stringify(userId),
-          status: "LOGIN",
-        });
+        await createToken(id, generateToken, true, "LOGIN", t);
       } else {
-        token = await db.Token.update(
-          {
-            expired: moment().add(1, "h").format(),
-            token: nanoid(),
-          },
-          {
-            where: { userId: JSON.stringify(userId), status: "LOGIN" },
-          }
-        );
+        await updateToken(id, generateToken, true, "LOGIN", t);
       }
+
       t.commit();
       delete user.dataValues.password;
       delete user.dataValues.id;
       return res.status(200).send({
         message: "Success login",
-        token: nanoid(),
+        token: generateToken,
         data: user.dataValues,
       });
     } catch (err) {
       t.rollback();
-      console.log(err.message);
       return res.status(500).send(err.message);
     }
   },
-  getByTokenV2: async (req, res, next) => {
+  tokenDecoder: async (req, res, next) => {
     try {
       const token = req.headers.authorization.split(" ")[1];
-      let p = await db.Token.findOne({
-        where: {
-          token,
-          expired: {
-            [db.Sequelize.Op.gte]: moment().format(),
-          },
-          valid: true,
-        },
-      });
+      console.log(token);
+      let p = await findToken({ token: token, valid: 1 });
       if (!p) {
         throw new Error("token has expired");
       }
-      user = await db.User.findOne({
-        where: {
-          id: JSON.parse(p.dataValues.userId).id,
-        },
-      });
+      const user = await findUser(JSON.parse(p.dataValues.userId).id);
       delete user.dataValues.password;
       req.user = user;
       next();
@@ -179,6 +126,69 @@ const userController = {
   getUserByToken: async (req, res) => {
     delete req.user.id;
     res.send(req.user);
+  },
+  generateTokenByEmail: async (req, res) => {
+    const t = await db.sequelize.transaction();
+    try {
+      const { email } = req.query;
+      const user = await findUser(email);
+
+      if (user) {
+        const id = JSON.stringify({ id: user.dataValues.id });
+        const check = await findToken({
+          userId: id,
+          status: "FORGOT-PASSWORD",
+        });
+        const generateToken = nanoid();
+        if (check) {
+          await updateToken(id, generateToken, true, "FORGOT-PASSWORD", t);
+        } else {
+          await createToken(id, generateToken, true, "FORGOT-PASSWORD", t);
+        }
+
+        const template = await fs.readFile(
+          "./src/template/forgotPassword.html",
+          "utf-8"
+        );
+        let compiledTemplate = handlebars.compile(template);
+        let resetPasswordTemplate = compiledTemplate({
+          registrationLink: `${process.env.URL}/forgot-password/${generateToken}`,
+        });
+        mailer({
+          subject: "RESET PASSWORD",
+          to: email,
+          html: resetPasswordTemplate,
+        });
+        await t.commit();
+        return res.send({ message: "check your email" });
+      } else {
+        throw new Error("Email not found");
+      }
+    } catch (err) {
+      await t.rollback();
+      return res.status(500).send(err.message);
+    }
+  },
+  forgotPassword: async (req, res) => {
+    const t = await db.sequelize.transaction();
+    try {
+      let token = req.headers.authorization;
+      token = token.slice(7);
+      console.log(token);
+      const { id } = req.user;
+
+      await updateUser(req.body, id, t); //req.body: pass
+      await db.Token.update(
+        { valid: false },
+        { where: { token } },
+        { transaction: t }
+      );
+      await t.commit();
+      return res.status(200).send({ message: "success change passowrd" });
+    } catch (err) {
+      await t.rollback();
+      return res.status(500).send({ message: err.message });
+    }
   },
   addAdmin: async (req, res) => {
     const t = await db.sequelize.transaction();
@@ -273,7 +283,8 @@ const userController = {
     } catch (err) {
       await t.rollback();
       return res.status(500).send(err.message);
-
+    }
+  },
   getWarehouseCity: async (req, res, next) => {
     try {
       const result = await db.User.findOne({

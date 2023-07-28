@@ -1,15 +1,13 @@
 const init = {
-  name: "fahmi",
+  name: "",
   email: "",
-  password: "",
-  role: "SUPERADMIN",
+  role: "",
 };
 
 function userReducer(state = init, action) {
   if (action.type == "login") {
     return {
       ...state,
-      id: action.payload.id,
       email: action.payload.email,
       name: action.payload.name,
       role: action.payload.role,

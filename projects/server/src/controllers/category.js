@@ -72,9 +72,15 @@ const categoryController = {
   editCategory: async (req, res) => {
     const t = await db.sequelize.transaction();
     try {
-      const { name } = req.body;
+      const { name, category } = req.body;
+      const filename = req?.file?.filename || category;
       await db.Category.update(
-        { name },
+        {
+          name,
+          category_img: !req?.file?.filename
+            ? category
+            : CATEGORY_URL + filename,
+        },
         { where: { id: req.params.id } },
         { transaction: t }
       );

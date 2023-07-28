@@ -10,6 +10,7 @@ import {
   Input,
   useToast,
   Box,
+  Image,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { api } from "../../api/api";
@@ -17,7 +18,9 @@ import { api } from "../../api/api";
 export function EditCategory(props) {
   const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
-  const [name, setName] = useState();
+  const [category, setCategory] = useState();
+  const [selectedFile, setSelectedFile] = useState();
+  const [image, setImage] = useState();
 
   useEffect(() => {
     if (props.id) {
@@ -27,12 +30,19 @@ export function EditCategory(props) {
 
   const fetchCatId = async () => {
     const res = await api.get("/categories/" + props.id);
-    setName(res.data.name);
+    setCategory(res.data);
+    setImage(res.data.category_img);
   };
 
   const updateCategory = () => {
+    const formData = new FormData();
+    formData.append("name", category.name);
+    formData.append(
+      "category",
+      !selectedFile ? category.category_img : selectedFile
+    );
     api
-      .patch("/categories/" + props.id, { name })
+      .patch("/categories/" + props.id, formData)
       .then((res) => {
         toast({
           title: res.data.message,
@@ -41,25 +51,31 @@ export function EditCategory(props) {
         });
         props.fetch();
         clearS();
-        props.onClose();
       })
       .catch((err) => console.log(err));
   };
 
   const clearS = () => {
-    setName({});
+    setCategory({});
     props.setId(null);
+    setSelectedFile(null);
+    props.onClose();
+  };
+
+  const handleFile = (event) => {
+    setSelectedFile(event.target.files[0]);
+    setImage(URL.createObjectURL(event.target.files[0]));
+  };
+
+  const inputhandler = (e) => {
+    const { id, value } = e.target;
+    const temp = { ...category };
+    temp[id] = value;
+    setCategory(temp);
   };
   return (
     <>
-      <Modal
-        isOpen={props.isOpen}
-        onClose={() => {
-          props.onClose();
-          clearS();
-        }}
-        closeOnOverlayClick={false}
-      >
+      <Modal isOpen={props.isOpen} onClose={clearS} closeOnOverlayClick={false}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader p={2}>Edit Category</ModalHeader>
@@ -70,9 +86,19 @@ export function EditCategory(props) {
               <Input
                 id="name"
                 type="text"
-                onChange={(e) => setName(e.target.value)}
-                defaultValue={name}
+                onChange={inputhandler}
+                defaultValue={category?.name}
               />
+            </Box>
+            <Box>
+              Image:
+              <Input
+                accept="image"
+                type="file"
+                paddingTop={"4px"}
+                onChange={handleFile}
+              />
+              <Image src={image} />
             </Box>
           </ModalBody>
           <ModalFooter>

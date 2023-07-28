@@ -59,7 +59,6 @@ export default function EditAdmin(props) {
     });
     props.fetch();
     clearAdmin();
-    props.onClose();
   };
 
   const handleFile = (event) => {
@@ -71,15 +70,13 @@ export default function EditAdmin(props) {
     setAdmin({});
     setSelectedFile(null);
     props.setAdminId(null);
+    props.onClose();
   };
   return (
     <>
       <Modal
         isOpen={props.isOpen}
-        onClose={() => {
-          props.onClose();
-          clearAdmin();
-        }}
+        onClose={clearAdmin}
         closeOnOverlayClick={false}
       >
         <ModalOverlay />

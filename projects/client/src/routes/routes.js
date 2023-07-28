@@ -13,6 +13,10 @@ import InventoryPage from "../pages/inventoryPage";
 import CategoryPage from "../pages/categoryPage";
 import SubcategoryPage from "../pages/Subcategory";
 import ProductPage from "../pages/productPage";
+import BrandPage from "../pages/brandPage";
+import ProfilePage from "../pages/profilePage";
+import ForgotPassword from "../components/auth/forgotPassword";
+import ChangePassword from "../components/auth/changePassword";
 const routes = [
   <Route
     path="/"
@@ -41,6 +45,60 @@ const routes = [
       </ProtectedPage>
     }
   />,
+  <Route
+    path="/profile"
+    element={
+      <ProtectedPage guestOnly={true} needLogin={true}>
+        <Navbar />
+        <ProfilePage />
+      </ProtectedPage>
+    }
+  />,
+  <Route
+    path="/forgot-password"
+    element={
+      <ProtectedPage guestOnly={true}>
+        <Navbar />
+        <ForgotPassword />
+      </ProtectedPage>
+    }
+  />,
+  <Route
+    path="/forgot-password/:token"
+    element={
+      <ProtectedPage guestOnly={true}>
+        <Navbar />
+        <ChangePassword />
+      </ProtectedPage>
+    }
+  />,
+  <Route
+    path="/:category"
+    element={
+      <ProtectedPage guestOnly={true}>
+        <Navbar />
+        {/* product list */}
+      </ProtectedPage>
+    }
+  />,
+  <Route
+    path="/:category/:sub"
+    element={
+      <ProtectedPage guestOnly={true}>
+        <Navbar />
+        {/* product list */}
+      </ProtectedPage>
+    }
+  />,
+  <Route
+    path="/:category/:sub/:product_name"
+    element={
+      <ProtectedPage guestOnly={true}>
+        <Navbar />
+        {/* product detail */}
+      </ProtectedPage>
+    }
+  />,
   //------------------------------------- admin
 
   <Route
@@ -60,6 +118,16 @@ const routes = [
         <NavbarDashboard />
         <Sidebar />
         <ProductPage />
+      </ProtectedPage>
+    }
+  />,
+  <Route
+    path="/brand"
+    element={
+      <ProtectedPage needLogin={true} guestOnly={false}>
+        <NavbarDashboard />
+        <Sidebar />
+        <BrandPage />
       </ProtectedPage>
     }
   />,
