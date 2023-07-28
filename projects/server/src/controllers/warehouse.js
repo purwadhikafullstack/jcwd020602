@@ -15,22 +15,23 @@ const warehouseControllers = {
   addWarehouse: async (req, res) => {
     const t = await db.sequelize.transaction();
     try {
-      const { name, phone, province, city, address } = req.body;
-      const response = await opencage(address, city, province);
+      const { name, phone, city_id, address } = req.body;
+      const city = await db.City.findOne({
+        where: { city_id },
+      });
+      const response = await opencage(
+        address,
+        city.dataValues.city_name,
+        city.dataValues.province
+      );
       const warehouse = await db.Warehouse.create(
         {
           name,
           phone,
-          address: response.data.results[0].formatted,
-          province:
-            response.data.results[0].components?.state ||
-            response.data.results[0].components?.region ||
-            province,
-          city:
-            response.data.results[0].components.city ||
-            response.data.results[0].components.city_district ||
-            city,
-          postcode: response.data.results[0].components.postcode,
+          address: `${address}, ${city.dataValues.city_name}, ${city.dataValues.province}, ${city.dataValues.postal_code}`,
+          province_id: city.dataValues.province_id,
+          city_id: city_id,
+          postcode: city.dataValues.postal_code,
           latitude: response.data.results[0].geometry.lat,
           longitude: response.data.results[0].geometry.lng,
         },
@@ -65,6 +66,7 @@ const warehouseControllers = {
   getById: async (req, res) => {
     const warehouse = await db.Warehouse.findOne({
       where: { id: req.params.id },
+      include: [{ model: db.City }],
     });
     return res.status(200).send(warehouse);
   },
@@ -85,30 +87,35 @@ const warehouseControllers = {
   editWarehouse: async (req, res) => {
     const t = await db.sequelize.transaction();
     try {
-      const { name, phone, province, city, address } = req.body;
-      const response = await opencage(address, city, province);
-
-      await db.Warehouse.update(
-        {
-          name,
-          phone,
-          address:
-            response?.data?.results[0]?.formatted == null
-              ? address
-              : response?.data?.results[0]?.formatted,
-          province:
-            response.data.results[0].components.state ||
-            response.data.results[0].components.region,
-          city:
-            response.data.results[0].components.city ||
-            response.data.results[0].components.city_district,
-          postcode: response.data.results[0].components.postcode,
-          latitude: response.data.results[0].geometry.lat,
-          longitude: response.data.results[0].geometry.lng,
-        },
-        { where: { id: req.params.id } },
-        { transaction: t }
-      );
+      const { name, phone, city_id, address } = req.body;
+      const city = await db.City.findOne({
+        where: { city_id },
+      });
+      if (city) {
+        const response = await opencage(
+          address,
+          city.dataValues.city_name,
+          city.dataValues.province
+        );
+        await db.Warehouse.update(
+          {
+            name,
+            phone,
+            address: `${address}, ${city.dataValues.city_name}, ${city.dataValues.province}, ${city.dataValues.postal_code}`,
+            province_id: city.dataValues.province_id,
+            city_id: city.dataValues.city_id,
+            postcode: city.dataValues.postal_code,
+            latitude: response.data.results[0].geometry.lat,
+            longitude: response.data.results[0].geometry.lng,
+          },
+          { where: { id: req.params.id } },
+          { transaction: t }
+        );
+      } else {
+        res.status(500).send({
+          message: "city doesn't exist",
+        });
+      }
       await t.commit();
       return res.status(200).send({ message: "success update Warehouse" });
     } catch (err) {
@@ -124,14 +131,16 @@ const warehouseControllers = {
         { warehouse_id: req.body.warehouse_id, user_id },
         { transaction: t }
       );
-
       const user = await db.User.findOne({
         where: { id: user_id },
       });
-
       if (user) {
         user.assign = true;
-        await user.save();
+        await user.save({ transaction: t });
+        await db.User.update(
+          { warehouse_id: req.body.warehouse_id },
+          { where: { id: user_id }, transaction: t }
+        );
       }
       await t.commit();
       return res.status(200).send({ message: "success assign admin" });
@@ -151,6 +160,7 @@ const warehouseControllers = {
         { where: { user_id } },
         { transaction: t }
       );
+      await db.User.update({ warehouse_id }, { where: { id: user_id } });
       await t.commit();
       return res.status(200).send({ message: "success reassign admin" });
     } catch (err) {
@@ -204,7 +214,13 @@ const warehouseControllers = {
   getProv: async (req, res) => {
     try {
       db.Warehouse.findAll({
-        attributes: ["province"],
+        include: [
+          {
+            model: db.City,
+            attributes: ["province_id", "province"],
+          },
+        ],
+        distinc: true,
       }).then((result) => res.status(200).send(result));
     } catch (err) {
       return res.status(500).send(err.message);
@@ -213,10 +229,13 @@ const warehouseControllers = {
   getCity: async (req, res) => {
     try {
       db.Warehouse.findAll({
-        attributes: ["city", "id"],
+        include: [
+          { model: db.City, attributes: ["city_id", "city_name", "type"] },
+        ],
         where: {
-          province: req.query.province,
+          "$city.province$": req.query.province,
         },
+        distinc: true,
       }).then((result) => res.status(200).send(result));
     } catch (err) {
       return res.status(500).send(err.message);

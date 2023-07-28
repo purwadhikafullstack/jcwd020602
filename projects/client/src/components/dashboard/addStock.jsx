@@ -32,9 +32,6 @@ export default function AddStock(props) {
     shoe_size_id: "",
     warehouse_id: "",
   });
-  useEffect(() => {
-    console.log(props.city);
-  }, []);
   function inputHandler(e) {
     const { id, value } = e.target;
     const temp = { ...stock };

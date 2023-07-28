@@ -1,6 +1,5 @@
 const warehouseController = require("./warehouse");
 const provinceCityController = require("./province&city");
-const getAllStockHistory = require("./getAllStockHistory");
 const shoeController = require("./shoe");
 const categoryController = require("./category");
 const brandController = require("./brand");
@@ -8,16 +7,19 @@ const addressController = require("./address");
 const userController = require("./user");
 const stockController = require("./stock");
 const shoeSizeController = require("./shoeSize");
+const stockHistoryController = require("./stockHistory");
+const stockMutationController = require("./stockMutation");
 
 module.exports = {
-  warehouseController,
+  userController,
+  addressController,
   provinceCityController,
-  getAllStockHistory,
+  warehouseController,
   shoeController,
   categoryController,
   brandController,
-  addressController,
-  userController,
-  stockController,
   shoeSizeController,
+  stockController,
+  stockHistoryController,
+  stockMutationController,
 };

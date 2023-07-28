@@ -20,10 +20,10 @@ import { useFetchCity, useFetchProv } from "../../hooks/useFetchProvCity";
 export default function EditWarehouse(props) {
   const [isLoading, setIsLoading] = useState(false);
   const { provinces } = useFetchProv();
-  const [provid, setProvid] = useState(0);
-  const { cities } = useFetchCity(provid);
   const toast = useToast();
   const [warehouse, setWarehouse] = useState({});
+  const [provid, setProvid] = useState(0);
+  const { cities } = useFetchCity(provid);
 
   useEffect(() => {
     if (props.id) {
@@ -34,6 +34,7 @@ export default function EditWarehouse(props) {
   const fetchWarehouseById = async () => {
     const res = await api.get("/warehouses/" + props.id);
     setWarehouse(res.data);
+    setProvid(res.data.city.province);
   };
 
   function inputHandler(e) {
@@ -83,14 +84,14 @@ export default function EditWarehouse(props) {
                 id="name"
                 type="text"
                 onChange={inputHandler}
-                defaultValue={warehouse.name}
+                defaultValue={warehouse?.name}
               />
               phone:
               <Input
                 id="phone"
                 type={"number"}
                 onChange={inputHandler}
-                defaultValue={warehouse.phone}
+                defaultValue={warehouse?.phone}
               />
             </Box>
             <Box>
@@ -98,6 +99,7 @@ export default function EditWarehouse(props) {
               <Select
                 id="province"
                 placeholder="choose province.."
+                value={warehouse?.city?.province}
                 onChange={(e) => {
                   inputHandler(e);
                   setProvid(e.target.value);
@@ -105,8 +107,8 @@ export default function EditWarehouse(props) {
               >
                 {provinces &&
                   provinces.map((val, idx) => (
-                    <option key={val.id} value={val.province}>
-                      {val.province}
+                    <option key={val?.province} value={val?.province}>
+                      {val?.province}
                     </option>
                   ))}
               </Select>
@@ -116,11 +118,12 @@ export default function EditWarehouse(props) {
               <Select
                 placeholder="choose city.."
                 onChange={inputHandler}
+                value={warehouse?.city?.city_name}
                 id="city"
               >
                 {cities &&
                   cities.map((val, idx) => (
-                    <option value={val.city_id}>{val.city_name}</option>
+                    <option value={val?.city_name}>{val?.city_name}</option>
                   ))}
               </Select>
             </Box>
@@ -132,7 +135,7 @@ export default function EditWarehouse(props) {
                 maxLength={225}
                 onChange={inputHandler}
                 placeholder="road, district  "
-                defaultValue={warehouse.address}
+                defaultValue={warehouse?.address}
               />
             </Box>
           </ModalBody>

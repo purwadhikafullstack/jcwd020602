@@ -13,10 +13,13 @@ import InventoryPage from "../pages/inventoryPage";
 import CategoryPage from "../pages/categoryPage";
 import SubcategoryPage from "../pages/Subcategory";
 import ProductPage from "../pages/productPage";
+
+import StockHistoryPage from "../pages/stockHistoryPage";
 import BrandPage from "../pages/brandPage";
 import ProfilePage from "../pages/profilePage";
 import ForgotPassword from "../components/auth/forgotPassword";
 import ChangePassword from "../components/auth/changePassword";
+
 const routes = [
   <Route
     path="/"
@@ -162,12 +165,22 @@ const routes = [
     }
   />,
   <Route
-    path="/inventory"
+    path="/stock"
     element={
       <ProtectedPage needLogin={true} guestOnly={false}>
         <NavbarDashboard />
         <Sidebar />
         <InventoryPage />
+      </ProtectedPage>
+    }
+  />,
+  <Route
+    path="/stockHistory"
+    element={
+      <ProtectedPage needLogin={true} guestOnly={false}>
+        <NavbarDashboard />
+        <Sidebar />
+        <StockHistoryPage />
       </ProtectedPage>
     }
   />,

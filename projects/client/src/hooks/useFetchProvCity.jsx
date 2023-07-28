@@ -18,14 +18,12 @@ export const useFetchProv = () => {
   return { provinces, fetch };
 };
 
-export const useFetchCity = (id) => {
+export const useFetchCity = (province_id) => {
   const [cities, setCities] = useState();
-  const province = id;
-
   const fetch = async () => {
     try {
-      if (province) {
-        await api.get("/province&city/city/" + province).then((res) => {
+      if (province_id) {
+        await api.get("/province&city/city/" + province_id).then((res) => {
           setCities(res.data);
         });
       } else {
@@ -38,7 +36,7 @@ export const useFetchCity = (id) => {
 
   useEffect(() => {
     fetch();
-  }, [province]);
+  }, [province_id]);
 
   return { cities, fetch };
 };

@@ -3,7 +3,7 @@ import {
   MdOutlineArrowBackIos,
   MdOutlineArrowForwardIos,
 } from "react-icons/md";
-export default function Pagination({ shown, setShown, stocks, pages }) {
+export default function Pagination({ shown, setShown, datas, pages }) {
   const PageCard = ({ val }) => {
     return (
       <Flex
@@ -76,7 +76,7 @@ export default function Pagination({ shown, setShown, stocks, pages }) {
         onClick={() => {
           setShown({ ...shown, page: shown.page + 1 });
         }}
-        display={shown.page < stocks.totalPages ? "flex" : "none"}
+        display={shown.page < datas ? "flex" : "none"}
       >
         <Icon as={MdOutlineArrowForwardIos} />
       </Flex>

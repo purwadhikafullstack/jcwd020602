@@ -17,6 +17,11 @@ export default function DeleteStock(props) {
   const cancelRef = React.useRef();
   const toast = useToast();
 
+  function clearData() {
+    props.setId(null);
+    props.onClose();
+  }
+
   const deleteStock = async () => {
     await api.delete("/stocks/" + props.id).then((res) => {
       toast({
@@ -26,7 +31,7 @@ export default function DeleteStock(props) {
       });
       props.setShown({ page: 1 });
       props.fetch();
-      props.onClose();
+      clearData();
     });
   };
 
@@ -35,7 +40,7 @@ export default function DeleteStock(props) {
       <AlertDialog
         motionPreset="slideInBottom"
         leastDestructiveRef={cancelRef}
-        onClose={props.onClose}
+        onClose={clearData}
         isOpen={props.isOpen}
         isCentered
       >

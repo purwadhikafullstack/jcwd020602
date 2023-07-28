@@ -98,11 +98,11 @@ export default function Sidebar(props) {
                   <Link to="/inventory">
                     <Box id="asyu">Stock</Box>
                   </Link>
-                  <Link to="/">
-                    <Box id="asyu">blabla</Box>
+                  <Link to="/stockHistory">
+                    <Box id="asyu">Stock History</Box>
                   </Link>
-                  <Link to="/">
-                    <Box id="asyu">blabla</Box>
+                  <Link to="/stockMutation">
+                    <Box id="asyu">Stock Mutation</Box>
                   </Link>
                 </AccordionPanel>
               </AccordionItem>

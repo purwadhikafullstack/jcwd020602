@@ -19,15 +19,14 @@ import { useFetchCity, useFetchProv } from "../../hooks/useFetchProvCity";
 
 export default function AddWarehouse(props) {
   const { provinces } = useFetchProv();
-  const [provid, setProvid] = useState(0);
-  const { cities } = useFetchCity(provid);
+  const [province_id, setProvince_id] = useState(0);
+  const { cities } = useFetchCity(province_id);
   const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [warehouse, setWarehouse] = useState({
     name: "",
     phone: "",
-    province: "",
-    city: "",
+    city_id: "",
     address: "",
   });
 
@@ -77,13 +76,12 @@ export default function AddWarehouse(props) {
                 id="province"
                 placeholder="choose province.."
                 onChange={(e) => {
-                  inputHandler(e);
-                  setProvid(e.target.value);
+                  setProvince_id(e.target.value);
                 }}
               >
                 {provinces &&
                   provinces.map((val, idx) => (
-                    <option key={val.province_id} value={val.province}>
+                    <option key={val.province_id} value={val.province_id}>
                       {val.province}
                     </option>
                   ))}
@@ -94,12 +92,12 @@ export default function AddWarehouse(props) {
               <Select
                 placeholder="choose city.."
                 onChange={inputHandler}
-                id="city"
+                id="city_id"
               >
                 {cities &&
                   cities.map((val, idx) => (
-                    <option key={val.city_id} value={val.city_name}>
-                      {val.city_name}
+                    <option key={val.city_id} value={val.city_id}>
+                      {val.type} {val.city_name}
                     </option>
                   ))}
               </Select>
