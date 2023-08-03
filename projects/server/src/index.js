@@ -50,6 +50,7 @@ app.use("/api/auth", verify, routes.userRoutes);
 app.use("/api/stocks", verify, routes.stockRoutes);
 app.use("/api/stockHistories", verify, routes.stockHistoryRoutes);
 app.use("/api/stockMutations", verify, routes.stockMutationRoutes);
+app.use("/api/carts", routes.cartRoutes);
 
 // ===========================
 app.use("/api/category", express.static(`${__dirname}/public/category`));
