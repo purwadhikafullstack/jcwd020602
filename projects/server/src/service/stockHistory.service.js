@@ -9,14 +9,14 @@ module.exports = {
     t,
   }) => {
     try {
-      const q = stock_after - stock_before;
+      const qty = stock_after - stock_before;
       return await db.StockHistory.create(
         {
           stock_before,
           stock_after,
-          qty: Math.abs(q),
+          qty,
           stock_id,
-          status: q > 0 ? "ADDED" : "DECREASED",
+          status: qty > 0 ? "ADDED" : "DECREASED",
           reference,
         },
         { transaction: t }

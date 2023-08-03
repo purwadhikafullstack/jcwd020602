@@ -121,10 +121,10 @@ export default function Navbar() {
                           px={2}
                           whiteSpace={"nowrap"}
                           w={"100%"}
-                          key={val.id}
+                          key={val?.id}
                           _hover={{ bg: "black", color: "white" }}
                         >
-                          {val.name}
+                          {val?.name}
                         </Box>
                       ))}
                   </Box>

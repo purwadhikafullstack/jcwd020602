@@ -14,6 +14,15 @@ import CategoryPage from "../pages/categoryPage";
 import SubcategoryPage from "../pages/Subcategory";
 import ProductPage from "../pages/productPage";
 import StockHistoryPage from "../pages/stockHistoryPage";
+<<<<<<< Updated upstream
+=======
+import BrandPage from "../pages/brandPage";
+import ProfilePage from "../pages/profilePage";
+import ForgotPassword from "../components/auth/forgotPassword";
+import ChangePassword from "../components/auth/changePassword";
+import StockMutationPage from "../pages/stockMutationPage";
+
+>>>>>>> Stashed changes
 const routes = [
   <Route
     path="/"
@@ -111,6 +120,16 @@ const routes = [
         <NavbarDashboard />
         <Sidebar />
         <StockHistoryPage />
+      </ProtectedPage>
+    }
+  />,
+  <Route
+    path="/stockMutation"
+    element={
+      <ProtectedPage needLogin={true} guestOnly={false}>
+        <NavbarDashboard />
+        <Sidebar />
+        <StockMutationPage />
       </ProtectedPage>
     }
   />,

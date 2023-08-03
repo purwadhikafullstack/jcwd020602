@@ -6,7 +6,6 @@ export const useFetchStockHistory = (filter) => {
   const fetch = async () => {
     try {
       await api.get("/stockHistories", { params: filter }).then((res) => {
-        console.log(res.data);
         setStockHistories(res.data);
       });
     } catch (err) {
@@ -14,7 +13,7 @@ export const useFetchStockHistory = (filter) => {
     }
   };
   useEffect(() => {
-    if (filter.city != "") {
+    if (filter.city_id != "") {
       fetch();
     }
   }, [filter]);

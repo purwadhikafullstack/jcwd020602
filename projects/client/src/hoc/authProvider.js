@@ -14,6 +14,7 @@ export default function AuthProvider({ children }) {
     try {
       const token = JSON.parse(localStorage.getItem("user"));
       if (token) {
+<<<<<<< Updated upstream
         const user = await api
           .get("/auth/v3", {
             headers: {
@@ -21,10 +22,17 @@ export default function AuthProvider({ children }) {
             },
           })
           .then((res) => res.data);
+=======
+        const user = await api.get("/auth/userbytoken", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+>>>>>>> Stashed changes
         if (user) {
           dispatch({
             type: "login",
-            payload: user,
+            payload: user.data,
           });
         }
       }

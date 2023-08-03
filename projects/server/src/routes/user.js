@@ -7,12 +7,18 @@ const {
   validateVerification,
 } = require("../middlewares/validator");
 const { fileUploader } = require("../middlewares/multer");
+const roleDecoder = require("../middlewares/roleDecoder");
 
 //REGISTER NEW USER ACCOUNT
 router.post("/register", validateRegister, userController.register);
 
 // VERIFICATION BY EMAIL
-router.patch("/verify", validateVerification, userController.verify);
+router.patch(
+  "/verify",
+  roleDecoder.checkUser,
+  validateVerification,
+  userController.verify
+);
 
 router.post("/login", userController.login);
 
@@ -21,16 +27,30 @@ router.get(
   userController.getByTokenV2,
   userController.getUserByToken
 );
+<<<<<<< Updated upstream
 router.get(
   "/warehousebytoken",
   userController.getByTokenV2,
   userController.getWarehouseCity
 );
 router.get("/userbytoken", tokenDecoder, userController.getUserByToken);
+=======
+
+//token forgot password
+router.get("/generate-token/email", userController.generateTokenByEmail);
+
+//forgot password
+router.patch(
+  "/forgot-password",
+  userController.tokenDecoder,
+  userController.forgotPassword
+);
+>>>>>>> Stashed changes
 
 // ------------- admin
 router.post(
   "/admin",
+  roleDecoder.checkSuper,
   fileUploader({
     destinationFolder: "avatar",
     fileType: "image",
@@ -39,15 +59,20 @@ router.post(
 );
 router.patch(
   "/admin/:id",
+  roleDecoder.checkSuper,
   fileUploader({
     destinationFolder: "avatar",
     fileType: "image",
   }).single("avatar"),
   userController.editAdminById
 );
-
-router.get("/", userController.getAllUser);
-router.get("/:id", userController.getAdminById);
-router.delete("/:id", userController.deleteAdmin);
+router.get(
+  "/warehousebytoken",
+  roleDecoder.checkAdmin,
+  userController.getWarehouseCity
+);
+router.get("/", roleDecoder.checkSuper, userController.getAllUser);
+router.get("/:id", roleDecoder.checkSuper, userController.getAdminById);
+router.delete("/:id", roleDecoder.checkSuper, userController.deleteAdmin);
 
 module.exports = router;

@@ -68,6 +68,7 @@ export default function Login() {
         });
       } else {
         let token;
+<<<<<<< Updated upstream
         await api
           .post("/auth/login", values)
           .then((res) => {
@@ -101,6 +102,31 @@ export default function Login() {
             });
             nav("/");
           });
+=======
+        const res = await api.post("/auth/login", formik.values);
+        localStorage.setItem("user", JSON.stringify(res.data.token));
+        token = res.data.token;
+
+        const resGet = await api.get("/auth/userbytoken", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        dispatch({
+          type: "login",
+          payload: resGet.data,
+        });
+        nav("/");
+      } catch (err) {
+        toast({
+          title: err.response?.data,
+          status: "error",
+          position: "top",
+          duration: 1000,
+          isClosable: true,
+        });
+        console.log(err.message);
+>>>>>>> Stashed changes
       }
     } catch (err) {
       console.log(err.message);

@@ -102,6 +102,18 @@ const userController = {
       if (!match) {
         throw new Error("Wrong password");
       }
+<<<<<<< Updated upstream
+=======
+      const id = JSON.stringify({ id: user.dataValues.id });
+      const generateToken = nanoid();
+      let token = await findToken({ userId: id, valid: 1, status: "LOGIN" });
+      console.log(token);
+      if (!token) {
+        await createToken(id, generateToken, true, "LOGIN", t);
+      } else {
+        await updateToken(id, generateToken, true, "LOGIN", t);
+      }
+>>>>>>> Stashed changes
 
       const userId = { id: user.dataValues.id };
 
@@ -277,15 +289,11 @@ const userController = {
   },
   getWarehouseCity: async (req, res, next) => {
     try {
-      const result = await db.User.findOne({
-        where: { ...req.user },
-        include: [{ model: db.Warehouse, include: [{ model: db.City }] }],
+      let result = await db.Warehouse.findOne({
+        where: { id: req.user.warehouse_id },
       });
-      delete result.dataValues.password;
-      delete result.dataValues.id;
-      res.status(200).send(result);
+      return res.status(200).send(result || `153`);
     } catch (err) {
-      console.log(err);
       return res.status(500).send({ message: err.message });
     }
   },
