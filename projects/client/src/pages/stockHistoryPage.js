@@ -32,6 +32,8 @@ import Pagination from "../components/dashboard/pagination";
 import { api } from "../api/api";
 import { useFetchStockHistory } from "../hooks/useFetchStockHistory";
 import moment from "moment";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 export default function StockHistoryPage() {
   const userSelector = useSelector((state) => state.auth);
@@ -44,7 +46,8 @@ export default function StockHistoryPage() {
     sort: "",
     order: "ASC",
     search: "",
-    city: "",
+    city_id: "",
+    time: "",
   });
   //pagination ------------------------------------------------------
   const [pages, setPages] = useState([]);
@@ -68,13 +71,9 @@ export default function StockHistoryPage() {
   //-------------------------------------------------------------
 
   useEffect(() => {
-    if (userSelector.role != "SUPERADMIN") {
-      const token = JSON.parse(localStorage.getItem("user"));
-      if (token) {
-        warehouseAdmin(token);
-      }
-    } else if (userSelector.role == "SUPERADMIN") {
-      setFilter({ ...filter, city: "Jakarta Selatan" });
+    const token = JSON.parse(localStorage.getItem("user"));
+    if (token) {
+      warehouseAdmin(token);
     }
   }, []);
   async function warehouseAdmin(token) {
@@ -83,7 +82,26 @@ export default function StockHistoryPage() {
         Authorization: `Bearer ${token}`,
       },
     });
-    setFilter({ ...filter, city: warehouse.data.city });
+    setFilter({
+      ...filter,
+      city_id: warehouse?.data?.city_id || warehouse.data,
+    });
+  }
+  function parsingValue(reference) {
+    try {
+      const parsedValue = JSON.parse(reference);
+      if (
+        typeof parsedValue === "object" &&
+        parsedValue !== null &&
+        ("MUT" in parsedValue || "TRA" in parsedValue)
+      ) {
+        return `MUT/${parsedValue.MUT || parsedValue.TRA}`;
+      } else {
+        return reference;
+      }
+    } catch (error) {
+      return reference;
+    }
   }
   return (
     <>
@@ -91,6 +109,19 @@ export default function StockHistoryPage() {
         <Box mx={2} my={3}>
           <Flex justify={"space-between"} flexWrap={"wrap"}>
             <Box fontSize={"30px"}>Stock History</Box>
+            {/* <InputGroup size={"sm"} w={"500px"}>
+              <DatePicker
+                selected={moment().format("MM/yyyy")}
+                onChange={(e) => {
+                  setShown({ page: 1 });
+                  setFilter({ ...filter, time: e.target.value });
+                }}
+                dateFormat="MM/yyyy"
+                showMonthYearPicker
+                placeholderText="Month & Year..."
+                className="input-datepicker"
+              />
+            </InputGroup> */}
           </Flex>
 
           <Flex flexWrap={"wrap"} gap={2} my={2} justify={"space-between"}>
@@ -135,11 +166,11 @@ export default function StockHistoryPage() {
                     <Select
                       onChange={(e) => {
                         setShown({ page: 1 });
-                        setFilter({ ...filter, city: e.target.value });
+                        setFilter({ ...filter, city_id: e.target.value });
                       }}
                       id="city"
                       size={"sm"}
-                      value={filter.city}
+                      value={filter.city_id}
                     >
                       <option key={""} value={""}>
                         choose city..
@@ -148,9 +179,9 @@ export default function StockHistoryPage() {
                         cities.map((val, idx) => (
                           <option
                             key={val.city.city_name}
-                            value={val.city.city_name}
+                            value={val.city.city_id}
                           >
-                            {val.city.city_name}
+                            {`${val.city.type} ${val.city.city_name}`}
                           </option>
                         ))}
                     </Select>
@@ -209,18 +240,16 @@ export default function StockHistoryPage() {
                     gap={1}
                   >
                     <Box>#{idx + 1}</Box>
-                    <Box>Reference: {stockHistory?.reference}</Box>
+                    <Box>
+                      Reference:{parsingValue(stockHistory?.reference)}
+                      {}
+                    </Box>
                     <Divider />
                     <Box>Stock Before: {stockHistory?.stock_before}</Box>
                     <Divider />
                     <Box>Stock After: {stockHistory?.stock_after}</Box>
                     <Divider />
-                    <Box>
-                      Quantity:{" "}
-                      {`${stockHistory.status == "ADDED" ? "+ " : "- "}${
-                        stockHistory?.qty
-                      }`}
-                    </Box>
+                    <Box>Quantity: {`${stockHistory?.qty}`}</Box>
                     <Divider />
                     <Box>
                       Shoe:{" "}
@@ -233,6 +262,8 @@ export default function StockHistoryPage() {
                         "DD/MM/YYYY, HH:MM"
                       )}
                     </Box>
+                    <Divider />
+                    <Box>Warehouse: {stockHistory.stock.warehouse.name}</Box>
                     <Divider />
                   </Flex>
                 ))}
@@ -251,6 +282,7 @@ export default function StockHistoryPage() {
                   <Th textAlign={"center"}>Shoe</Th>
                   <Th textAlign={"center"}>Size</Th>
                   <Th textAlign={"center"}>Datetime</Th>
+                  <Th textAlign={"center"}>Warehouse</Th>
                 </Tr>
               </Thead>
               <Tbody>
@@ -260,12 +292,12 @@ export default function StockHistoryPage() {
                       <Td textAlign={"center"} w={"5%"}>
                         {idx + 1}
                       </Td>
-                      <Td textAlign={"center"}>{stockHistory?.reference}</Td>
+                      <Td textAlign={"center"}>
+                        {parsingValue(stockHistory?.reference)}
+                      </Td>
                       <Td textAlign={"center"}>{stockHistory?.stock_before}</Td>
                       <Td textAlign={"center"}>{stockHistory?.stock_after}</Td>
-                      <Td textAlign={"center"}>{`${
-                        stockHistory.status == "ADDED" ? "+ " : "- "
-                      }${stockHistory?.qty}`}</Td>
+                      <Td textAlign={"center"}>{`${stockHistory?.qty}`}</Td>
                       <Td
                         textAlign={"center"}
                       >{`${stockHistory?.stock?.Sho?.name} (${stockHistory?.stock?.Sho.brand?.name})`}</Td>
@@ -276,6 +308,9 @@ export default function StockHistoryPage() {
                         {moment(stockHistory?.createdAt).format(
                           "DD/MM/YYYY, HH:MM"
                         )}
+                      </Td>
+                      <Td textAlign={"center"}>
+                        {stockHistory.stock.warehouse.name}
                       </Td>
                     </Tr>
                   ))}

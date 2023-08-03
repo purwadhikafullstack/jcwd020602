@@ -49,40 +49,28 @@ export default function Login() {
     onSubmit: async () => {
       try {
         let token;
-        await api
-          .post("/auth/login", formik.values)
-          .then((res) => {
-            localStorage.setItem("user", JSON.stringify(res.data.token));
+        const res = await api.post("/auth/login", formik.values);
+        localStorage.setItem("user", JSON.stringify(res.data.token));
+        token = res.data.token;
 
-            token = res.data.token;
-          })
-          .catch((err) =>
-            toast({
-              title: err.response?.data,
-              status: "error",
-              position: "top",
-              duration: 1000,
-              isClosable: true,
-            })
-          );
-        console.log(token);
-        await api
-          .get("/auth/userbytoken", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            // params: {
-            //   token,
-            // },
-          })
-          .then((res) => {
-            dispatch({
-              type: "login",
-              payload: res.data,
-            });
-            nav("/");
-          });
+        const resGet = await api.get("/auth/userbytoken", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        dispatch({
+          type: "login",
+          payload: resGet.data,
+        });
+        nav("/");
       } catch (err) {
+        toast({
+          title: err.response?.data,
+          status: "error",
+          position: "top",
+          duration: 1000,
+          isClosable: true,
+        });
         console.log(err.message);
       }
     },

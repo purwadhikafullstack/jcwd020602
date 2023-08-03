@@ -1,16 +1,24 @@
 const db = require("../models");
 const { Op } = require("sequelize");
-
+const moment = require("moment");
 const stockHistoryController = {
   getStockHistory: async (req, res) => {
     try {
       const limit = 2;
       const page = req?.query?.page || 1;
-      let offset = (parseInt(page) - 1) * limit;
-      let sort = req?.query?.sort || "id";
-      const order = req?.query?.order || "ASC";
+      const offset = (parseInt(page) - 1) * limit;
+      let sort = req?.query?.sort || "createdAt";
+      const order = req?.query?.order || "DESC";
       const search = req?.query?.search || "";
-      const city = req?.query?.city || "";
+      let city_id = req?.query?.city_id || 153;
+      const time = req?.query?.time || moment().format();
+      const city = await db.User.findOne({
+        where: { ...req.user },
+        include: [{ model: db.Warehouse, attribute: ["city_id"] }],
+      });
+      if (city.warehouse_id != null) {
+        city_id = city?.dataValues?.warehouse?.city_id;
+      }
       switch (sort) {
         case "brand":
           sort = [
@@ -44,11 +52,26 @@ const stockHistoryController = {
       db.StockHistory.findAndCountAll({
         where: {
           [Op.and]: [
-            { "$stock.warehouse.city.city_name$": { [Op.like]: `%${city}%` } },
+            { "$stock.warehouse.city.city_id$": city_id },
             {
               [Op.or]: [
+                { reference: { [Op.like]: `%${search}%` } },
                 { "$stock.sho.name$": { [Op.like]: `%${search}%` } },
                 { "$stock.sho.brand.name$": { [Op.like]: `%${search}%` } },
+              ],
+            },
+            {
+              [Op.and]: [
+                {
+                  createdAt: {
+                    [Op.gte]: moment(time).startOf("month").format(),
+                  },
+                },
+                {
+                  createdAt: {
+                    [Op.lte]: moment(time).endOf("month").format(),
+                  },
+                },
               ],
             },
           ],
@@ -65,7 +88,10 @@ const stockHistoryController = {
               {
                 model: db.Warehouse,
                 include: [
-                  { model: db.City, attributes: ["city_id", "city_name"] },
+                  {
+                    model: db.City,
+                    attributes: ["city_id", "city_name", "type"],
+                  },
                 ],
               },
             ],

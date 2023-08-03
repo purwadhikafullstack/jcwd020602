@@ -16,11 +16,18 @@ const stockController = {
     try {
       const limit = 2;
       const page = req?.query?.page || 1;
-      let offset = (parseInt(page) - 1) * limit;
+      const offset = (parseInt(page) - 1) * limit;
       let sort = req?.query?.sort || "id";
       const order = req?.query?.order || "ASC";
       const search = req?.query?.search || "";
-      const city = req?.query?.city || "";
+      let city_id = req?.query?.city_id || 153;
+      const city = await db.User.findOne({
+        where: { ...req.user },
+        include: [{ model: db.Warehouse, attribute: ["city_id"] }],
+      });
+      if (city.warehouse_id != null) {
+        city_id = city?.dataValues?.warehouse?.city_id;
+      }
       switch (sort) {
         case "brand":
           sort = [
@@ -42,7 +49,7 @@ const stockController = {
       db.Stock.findAndCountAll({
         where: {
           [Op.and]: [
-            { "$warehouse.city.city_name$": { [Op.like]: `%${city}%` } },
+            { "$warehouse.city.city_id$": city_id },
             {
               [Op.or]: [
                 { "$sho.name$": { [Op.like]: `%${search}%` } },
@@ -79,12 +86,6 @@ const stockController = {
     const t = await db.sequelize.transaction();
     try {
       const { stock, shoe_id, shoe_size_id, warehouse_id } = req.body;
-      const stockChecker = await db.Stock.findOne({
-        where: { shoe_id, shoe_size_id, warehouse_id },
-      });
-      if (stockChecker) {
-        throw new ConflictError("stock already exist");
-      }
       const add = await db.Stock.create(
         {
           stock,
@@ -92,15 +93,19 @@ const stockController = {
           shoe_size_id,
           warehouse_id,
         },
-        { transaction: t }
+        {
+          transaction: t,
+        }
       );
-      const addHistory = await addStockHistory({
-        stock_before: 0,
-        stock_after: stock,
-        stock_id: add.dataValues.id,
-        reference: "manual",
-        t,
-      });
+      if (stock > 0) {
+        const addHistory = await addStockHistory({
+          stock_before: 0,
+          stock_after: stock,
+          stock_id: add?.dataValues?.id,
+          reference: "manual",
+          t,
+        });
+      }
       await t.commit();
       return res.status(200).send({ message: "stock added", add });
     } catch (err) {
@@ -108,7 +113,7 @@ const stockController = {
       if (err instanceof CustomError) {
         return res.status(err.statusCode).send({ message: err.message });
       } else {
-        return res.status(500).send({ message: "Internal Server Error" });
+        return res.status(500).send({ message: err.message });
       }
     }
   },
@@ -127,13 +132,15 @@ const stockController = {
           transaction: t,
         }
       );
-      const addHistory = await addStockHistory({
-        stock_before: req?.stock?.dataValues?.stock,
-        stock_after: stock,
-        stock_id: req?.params?.id,
-        reference: "manual",
-        t,
-      });
+      if (stock > 0) {
+        const addHistory = await addStockHistory({
+          stock_before: req?.stock?.dataValues?.stock,
+          stock_after: stock,
+          stock_id: req?.params?.id,
+          reference: "manual",
+          t,
+        });
+      }
       await t.commit();
       return res.status(200).send({ message: "Stock updated successfully" });
     } catch (err) {
@@ -186,6 +193,24 @@ const stockController = {
   getStockFromId: async (req, res) => {
     try {
       return res.status(200).send(req.stock);
+    } catch (err) {
+      return res.status(500).send({ message: err.message });
+    }
+  },
+  getStockByWarehouse: async (req, res, next) => {
+    try {
+      const stock = await db.Stock.findAll({
+        where: { warehouse_id: req.query.warehouse_id },
+        include: [
+          {
+            model: db.Shoe,
+            include: [{ model: db.Brand }],
+          },
+          { model: db.ShoeSize },
+          { model: db.Warehouse },
+        ],
+      });
+      return res.status(200).send(stock);
     } catch (err) {
       return res.status(500).send({ message: err.message });
     }
