@@ -19,6 +19,7 @@ import BrandPage from "../pages/brandPage";
 import ProfilePage from "../pages/profilePage";
 import ForgotPassword from "../components/auth/forgotPassword";
 import ChangePassword from "../components/auth/changePassword";
+import StockMutationPage from "../pages/stockMutationPage";
 
 const routes = [
   <Route
@@ -181,6 +182,16 @@ const routes = [
         <NavbarDashboard />
         <Sidebar />
         <StockHistoryPage />
+      </ProtectedPage>
+    }
+  />,
+  <Route
+    path="/stockMutation"
+    element={
+      <ProtectedPage needLogin={true} guestOnly={false}>
+        <NavbarDashboard />
+        <Sidebar />
+        <StockMutationPage />
       </ProtectedPage>
     }
   />,

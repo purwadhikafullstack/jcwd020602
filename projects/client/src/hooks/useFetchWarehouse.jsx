@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "../api/api";
+import { useSelector } from "react-redux";
 
 export const useFetchWarehouse = () => {
   const [warehouses, setWarehouses] = useState([]);

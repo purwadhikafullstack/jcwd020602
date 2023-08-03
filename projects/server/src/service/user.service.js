@@ -1,6 +1,7 @@
 const db = require("../models");
 const { nanoid } = require("nanoid");
-const { Op } = require("sequelize");
+const { Op, where } = require("sequelize");
+
 const bcrypt = require("bcrypt");
 const moment = require("moment");
 
@@ -25,17 +26,27 @@ module.exports = {
   },
   findToken: async (body) => {
     try {
-      console.log(body);
-      return await db.Token.findOne({
-        where: {
-          userId: { [Op.like]: `%${body?.id || ""}%` },
-          token: { [Op.like]: `%${body?.token || ""}%` },
-          expired: {
-            [db.Sequelize.Op.gte]: moment().format(),
-          },
-          valid: { [Op.like]: `%${body?.valid || 1}%` },
-          status: { [Op.like]: `%${body?.status || ""}%` },
+
+      const whereClause = {
+        expired: {
+          [db.Sequelize.Op.gte]: moment().format(),
         },
+      };
+      if (body.userId) {
+        whereClause.userId = body?.userId;
+      }
+      if (body.token) {
+        whereClause.token = body?.token;
+      }
+      if (body.valid) {
+        whereClause.valid = { [Op.like]: `%${body?.valid || 1}%` };
+      }
+      if (body.status) {
+        whereClause.status = { [Op.like]: `%${body?.status || ""}%` };
+      }
+      return await db.Token.findOne({
+        where: whereClause,
+
       });
     } catch (err) {
       return err;
