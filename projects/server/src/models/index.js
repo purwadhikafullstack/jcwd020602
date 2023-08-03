@@ -150,8 +150,13 @@ db.Warehouse.belongsTo(db.City, {
 });
 
 //db.Cart foreignKey
-db.Shoe.hasMany(db.Cart, { foreignKey: "shoe_id", targetKey: "id" });
-db.User.hasMany(db.Cart, { foreignKey: "user_id", targetKey: "id" });
+// db.Shoe.hasMany(db.Cart, { foreignKey: "shoe_id", targetKey: "id" });
+db.Cart.belongsTo(db.Shoe, {
+  foreignKey: "shoe_id",
+  targetKey: "id",
+  as: "Shoes",
+});
+db.Cart.belongsTo(db.User, { foreignKey: "user_id", targetKey: "id" });
 
 // db.User foreignKey
 db.Warehouse.hasMany(db.User, {

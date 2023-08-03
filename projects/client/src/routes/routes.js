@@ -19,6 +19,8 @@ import BrandPage from "../pages/brandPage";
 import ProfilePage from "../pages/profilePage";
 import ForgotPassword from "../components/auth/forgotPassword";
 import ChangePassword from "../components/auth/changePassword";
+import Cart from "../pages/cartPages";
+import Cartx from "../pages/cartPagesx";
 
 const routes = [
   <Route
@@ -100,6 +102,24 @@ const routes = [
         <Navbar />
         {/* product detail */}
       </ProtectedPage>
+    }
+  />,
+  <Route
+    path="/cart"
+    element={
+      <>
+        <Navbar />
+        <Cart />
+      </>
+    }
+  />,
+  <Route
+    path="/cartx"
+    element={
+      <>
+        <Navbar />
+        <Cartx />
+      </>
     }
   />,
   //------------------------------------- admin

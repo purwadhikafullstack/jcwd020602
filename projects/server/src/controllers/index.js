@@ -9,6 +9,7 @@ const stockController = require("./stock");
 const shoeSizeController = require("./shoeSize");
 const stockHistoryController = require("./stockHistory");
 const stockMutationController = require("./stockMutation");
+const cartController = require("./cartController");
 
 module.exports = {
   userController,
@@ -22,4 +23,5 @@ module.exports = {
   stockController,
   stockHistoryController,
   stockMutationController,
+  cartController,
 };
