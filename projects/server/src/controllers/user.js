@@ -210,7 +210,7 @@ const userController = {
           email,
           phone,
           password: hashPassword,
-          avatar_url: AVATAR_URL + filename,
+          avatar_url: "avatar/" + filename,
           role: "ADMIN",
           status: "verified",
         },
@@ -251,7 +251,7 @@ const userController = {
       if (check?.dataValues?.avatar_url) {
         fs.unlinkSync(
           `${__dirname}/../public/avatar/${
-            check.dataValues.avatar_url.split("/")[5]
+            check.dataValues.avatar_url.split("/")[1]
           }`
         );
       }
@@ -262,7 +262,7 @@ const userController = {
           email,
           phone,
           password: hashPassword,
-          avatar_url: !req?.file?.filename ? avatar : AVATAR_URL + filename,
+          avatar_url: !req?.file?.filename ? avatar : "avatar/" + filename,
         },
         { where: { id: req.params.id } },
         { transaction: t }
@@ -285,7 +285,7 @@ const userController = {
       if (check?.dataValues?.avatar_url) {
         fs.unlinkSync(
           `${__dirname}/../public/avatar/${
-            check.dataValues.avatar_url.split("/")[5]
+            check.dataValues.avatar_url.split("/")[1]
           }`
         );
       }

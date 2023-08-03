@@ -40,7 +40,7 @@ export function Recommend() {
                 <SwiperSlide className="recommend">
                   <Box border={"1px"} h={"100%"} cursor={"pointer"}>
                     <Image
-                      src={shoe.ShoeImages[0]?.shoe_img}
+                      src={`${process.env.REACT_APP_API_BASE_URL}/${shoe.ShoeImages[0]?.shoe_img}`}
                       h={"100%"}
                       objectFit={"cover"}
                     />

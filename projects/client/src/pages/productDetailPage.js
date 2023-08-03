@@ -15,7 +15,7 @@ export default function ProductDetailPage() {
   const [size, setSIze] = useState();
   const [stock, setStock] = useState();
   const [selectedImage, setSelectedImage] = useState(0);
-  // console.log(shoe);
+  console.log(shoe);
   // console.log(size);
 
   useEffect(() => {
@@ -47,7 +47,7 @@ export default function ProductDetailPage() {
           border={"2px"}
         >
           <Image
-            src={shoe?.ShoeImages[selectedImage]?.shoe_img}
+            src={`${process.env.REACT_APP_API_BASE_URL}/${shoe?.ShoeImages[selectedImage]?.shoe_img}`}
             objectFit={"cover"}
             w={"100%"}
           />
@@ -58,7 +58,11 @@ export default function ProductDetailPage() {
                 onClick={() => setSelectedImage(idx)}
                 _hover={{ transform: "scale(1.1,1.1)" }}
               >
-                <Image src={val.shoe_img} w={"4rem"} cursor={"pointer"} />
+                <Image
+                  src={`${process.env.REACT_APP_API_BASE_URL}/${val.shoe_img}`}
+                  w={"4rem"}
+                  cursor={"pointer"}
+                />
               </Box>
             ))}
           </Flex>

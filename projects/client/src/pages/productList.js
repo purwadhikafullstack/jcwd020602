@@ -141,7 +141,7 @@ export default function ProductList() {
                     }}
                   >
                     <Image
-                      src={shoe.ShoeImages[0]?.shoe_img}
+                      src={`${process.env.REACT_APP_API_BASE_URL}/${shoe.ShoeImages[0]?.shoe_img}`}
                       objectFit={"cover"}
                       maxH={"330px"}
                       w={"100%"}
@@ -149,7 +149,7 @@ export default function ProductList() {
                     <Image
                       maxH={"330px"}
                       w={"100%"}
-                      src={shoe.ShoeImages[1]?.shoe_img}
+                      src={`${process.env.REACT_APP_API_BASE_URL}/${shoe.ShoeImages[1]?.shoe_img}`}
                       objectFit={"cover"}
                       pos={"absolute"}
                       top={0}

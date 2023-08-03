@@ -47,7 +47,7 @@ const shoeController = {
       const imageArr = [];
       for (const file of req.files) {
         const { filename } = file;
-        const imageUrl = SHOE_URL + filename;
+        const imageUrl = "shoe/" + filename;
         imageArr.push({ shoe_id: shoe.id, shoe_img: imageUrl });
       }
 
@@ -151,7 +151,7 @@ const shoeController = {
         const images = check.map((image) => image.shoe_img);
         for (img of images) {
           try {
-            fs.unlinkSync(`${__dirname}/../public/shoe/${img.split("/")[5]}`);
+            fs.unlinkSync(`${__dirname}/../public/shoe/${img.split("/")[1]}`);
             console.log(`berhasil delete sepatu ${img}`);
           } catch (err) {
             console.log(err.message);
@@ -201,7 +201,7 @@ const shoeController = {
         const imageArr = [];
         for (const file of req.files) {
           const filename = file.filename;
-          const imageUrl = SHOE_URL + filename;
+          const imageUrl = "shoe/" + filename;
           imageArr.push({ shoe_id: req.params.id, shoe_img: imageUrl });
         }
 
@@ -212,7 +212,7 @@ const shoeController = {
           const images = check.map((image) => image.shoe_img);
           for (img of images) {
             try {
-              fs.unlinkSync(`${__dirname}/../public/shoe/${img.split("/")[5]}`);
+              fs.unlinkSync(`${__dirname}/../public/shoe/${img.split("/")[1]}`);
               console.log(`berhasil delete sepatu ${img}`);
             } catch (err) {
               console.log(err.message);
