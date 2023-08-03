@@ -1,20 +1,7 @@
-import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  Button,
-  Input,
-  Textarea,
-  Select,
-  Box,
-  useToast,
-  Image,
-  Flex,
-} from "@chakra-ui/react";
+import { ModalHeader, ModalFooter, ModalBody } from "@chakra-ui/react";
+import { Modal, ModalOverlay, ModalContent } from "@chakra-ui/react";
+import { ModalCloseButton, Button, Flex, Image } from "@chakra-ui/react";
+import { Input, Textarea, Select, Box, useToast } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { api } from "../../api/api";
 import { useFetchBrand } from "../../hooks/useFetchBrand";
@@ -22,6 +9,7 @@ import {
   useFetchCategory,
   useFetchSubcategory,
 } from "../../hooks/useFetchCategory";
+
 export default function EditProduct(props) {
   const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
@@ -32,7 +20,6 @@ export default function EditProduct(props) {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [sub, setSub] = useState();
   const [shoe, setShoe] = useState({});
-  console.log(shoe);
 
   useEffect(() => {
     if (props.id) {
@@ -55,7 +42,7 @@ export default function EditProduct(props) {
     setShoe(temp);
   }
 
-  const editShoe = () => {
+  const editShoe = async () => {
     const formData = new FormData();
     formData.append("name", shoe.name);
     formData.append("description", shoe.description);
@@ -69,19 +56,19 @@ export default function EditProduct(props) {
         formData.append("shoe", files);
       }
     }
-    api
-      .patch("/shoes/" + props.id, formData)
-      .then((res) => {
-        toast({
-          title: res.data.message,
-          status: "success",
-          position: "top",
-        });
-        props.fetch();
-        clearS();
-        props.onClose();
-      })
-      .catch((err) => console.log(err));
+    try {
+      const res = await api.patch("/shoes/" + props.id, formData);
+      toast({
+        title: res.data.message,
+        status: "success",
+        position: "top",
+      });
+      props.fetch();
+      clearS();
+      props.onClose();
+    } catch (err) {
+      console.log(err.response.data);
+    }
   };
 
   const handleImageChange = (e) => {

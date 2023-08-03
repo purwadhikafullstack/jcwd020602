@@ -6,15 +6,8 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
-  Button,
-  Box,
-  useToast,
-  Flex,
-  Input,
-  Center,
-  Avatar,
 } from "@chakra-ui/react";
-import { useFetchWarehouse } from "../../hooks/useFetchWarehouse";
+import { Button, Box, useToast, Input, Center, Avatar } from "@chakra-ui/react";
 import { useRef, useState } from "react";
 import { api } from "../../api/api";
 
@@ -46,14 +39,18 @@ export default function AddAdmin(props) {
     formData.append("password", admin.password);
     formData.append("avatar", selectedFile);
 
-    const response = await api.post("/auth/admin", formData);
-    toast({
-      title: response.data.message,
-      status: "success",
-      position: "top",
-    });
-    props.fetch();
-    props.onClose();
+    try {
+      const response = await api.post("/auth/admin", formData);
+      toast({
+        title: response.data.message,
+        status: "success",
+        position: "top",
+      });
+      props.fetch();
+      props.onClose();
+    } catch (err) {
+      console.log(err.response.data);
+    }
   };
 
   const handleFile = (event) => {

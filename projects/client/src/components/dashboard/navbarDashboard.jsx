@@ -1,17 +1,9 @@
-import {
-  Avatar,
-  Box,
-  Center,
-  Flex,
-  Icon,
-  Image,
-  Switch,
-  Text,
-  useDisclosure,
-} from "@chakra-ui/react";
+import { Avatar, Box, Flex, Image, Text } from "@chakra-ui/react";
+import { useDisclosure } from "@chakra-ui/react";
 import { BiMenuAltLeft } from "react-icons/bi";
 import { useSelector } from "react-redux";
 import Sidebar from "./sidebar";
+
 export default function NavbarDashboard() {
   const userSelector = useSelector((state) => state.auth);
   const { isOpen, onClose, onOpen } = useDisclosure();

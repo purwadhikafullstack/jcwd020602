@@ -1,18 +1,7 @@
-import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  Button,
-  Input,
-  Textarea,
-  Select,
-  Box,
-  useToast,
-} from "@chakra-ui/react";
+import { Modal, ModalOverlay, ModalContent } from "@chakra-ui/react";
+import { ModalHeader, ModalFooter } from "@chakra-ui/react";
+import { ModalBody, ModalCloseButton, useToast } from "@chakra-ui/react";
+import { Button, Input, Textarea, Select, Box } from "@chakra-ui/react";
 import { useState } from "react";
 import { api } from "../../api/api";
 import { useFetchCity, useFetchProv } from "../../hooks/useFetchProvCity";
@@ -37,19 +26,19 @@ export default function AddWarehouse(props) {
     setWarehouse(temp);
   }
 
-  const uploadWarehouse = () => {
-    api
-      .post("/warehouses", warehouse)
-      .then((res) => {
-        toast({
-          title: res.data.message,
-          status: "success",
-          position: "top",
-        });
-        props.fetch();
-        props.onClose();
-      })
-      .catch((err) => console.log(err));
+  const uploadWarehouse = async () => {
+    try {
+      const res = await api.post("/warehouses", warehouse);
+      toast({
+        title: res.data.message,
+        status: "success",
+        position: "top",
+      });
+      props.fetch();
+      props.onClose();
+    } catch (err) {
+      console.log(err.response.data);
+    }
   };
   return (
     <>

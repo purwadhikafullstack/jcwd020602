@@ -17,19 +17,19 @@ export default function DeleteWarehouse(props) {
   const cancelRef = React.useRef();
   const toast = useToast();
 
-  const deleteWarehouse = () => {
-    api
-      .delete("/warehouses/" + props.id)
-      .then((res) => {
-        toast({
-          title: res.data.message,
-          status: "success",
-          position: "top",
-        });
-        props.fetch();
-        props.onClose();
-      })
-      .catch((err) => console.log(err));
+  const deleteWarehouse = async () => {
+    try {
+      const res = await api.delete("/warehouses/" + props.id);
+      toast({
+        title: res.data.message,
+        status: "success",
+        position: "top",
+      });
+      props.fetch();
+      props.onClose();
+    } catch (err) {
+      console.log(err.response.message);
+    }
   };
 
   return (

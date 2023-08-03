@@ -1,33 +1,13 @@
 import {
-  Box,
-  Button,
-  Flex,
   FormControl,
   FormErrorMessage,
-  FormLabel,
-  Heading,
-  Icon,
-  Input,
-  InputGroup,
   InputLeftElement,
-  VStack,
-  Text,
-  useToast,
-  Center,
   InputRightElement,
 } from "@chakra-ui/react";
-import {
-  FaUser,
-  FaLock,
-  FaEnvelope,
-  FaFacebookF,
-  FaTwitter,
-  FaGoogle,
-  FaLinkedinIn,
-} from "react-icons/fa";
+import { Heading, Icon, Input, InputGroup, Button } from "@chakra-ui/react";
+import { VStack, Text, useToast, Center, Box } from "@chakra-ui/react";
+import { FaUser, FaLock } from "react-icons/fa";
 import { AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai";
-import axios from "axios";
-import { useState } from "react";
 import * as Yup from "yup";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
@@ -43,63 +23,51 @@ export default function Verify() {
   const handleClick = () => setShow(!show);
   const [show1, setShow1] = React.useState(false);
   const handleClick1 = () => setShow1(!show1);
-
-  const validationSchema = Yup.object().shape({
-    name: Yup.string()
-      .min(6, "Full name min 6 character")
-      .required("Email is required"),
-    password: Yup.string()
-      .matches(/^(?=.*[A-Z])/, "Must contain at least one uppercase")
-      .matches(/^(?=.*[a-z])/, "Must contain at least one lowercase")
-      .matches(/^(?=.*[0-9])/, "Must contain at least one number")
-      .matches(
-        /^(?=.*[!@#$%^&*])/,
-        "Must contain at least one special character"
-      )
-      .min(8, "Password minimum 8 character")
-      .required("Password is required!"),
-    confirmPassword: Yup.string().oneOf(
-      [Yup.ref("password"), null],
-      "Passwords must match"
-    ),
-  });
-
   const formik = useFormik({
     initialValues: {
       name: "",
       password: "",
       confirmPassword: "",
     },
-    validationSchema: validationSchema,
-    onSubmit: (values) => {
-      verif(values);
+    validationSchema: Yup.object().shape({
+      name: Yup.string()
+        .min(6, "Full name min 6 character")
+        .required("Email is required"),
+      password: Yup.string()
+        .matches(/^(?=.*[A-Z])/, "Must contain at least one uppercase")
+        .matches(/^(?=.*[a-z])/, "Must contain at least one lowercase")
+        .matches(/^(?=.*[0-9])/, "Must contain at least one number")
+        .matches(
+          /^(?=.*[!@#$%^&*])/,
+          "Must contain at least one special character"
+        )
+        .min(8, "Password minimum 8 character")
+        .required("Password is required!"),
+      confirmPassword: Yup.string().oneOf(
+        [Yup.ref("password"), null],
+        "Passwords must match"
+      ),
+    }),
+    onSubmit: async () => {
+      try {
+        const res = await api.patch("/auth/verify", formik.values);
+        toast({
+          title: res.data.message,
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+        nav("/auth");
+      } catch (err) {
+        toast({
+          title: err.response?.data,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
     },
   });
-
-  async function verif(values) {
-    const { password, name } = values;
-    try {
-      await api.patch("/auth/verify", {
-        email,
-        password,
-        name,
-      });
-      toast({
-        title: "Verification Succes, now you can log in",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
-      nav("/auth");
-    } catch (err) {
-      toast({
-        title: err.response?.data,
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    }
-  }
 
   return (
     <Box

@@ -1,17 +1,6 @@
-import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  Button,
-  Select,
-  Box,
-  useToast,
-  Flex,
-} from "@chakra-ui/react";
+import { ModalOverlay, ModalContent, ModalHeader } from "@chakra-ui/react";
+import { ModalFooter, ModalBody, ModalCloseButton } from "@chakra-ui/react";
+import { Button, Select, Box, useToast, Flex, Modal } from "@chakra-ui/react";
 import { useFetchWarehouse } from "../../hooks/useFetchWarehouse";
 import { useState } from "react";
 import { api } from "../../api/api";
@@ -23,21 +12,23 @@ export default function AssignAdmin(props) {
   const [warehouse_id, setWarehouse_id] = useState(0);
   const user_id = props.id;
 
-  const assignAdmin = () => {
-    api
-      .post("/warehouses/admin/" + user_id, { warehouse_id: warehouse_id })
-      .then((res) => {
-        toast({
-          title: res.data.message,
-          status: "success",
-          position: "top",
-        });
-        props.fetch();
-        fetch();
-        props.onClose();
-        setWarehouse_id(0);
-      })
-      .catch((err) => console.log(err.data.message));
+  const assignAdmin = async () => {
+    try {
+      const res = await api.post("/warehouses/admin/" + user_id, {
+        warehouse_id,
+      });
+      toast({
+        title: res.data.message,
+        status: "success",
+        position: "top",
+      });
+      props.fetch();
+      fetch();
+      props.onClose();
+      setWarehouse_id(0);
+    } catch (err) {
+      console.log(err.response.data);
+    }
   };
 
   return (
@@ -92,38 +83,40 @@ export function ReassignAdmin(props) {
   const [warehouse_id, setWarehouse_id] = useState(0);
   const user_id = props.id;
 
-  const reassignAdmin = () => {
-    api
-      .patch("/warehouses/admin/" + user_id, { warehouse_id: warehouse_id })
-      .then((res) => {
-        toast({
-          title: res.data.message,
-          status: "success",
-          position: "top",
-        });
-        props.fetch();
-        fetch();
-        props.onClose();
-        setWarehouse_id(0);
-      })
-      .catch((err) => console.log(err));
+  const reassignAdmin = async () => {
+    try {
+      const res = await api.patch("/warehouses/admin/" + user_id, {
+        warehouse_id,
+      });
+      toast({
+        title: res.data.message,
+        status: "success",
+        position: "top",
+      });
+      props.fetch();
+      fetch();
+      props.onClose();
+      setWarehouse_id(0);
+    } catch (err) {
+      console.log(err.response.data);
+    }
   };
 
-  const unassignAdmin = () => {
-    api
-      .delete("/warehouses/admin/" + user_id)
-      .then((res) => {
-        toast({
-          title: res.data.message,
-          status: "success",
-          position: "top",
-        });
-        props.fetch();
-        fetch();
-        props.onClose();
-        setWarehouse_id(0);
-      })
-      .catch((err) => console.log(err));
+  const unassignAdmin = async () => {
+    try {
+      const res = await api.delete("/warehouses/admin/" + user_id);
+      toast({
+        title: res.data.message,
+        status: "success",
+        position: "top",
+      });
+      props.fetch();
+      fetch();
+      props.onClose();
+      setWarehouse_id(0);
+    } catch (err) {
+      console.log(err.response.data);
+    }
   };
 
   return (

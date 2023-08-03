@@ -6,22 +6,22 @@ export const useFetchStock = (filter) => {
   const [stocks, setStocks] = useState({ rows: [] });
   const fetch = async () => {
     try {
-      const resGetStock = await api.get(`/stocks`, {
-        params: {
-          ...filter,
-        },
+      const res = await api.get(`/stocks`, {
+        params: { ...filter },
       });
-      setStocks(resGetStock.data);
+      setStocks(res.data);
+
     } catch (err) {
-      console.log(err);
-      return err;
+      console.log(err.response.data);
     }
   };
+
   useEffect(() => {
     if (filter.city_id != "") {
       fetch();
     }
   }, [filter]);
+
   return { stocks, fetch };
 };
 export const useFetchFromStock = (from_warehouse_id) => {

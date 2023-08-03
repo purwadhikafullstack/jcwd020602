@@ -2,7 +2,7 @@ import { Box, Center, Image, Text } from "@chakra-ui/react";
 import adidas from "../assets/adidas2.png";
 import converse from "../assets/convers low.png";
 import logo from "../assets/newlogo.png";
-import BestSeller from "../components/website/bestSeller";
+import { Recommend } from "../components/website/carousel";
 import AllBrand from "../components/website/allBrand";
 import Category from "../components/website/category";
 import LogoCarousel from "../components/website/logoCarousel";
@@ -24,8 +24,6 @@ export default function LandingPage() {
           justifyContent={"center"}
           zIndex={1}
           overflow={"hidden"}
-          // bg={"white"}
-          // color={"black"}
         >
           <Image
             src={adidas}
@@ -64,7 +62,7 @@ export default function LandingPage() {
         {/* category */}
         <Category />
         {/* best seller */}
-        <BestSeller />
+        <Recommend />
         {/* brands */}
         <AllBrand />
         {/* foot */}

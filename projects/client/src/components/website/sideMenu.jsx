@@ -39,70 +39,50 @@ export default function SideMenu(props) {
           <DrawerBody p={0}>
             <Accordion allowToggle className="Accordion">
               {userSelector.name ? (
-                <AccordionItem>
-                  <AccordionButton _expanded={{ bg: "black", color: "white" }}>
-                    <Flex
-                      as="span"
-                      flex="1"
-                      fontWeight={"bold"}
-                      alignItems={"center"}
-                      gap={2}
-                    >
-                      <Avatar size={"sm"} />
-                      <Box>Hi, {userSelector.name}</Box>
-                    </Flex>
-                    <AccordionIcon />
-                  </AccordionButton>
-                  <AccordionPanel
-                    pb={4}
-                    display={"flex"}
-                    flexDir={"column"}
-                    gap={2}
+                <Link to={"/profile"}>
+                  <AccordionItem
+                    className="accordion-item"
+                    onClick={props.onClose}
                   >
-                    <Link to="/profile">
-                      <text>Profile</text>
-                    </Link>
-                    <text>Orders</text>
-                    <text>Favorites</text>
-                    <text>Account Settings</text>
-                    <text
-                      onClick={() => {
-                        localStorage.removeItem("user");
-                        dispatch({
-                          type: "logout",
-                        });
-                      }}
-                    >
-                      Log Out
-                    </text>
-                  </AccordionPanel>
-                </AccordionItem>
+                    <AccordionButton>
+                      <Flex fontWeight={"bold"} alignItems={"center"} gap={2}>
+                        <Avatar size={"sm"} />
+                        <Box>Hi, {userSelector.name}</Box>
+                      </Flex>
+                    </AccordionButton>
+                  </AccordionItem>
+                </Link>
               ) : (
-                <AccordionItem>
-                  <AccordionButton fontWeight={"bold"}>
-                    <a href="/auth"> Login/Signup</a>
-                  </AccordionButton>
-                </AccordionItem>
+                <Link to={"/auth"}>
+                  <AccordionItem className="accordion-item">
+                    <AccordionButton fontWeight={"bold"}>
+                      <Box> Login/Signup</Box>
+                    </AccordionButton>
+                  </AccordionItem>
+                </Link>
               )}
-              <AccordionItem>
+
+              <AccordionItem className="accordion-item">
                 <AccordionButton _expanded={{ bg: "black", color: "white" }}>
                   <Box as="span" flex="1" textAlign="left" fontWeight={"bold"}>
                     BRANDS
                   </Box>
                   <AccordionIcon />
                 </AccordionButton>
-                <AccordionPanel pb={4}>
+                <AccordionPanel display={"flex"} flexDir={"column"} p={0}>
                   {brands?.map((val, idx) => (
-                    <Box id="option" mb={1} key={idx}>
-                      {val.name}
-                    </Box>
+                    <Link to={`/b/${val.name}`}>
+                      <Box id="asyu" onClick={props.onClose}>
+                        {val.name}
+                      </Box>
+                    </Link>
                   ))}
                 </AccordionPanel>
               </AccordionItem>
 
               {categories &&
                 categories?.map((category, idx) => (
-                  <AccordionItem key={idx}>
+                  <AccordionItem className="accordion-item">
                     <AccordionButton
                       _expanded={{ bg: "black", color: "white" }}
                     >
@@ -116,15 +96,32 @@ export default function SideMenu(props) {
                       </Box>
                       <AccordionIcon />
                     </AccordionButton>
-                    <AccordionPanel pb={4}>
+                    <AccordionPanel p={0}>
                       {category?.subcategories.map((sub, idx) => (
-                        <Box id="option" key={idx} mb={1}>
-                          {sub.name}
-                        </Box>
+                        <Link to={`/c/${category.name}/${sub.name}`}>
+                          <Box id="asyu" onClick={props.onClose}>
+                            {sub.name}
+                          </Box>
+                        </Link>
                       ))}
                     </AccordionPanel>
                   </AccordionItem>
                 ))}
+
+              <AccordionItem
+                className="accordion-item"
+                onClick={() => {
+                  localStorage.removeItem("user");
+                  dispatch({
+                    type: "logout",
+                  });
+                  props.onClose();
+                }}
+              >
+                <AccordionButton fontWeight={"bold"}>
+                  <Box> Logout</Box>
+                </AccordionButton>
+              </AccordionItem>
             </Accordion>
           </DrawerBody>
         </DrawerContent>

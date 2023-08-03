@@ -39,16 +39,10 @@ export default function Navbar() {
     navbar.classList.toggle("sticky", window.scrollY > 550);
   });
   const handleCategoryMouseEnter = (categoryId) => {
-    setSubCategory((prevState) => ({
-      ...prevState,
-      [categoryId]: true,
-    }));
+    setSubCategory({ [categoryId]: true });
   };
   const handleCategoryMouseLeave = (categoryId) => {
-    setSubCategory((prevState) => ({
-      ...prevState,
-      [categoryId]: false,
-    }));
+    setSubCategory({ [categoryId]: false });
   };
 
   return (
@@ -61,8 +55,7 @@ export default function Navbar() {
         top={-1}
         zIndex={9}
         className="navbar"
-        transition={"1s"}
-        color={"black"}
+        borderBottom={"2px"}
       >
         <Box w={"100vw"} maxW={"1550px"} m={3}>
           {/* atas */}
@@ -74,17 +67,17 @@ export default function Navbar() {
             fontSize={"10px"}
           >
             <text>Help</text>
-            <Link to="/profile">
-              <Box>
-                {userSelector?.role ? (
+            <Box>
+              {userSelector?.role ? (
+                <Link to="/profile">
                   <text>Hi, {userSelector?.name}</text>
-                ) : (
-                  <Link to={"/auth"}>
-                    <text>Login/Signup</text>
-                  </Link>
-                )}
-              </Box>
-            </Link>
+                </Link>
+              ) : (
+                <Link to={"/auth"}>
+                  <text>Login/Signup</text>
+                </Link>
+              )}
+            </Box>
           </Box>
           <Divider className="navbar-atas" mb={1} />
           {/* bawah */}
@@ -93,7 +86,9 @@ export default function Navbar() {
               <Image as={BiMenuAltLeft} h={"auto"} w={"30px"} />
             </Box>
             <SideMenu isOpen={isOpen} onClose={onClose} />
-            <Image src={logo} w={"115px"} />
+            <Link to={"/"}>
+              <Image src={logo} w={"115px"} />
+            </Link>
             <Box h={"30px"} className="menu" transform={"translateY(7px)"}>
               {/* brands */}
               <Flex flexDir={"column"} pos={"relative"}>
@@ -105,7 +100,7 @@ export default function Navbar() {
                   color={brand ? "white" : ""}
                   bg={brand ? "black" : ""}
                 >
-                  BRANDS
+                  brands
                 </Box>
                 <Box
                   className="categorymenu"
@@ -119,15 +114,18 @@ export default function Navbar() {
                   <Box align={"center"}>
                     {brands &&
                       brands?.map((val) => (
-                        <Box
-                          px={2}
-                          whiteSpace={"nowrap"}
-                          w={"100%"}
-                          key={val?.id}
-                          _hover={{ bg: "black", color: "white" }}
-                        >
-                          {val?.name}
-                        </Box>
+                        <Link to={`/b/${val.name}`}>
+                          <Box
+                            p={2}
+                            whiteSpace={"nowrap"}
+                            w={"100%"}
+                            key={val.id}
+                            _hover={{ bg: "black", color: "white" }}
+                          >
+                            {val.name}
+                          </Box>
+                        </Link>
+
                       ))}
                   </Box>
                 </Box>
@@ -157,19 +155,26 @@ export default function Navbar() {
                     >
                       <Box align={"center"}>
                         {category?.subcategories?.map((sub, idx) => (
-                          <Box
-                            key={sub.id}
-                            px={2}
-                            whiteSpace={"nowrap"}
-                            _hover={{ bg: "black", color: "white" }}
-                          >
-                            {sub.name}
-                          </Box>
+                          <Link to={`/c/${category.name}/${sub.name}`}>
+                            <Box
+                              key={sub.id}
+                              p={2}
+                              whiteSpace={"nowrap"}
+                              _hover={{ bg: "black", color: "white" }}
+                            >
+                              {sub.name}
+                            </Box>
+                          </Link>
                         ))}
                       </Box>
                     </Box>
                   </Flex>
                 ))}
+              <Link to={"/shoes"}>
+                <Box px={1} _hover={{ bg: "black", color: "white" }}>
+                  All Shoes
+                </Box>
+              </Link>
             </Box>
             <Flex gap={2} align={"center"}>
               <Box

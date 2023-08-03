@@ -3,6 +3,10 @@ const router = require("express").Router();
 const { fileUploader } = require("../middlewares/shoemulter");
 const roleDecoder = require("../middlewares/roleDecoder");
 
+router.get("/", shoeController.getAllShoe);
+
+router.get("/:name", shoeController.getShoeByName);
+
 router.post(
   "/",
   roleDecoder.checkSuper,
@@ -12,20 +16,18 @@ router.post(
   }).array("shoe", 4),
   shoeController.addShoe
 );
-router.get("/", shoeController.getAll);
-router.get("/:id", shoeController.getById);
 
-// router.patch(
-//   "/:id",
-//   roleDecoder.checkSuper,
-//   fileUploader({
-//     destinationFolder: "shoe",
-//     fileType: "image",
-//   }).array("shoe", 4),
-//   shoeController.editShoe
-// );
+router.patch(
+  "/:id",
+  roleDecoder.checkSuper,
+  fileUploader({
+    destinationFolder: "shoe",
+    fileType: "image",
+  }).array("shoe", 4),
+  shoeController.editShoe
+);
 
-// router.delete("/:id", roleDecoder.checkSuper, shoeController.deleteShoe);
+router.delete("/:id", roleDecoder.checkSuper, shoeController.deleteShoe);
 
 
 module.exports = router;

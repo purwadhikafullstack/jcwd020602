@@ -19,6 +19,8 @@ import BrandPage from "../pages/brandPage";
 import ProfilePage from "../pages/profilePage";
 import ForgotPassword from "../components/auth/forgotPassword";
 import ChangePassword from "../components/auth/changePassword";
+import ProductList from "../pages/productList";
+import ProductDetailPage from "../pages/productDetailPage";
 
 import Cart from "../pages/cartPages";
 import Cartx from "../pages/cartPagesx";
@@ -82,29 +84,47 @@ const routes = [
     }
   />,
   <Route
-    path="/:category"
+    path="/c/:category"
     element={
       <ProtectedPage guestOnly={true}>
         <Navbar />
-        {/* product list */}
+        <ProductList />
       </ProtectedPage>
     }
   />,
   <Route
-    path="/:category/:sub"
+    path="/b/:brand"
     element={
       <ProtectedPage guestOnly={true}>
         <Navbar />
-        {/* product list */}
+        <ProductList />
       </ProtectedPage>
     }
   />,
   <Route
-    path="/:category/:sub/:product_name"
+    path="/c/:category/:sub"
     element={
       <ProtectedPage guestOnly={true}>
         <Navbar />
-        {/* product detail */}
+        <ProductList />
+      </ProtectedPage>
+    }
+  />,
+  <Route
+    path="/shoes"
+    element={
+      <ProtectedPage guestOnly={true}>
+        <Navbar />
+        <ProductList />
+      </ProtectedPage>
+    }
+  />,
+  <Route
+    path="/:product_name"
+    element={
+      <ProtectedPage guestOnly={true}>
+        <Navbar />
+        <ProductDetailPage />
       </ProtectedPage>
     }
   />,

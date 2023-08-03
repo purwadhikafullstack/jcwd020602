@@ -20,7 +20,8 @@ export default function Banner() {
   ];
   return (
     <>
-      <Box zIndex={1} bg={"white"} w={"100%"} maxW={"1531px"} p={"0rem  1rem"}>
+      <Box zIndex={1} bg={"white"} w={"100%"} maxW={"1531px"} p={"1rem  1rem"}>
+        {/* <Box p={"1rem"} border={"2px"} gap={2}> */}
         <Swiper
           autoplay={{ delay: 3000, disableOnInteraction: false }}
           loop
@@ -29,7 +30,7 @@ export default function Banner() {
         >
           {img.map((val, idx) => (
             <SwiperSlide className="banner" key={idx}>
-              <Image src={val.img} />
+              <Image src={val.img} h={"auto"} />
             </SwiperSlide>
           ))}
           <Box className="slider-controler">
@@ -37,6 +38,7 @@ export default function Banner() {
           </Box>
         </Swiper>
       </Box>
+      {/* </Box> */}
     </>
   );
 }

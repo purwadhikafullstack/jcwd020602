@@ -1,22 +1,7 @@
-import {
-  Box,
-  Button,
-  Center,
-  Flex,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  Heading,
-  Icon,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  InputRightElement,
-  Stack,
-  Text,
-  useToast,
-} from "@chakra-ui/react";
-
+import { Box, Button, Center, Flex } from "@chakra-ui/react";
+import { FormControl, FormErrorMessage, FormLabel } from "@chakra-ui/react";
+import { Heading, Icon, Input, InputGroup } from "@chakra-ui/react";
+import { InputRightElement, Stack, Text, useToast } from "@chakra-ui/react";
 import { TbAlertCircleFilled } from "react-icons/tb";
 import { ViewOffIcon, ViewIcon, EmailIcon } from "@chakra-ui/icons";
 import { Link, useNavigate } from "react-router-dom";
@@ -47,22 +32,28 @@ export default function Login() {
         .required("Required"),
     }),
     onSubmit: async () => {
+      let token;
       try {
-        let token;
         const res = await api.post("/auth/login", formik.values);
         localStorage.setItem("user", JSON.stringify(res.data.token));
         token = res.data.token;
-
-        const resGet = await api.get("/auth/userbytoken", {
+        const restoken = await api.get("/auth/userbytoken", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
         dispatch({
           type: "login",
-          payload: resGet.data,
+          payload: restoken.data,
         });
-        nav("/");
+        toast({
+          title: res.data.message,
+          status: "success",
+          position: "top",
+          duration: 1000,
+        });
+        return nav("/");
+
       } catch (err) {
         toast({
           title: err.response?.data,
@@ -71,7 +62,6 @@ export default function Login() {
           duration: 1000,
           isClosable: true,
         });
-        console.log(err.message);
       }
     },
   });

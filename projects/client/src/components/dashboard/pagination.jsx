@@ -1,4 +1,4 @@
-import { Flex, Icon } from "@chakra-ui/react";
+import { Box, Flex, Icon } from "@chakra-ui/react";
 import {
   MdOutlineArrowBackIos,
   MdOutlineArrowForwardIos,
@@ -6,20 +6,25 @@ import {
 export default function Pagination({ shown, setShown, datas, pages }) {
   const PageCard = ({ val }) => {
     return (
-      <Flex
-        cursor={"pointer"}
+      <Box
+        p={2}
         bgColor={Math.ceil(shown.page) == val ? "black" : "white"}
         color={Math.ceil(shown.page) == val ? "white" : "black"}
-        borderRadius={"3px"}
-        w={"16px"}
-        h={"16px"}
-        justifyContent={"center"}
-        alignItems={"center"}
-        onClick={() => setShown({ ...shown, page: val })}
-        key={val}
+        borderRadius={5}
+        mx={2}
       >
-        {val}
-      </Flex>
+        <Flex
+          cursor={"pointer"}
+          w={"16px"}
+          h={"16px"}
+          justifyContent={"center"}
+          alignItems={"center"}
+          onClick={() => setShown({ ...shown, page: val })}
+          key={val}
+        >
+          {val}
+        </Flex>
+      </Box>
     );
   };
   return (
@@ -36,33 +41,29 @@ export default function Pagination({ shown, setShown, datas, pages }) {
       >
         <Icon as={MdOutlineArrowBackIos} />
       </Flex>
-      <Flex flexDir={"row"} gap={"8px"}>
-        {pages.length <= 4 ? (
+      <Flex>
+        {pages.length <= 3 ? (
           pages.map((val) => <PageCard val={val} />)
         ) : (
           <>
             {shown.page < Math.ceil(pages.length / 3) && (
               <>
-                {pages.slice(0, 4).map((val) => (
+                {pages.slice(0, 3).map((val) => (
                   <PageCard val={val} />
                 ))}
-                <Flex>...</Flex>
               </>
             )}
             {shown.page >= Math.ceil(pages.length / 3) &&
-              shown.page < Math.ceil((pages.length / 3) * 2) && (
+              shown.page <= pages.length - 2 && (
                 <>
-                  <Flex>...</Flex>
-                  {pages.slice(shown.page - 1, shown.page + 2).map((val) => (
+                  {pages.slice(shown.page - 2, shown.page + 1).map((val) => (
                     <PageCard val={val} />
                   ))}
-                  <Flex>...</Flex>
                 </>
               )}
-            {shown.page >= Math.ceil((pages.length / 3) * 2) && (
+            {shown.page > pages.length - 2 && (
               <>
-                <Flex>...</Flex>
-                {pages.slice(-4).map((val) => (
+                {pages.slice(-3).map((val) => (
                   <PageCard val={val} />
                 ))}
               </>

@@ -1,36 +1,15 @@
-import {
-  Box,
-  Button,
-  ButtonGroup,
-  Divider,
-  Flex,
-  Icon,
-  IconButton,
-  Input,
-  InputGroup,
-  InputRightAddon,
-  Tag,
-  useDisclosure,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableContainer,
-  Select,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-} from "@chakra-ui/react";
+import { Box, Button, ButtonGroup, IconButton, Tag } from "@chakra-ui/react";
+import { Input, InputGroup, InputRightAddon, Icon } from "@chakra-ui/react";
+import { Divider, useDisclosure, TableContainer, Flex } from "@chakra-ui/react";
+import { Table, Thead, Tbody, Tr, Th, Td, Select } from "@chakra-ui/react";
+import { Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
 import { AiOutlinePlus } from "react-icons/ai";
 import { GrClose, GrMenu } from "react-icons/gr";
 import { FaSearch } from "react-icons/fa";
-import AddWarehouse from "../components/dashboard/addWarehouse";
 import { useSelector } from "react-redux";
 import { useEffect, useRef, useState } from "react";
 import { useFetchWarehouse } from "../hooks/useFetchWarehouse";
+import AddWarehouse from "../components/dashboard/addWarehouse";
 import EditWarehouse from "../components/dashboard/editWarehouse";
 import DeleteWarehouse from "../components/dashboard/deleteWarehouse";
 

@@ -1,20 +1,7 @@
-import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  Button,
-  Input,
-  Textarea,
-  Select,
-  Box,
-  useToast,
-  Image,
-  Flex,
-} from "@chakra-ui/react";
+import { Modal, ModalOverlay, ModalContent } from "@chakra-ui/react";
+import { ModalCloseButton, ModalHeader } from "@chakra-ui/react";
+import { ModalFooter, ModalBody, Button, Input } from "@chakra-ui/react";
+import { Textarea, Select, Box, useToast, Image, Flex } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { api } from "../../api/api";
 import { useFetchBrand } from "../../hooks/useFetchBrand";
@@ -22,6 +9,7 @@ import {
   useFetchCategory,
   useFetchSubcategory,
 } from "../../hooks/useFetchCategory";
+
 export default function AddShoe(props) {
   const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
@@ -39,9 +27,8 @@ export default function AddShoe(props) {
     brand_id: 0,
     category_id: 0,
     subcategory_id: 0,
-    shoe_img: [],
   });
-  console.log(shoe);
+
   function inputHandler(e) {
     const { id, value } = e.target;
     const temp = { ...shoe };
@@ -49,7 +36,7 @@ export default function AddShoe(props) {
     setShoe(temp);
   }
 
-  const uploadShoe = () => {
+  const uploadShoe = async () => {
     const formData = new FormData();
     formData.append("name", shoe.name);
     formData.append("description", shoe.description);
@@ -61,18 +48,18 @@ export default function AddShoe(props) {
     for (const files of selectedFiles) {
       formData.append("shoe", files);
     }
-    api
-      .post("/shoes", formData)
-      .then((res) => {
-        toast({
-          title: res.data.message,
-          status: "success",
-          position: "top",
-        });
-        props.fetch();
-        clear();
-      })
-      .catch((err) => console.log(err));
+    try {
+      const res = await api.post("/shoes", formData);
+      toast({
+        title: res.data.message,
+        status: "success",
+        position: "top",
+      });
+      props.fetch();
+      clear();
+    } catch (err) {
+      console.log(err.response.data);
+    }
   };
 
   const handleImageChange = (e) => {
@@ -87,12 +74,6 @@ export default function AddShoe(props) {
       images.push(imageUrl);
     }
     setSelectedImages(images);
-
-    const shoeImages = [];
-    for (const file of files) {
-      shoeImages.push(file);
-    }
-    setShoe((prevShoe) => ({ ...prevShoe, shoe_img: shoeImages }));
   };
 
   const clear = () => {
@@ -182,13 +163,11 @@ export default function AddShoe(props) {
               <Input
                 accept="image"
                 type="file"
-                id="productImg"
                 paddingTop={"4px"}
                 multiple
                 onChange={handleImageChange}
               />
             </Box>
-            {/* Preview the selected images */}
             {selectedImages.length ? (
               <Flex flexDir={"column"} borderColor={"#E6EBF2"} gap={1}>
                 {selectedImages.map((imageUrl, index) => (

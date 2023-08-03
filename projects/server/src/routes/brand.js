@@ -12,7 +12,9 @@ router.post(
   }).array("brand", 2),
   brandController.addBrand
 );
+
 router.get("/", brandController.getAll);
-// router.delete("/:id", roleDecoder.checkSuper, brandController.deleteBrand);
+
+ router.delete("/:id", roleDecoder.checkSuper, brandController.deleteBrand);
 
 module.exports = router;

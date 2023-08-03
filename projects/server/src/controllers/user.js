@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 const { nanoid } = require("nanoid");
 const moment = require("moment");
 const mailer = require("../lib/nodemailer");
-const fs = require("fs").promises;
+const fs = require("fs");
 const handlebars = require("handlebars");
 const {
   findUser,
@@ -20,6 +20,7 @@ const userController = {
     try {
       const { email } = req.body;
       const findEmail = await findUser(email);
+      console.log(findEmail);
       if (findEmail) {
         throw new Error("Email was registered");
       } else {
@@ -47,7 +48,7 @@ const userController = {
         });
         t.commit();
         return res.status(201).send({
-          message: "register berhasil",
+          message: "Check your email for verification",
         });
       }
     } catch (err) {
@@ -71,6 +72,7 @@ const userController = {
     try {
       const { email, password } = req.body;
       const user = await findUser(email);
+      console.log(user);
       if (!user) {
         throw new Error("email not found");
       }
@@ -172,8 +174,7 @@ const userController = {
   forgotPassword: async (req, res) => {
     const t = await db.sequelize.transaction();
     try {
-      let token = req.headers.authorization;
-      token = token.slice(7);
+      let token = req.headers.authorization.split(" ")[1];
       console.log(token);
       const { id } = req.user;
 
@@ -196,14 +197,11 @@ const userController = {
       const { name, email, phone, password } = req.body;
       const { filename } = req.file;
       const hashPassword = await bcrypt.hash(password, 10);
+      const check = await findUser(email);
 
-      const checkEmail = await db.User.findOne({
-        where: {
-          email,
-        },
-      });
-      if (checkEmail) {
-        throw new ValidationError("Email alredy exists");
+      if (check) {
+        fs.unlinkSync(req.file.path);
+        return res.status(400).send({ message: "email alrdy exist" });
       }
 
       await db.User.create(
@@ -219,8 +217,9 @@ const userController = {
         { transaction: t }
       );
       await t.commit();
-      return res.send({ message: "success add admin" });
+      return res.status(200).send({ message: "success add admin" });
     } catch (err) {
+      fs.unlinkSync(req.file.path);
       await t.rollback();
       return res.status(500).send(err.message);
     }
@@ -247,6 +246,15 @@ const userController = {
       const { name, email, phone, password, avatar } = req.body;
       const filename = req?.file?.filename || avatar;
       const hashPassword = await bcrypt.hash(password, 10);
+      const check = findUser(email);
+
+      if (check?.dataValues?.avatar_url) {
+        fs.unlinkSync(
+          `${__dirname}/../public/avatar/${
+            check.dataValues.avatar_url.split("/")[5]
+          }`
+        );
+      }
 
       await db.User.update(
         {
@@ -262,6 +270,7 @@ const userController = {
       await t.commit();
       return res.send({ message: "success update admin" });
     } catch (err) {
+      fs.unlinkSync(req.file.path);
       await t.rollback();
       return res.status(500).send(err.message);
     }
@@ -269,15 +278,19 @@ const userController = {
   deleteAdmin: async (req, res) => {
     const t = await db.sequelize.transaction();
     try {
-      await db.Admin.destroy(
-        { where: { user_id: req.params.id } },
-        { transaction: t }
-      );
+      const id = req.params.id;
+      await db.Admin.destroy({ where: { user_id: id } }, { transaction: t });
 
-      await db.User.destroy(
-        { where: { id: req.params.id } },
-        { transaction: t }
-      );
+      const check = await findUser(id);
+      if (check?.dataValues?.avatar_url) {
+        fs.unlinkSync(
+          `${__dirname}/../public/avatar/${
+            check.dataValues.avatar_url.split("/")[5]
+          }`
+        );
+      }
+
+      await db.User.destroy({ where: { id } }, { transaction: t });
       await t.commit();
       return res.status(200).send({ message: "success delete admin" });
     } catch (err) {

@@ -1,30 +1,8 @@
-import {
-  Box,
-  Button,
-  ButtonGroup,
-  Divider,
-  Flex,
-  Icon,
-  IconButton,
-  Input,
-  InputGroup,
-  InputRightAddon,
-  Tag,
-  useDisclosure,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableContainer,
-  Select,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  Image,
-} from "@chakra-ui/react";
+import { IconButton, InputGroup, InputRightAddon } from "@chakra-ui/react";
+import { ButtonGroup, Divider, Flex, Icon, Input } from "@chakra-ui/react";
+import { Table, Thead, Tbody, Tr, Th, Td, Box, Button } from "@chakra-ui/react";
+import { Select, Menu, MenuList, MenuItem, Image, Tag } from "@chakra-ui/react";
+import { useDisclosure, TableContainer, MenuButton } from "@chakra-ui/react";
 import { AiOutlinePlus } from "react-icons/ai";
 import { GrClose, GrMenu } from "react-icons/gr";
 import { FaSearch } from "react-icons/fa";
@@ -41,17 +19,16 @@ import ImageModal from "../components/dashboard/imageModal";
 
 export default function CategoryPage() {
   const { isOpen, onClose, onOpen } = useDisclosure();
-  const [img, setImg] = useState();
   const addModal = useDisclosure();
   const addSub = useDisclosure();
   const deleteModal = useDisclosure();
   const editModal = useDisclosure();
   const userSelector = useSelector((state) => state.auth);
+  const [img, setImg] = useState();
   const inputFileRef = useRef(null);
   const [search, setSearch] = useState();
   const { categories, fetch } = useFetchCategory();
   const [categoyId, setCategoryId] = useState();
-  console.log(categories);
   return (
     <>
       <Box id="content" pt={"52px"}>

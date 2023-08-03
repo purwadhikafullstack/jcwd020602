@@ -10,7 +10,14 @@ import reeboklogo from "../../assets/logoreebok.png";
 export default function LogoCarousel() {
   return (
     <>
-      <Box zIndex={0} bg={"white"} w={"100%"} maxW={"1531px"} py={2}>
+      <Box
+        borderY={"2px"}
+        zIndex={0}
+        bg={"white"}
+        w={"100%"}
+        maxW={"1531px"}
+        py={2}
+      >
         <Box id="slider">
           <Box id="slider-track">
             <Box id="slide">

@@ -1,18 +1,7 @@
-import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  Button,
-  Box,
-  useToast,
-  Input,
-  Center,
-  Avatar,
-} from "@chakra-ui/react";
+import { ModalOverlay, ModalContent, ModalHeader, Box } from "@chakra-ui/react";
+import { ModalFooter, ModalBody, ModalCloseButton } from "@chakra-ui/react";
+import { Button, useToast, Input } from "@chakra-ui/react";
+import { Center, Avatar, Modal } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { api } from "../../api/api";
 
@@ -23,7 +12,7 @@ export default function EditAdmin(props) {
   const [admin, setAdmin] = useState({});
   const [selectedFile, setSelectedFile] = useState();
   const [image, setImage] = useState();
-  console.log(admin);
+
   useEffect(() => {
     if (props.id) {
       fetchAdminbyId();
@@ -51,14 +40,18 @@ export default function EditAdmin(props) {
     formData.append("password", admin.password);
     formData.append("avatar", !selectedFile ? admin.avatar_url : selectedFile);
 
-    const response = await api.patch("/auth/admin/" + props.id, formData);
-    toast({
-      title: response.data.message,
-      status: "success",
-      position: "top",
-    });
-    props.fetch();
-    clearAdmin();
+    try {
+      const response = await api.patch("/auth/admin/" + props.id, formData);
+      toast({
+        title: response.data.message,
+        status: "success",
+        position: "top",
+      });
+      props.fetch();
+      clearAdmin();
+    } catch (err) {
+      console.log(err.response.data);
+    }
   };
 
   const handleFile = (event) => {

@@ -17,19 +17,19 @@ export function DeleteProduct(props) {
   const cancelRef = React.useRef();
   const toast = useToast();
 
-  const deleteShoe = () => {
-    api
-      .delete("/shoes/" + props.id)
-      .then((res) => {
-        toast({
-          title: res.data.message,
-          status: "success",
-          position: "top",
-        });
-        props.fetch();
-        props.onClose();
-      })
-      .catch((err) => console.log(err));
+  const deleteShoe = async () => {
+    try {
+      const res = await api.delete("/shoes/" + props.id);
+      toast({
+        title: res.data.message,
+        status: "success",
+        position: "top",
+      });
+      props.fetch();
+      props.onClose();
+    } catch (err) {
+      console.log(err.response.data);
+    }
   };
 
   return (

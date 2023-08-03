@@ -14,21 +14,13 @@ export default function AuthProvider({ children }) {
     try {
       const token = JSON.parse(localStorage.getItem("user"));
       if (token) {
-<<<<<<< Updated upstream
-        const user = await api
-          .get("/auth/userbytoken", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          })
-          .then((res) => res.data);
-=======
+
         const user = await api.get("/auth/userbytoken", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
->>>>>>> Stashed changes
+
         if (user) {
           dispatch({
             type: "login",
@@ -37,7 +29,7 @@ export default function AuthProvider({ children }) {
         }
       }
     } catch (err) {
-      console.log(err);
+      console.log(err.response.data);
     }
   }
 

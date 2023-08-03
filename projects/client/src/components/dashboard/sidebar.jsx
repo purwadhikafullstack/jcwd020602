@@ -1,19 +1,8 @@
-import {
-  Drawer,
-  DrawerBody,
-  DrawerHeader,
-  DrawerOverlay,
-  DrawerContent,
-  DrawerCloseButton,
-  Image,
-  Accordion,
-  AccordionItem,
-  AccordionButton,
-  AccordionPanel,
-  AccordionIcon,
-  Box,
-  Flex,
-} from "@chakra-ui/react";
+import { DrawerHeader, DrawerOverlay } from "@chakra-ui/react";
+import { DrawerContent, AccordionItem } from "@chakra-ui/react";
+import { DrawerCloseButton, Accordion, DrawerBody } from "@chakra-ui/react";
+import { AccordionButton, AccordionPanel, Drawer } from "@chakra-ui/react";
+import { AccordionIcon, Box, Flex, Image } from "@chakra-ui/react";
 import { Link, useLocation } from "react-router-dom";
 import logo from "../../assets/newlogo.png";
 import { useDispatch } from "react-redux";
@@ -32,7 +21,10 @@ export default function Sidebar(props) {
           <DrawerBody p={0}>
             <Accordion allowToggle className="Accordion">
               <Link to="/dashboard">
-                <AccordionItem className="accordion-item">
+                <AccordionItem
+                  className="accordion-item"
+                  onClick={props.onClose}
+                >
                   <AccordionButton _expanded={{ bg: "black", color: "white" }}>
                     <Box fontWeight={"bold"}>Dashboard</Box>
                   </AccordionButton>
@@ -40,7 +32,10 @@ export default function Sidebar(props) {
               </Link>
 
               <Link to="/product">
-                <AccordionItem className="accordion-item">
+                <AccordionItem
+                  className="accordion-item"
+                  onClick={props.onClose}
+                >
                   <AccordionButton _expanded={{ bg: "black", color: "white" }}>
                     <Box fontWeight={"bold"}>Product</Box>
                   </AccordionButton>
@@ -62,19 +57,28 @@ export default function Sidebar(props) {
                 </AccordionButton>
                 <AccordionPanel display={"flex"} flexDir={"column"} p={0}>
                   <Link to="/brand">
-                    <Box id="asyu">Brand</Box>
+                    <Box id="asyu" onClick={props.onClose}>
+                      Brand
+                    </Box>
                   </Link>
                   <Link to="/category">
-                    <Box id="asyu">Category</Box>
+                    <Box id="asyu" onClick={props.onClose}>
+                      Category
+                    </Box>
                   </Link>
                   <Link to="/subcategory">
-                    <Box id="asyu">Subcategory</Box>
+                    <Box id="asyu" onClick={props.onClose}>
+                      Subcategory
+                    </Box>
                   </Link>
                 </AccordionPanel>
               </AccordionItem>
 
               <Link to="/warehouse">
-                <AccordionItem className="accordion-item">
+                <AccordionItem
+                  className="accordion-item"
+                  onClick={props.onClose}
+                >
                   <AccordionButton _expanded={{ bg: "black", color: "white" }}>
                     <Box fontWeight={"bold"}>Warehouse</Box>
                   </AccordionButton>
@@ -96,13 +100,19 @@ export default function Sidebar(props) {
                 </AccordionButton>
                 <AccordionPanel display={"flex"} flexDir={"column"} p={0}>
                   <Link to="/inventory">
-                    <Box id="asyu">Stock</Box>
+                    <Box id="asyu" onClick={props.onClose}>
+                      Stock
+                    </Box>
                   </Link>
                   <Link to="/stockHistory">
-                    <Box id="asyu">Stock History</Box>
+                    <Box id="asyu" onClick={props.onClose}>
+                      Stock History
+                    </Box>
                   </Link>
                   <Link to="/stockMutation">
-                    <Box id="asyu">Stock Mutation</Box>
+                    <Box id="asyu" onClick={props.onClose}>
+                      Stock Mutation
+                    </Box>
                   </Link>
                 </AccordionPanel>
               </AccordionItem>
@@ -148,6 +158,7 @@ export default function Sidebar(props) {
                   dispatch({
                     type: "logout",
                   });
+                  props.onClose();
                 }}
               >
                 <AccordionButton _expanded={{ bg: "black", color: "white" }}>
