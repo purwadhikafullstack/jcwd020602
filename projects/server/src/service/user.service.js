@@ -1,15 +1,24 @@
 const db = require("../models");
 const { nanoid } = require("nanoid");
 const { Op, where } = require("sequelize");
+
 const bcrypt = require("bcrypt");
 const moment = require("moment");
 
 module.exports = {
-  roleChecker: async (id) => {
+  findUser: async (user) => {
     try {
-      return await db.users.findOne({
-        where: { id },
-        raw: true,
+      return await db.User.findOne({
+        where: {
+          [Op.or]: [
+            {
+              email: user,
+            },
+            {
+              id: user,
+            },
+          ],
+        },
       });
     } catch (err) {
       return err;
@@ -17,6 +26,7 @@ module.exports = {
   },
   findToken: async (body) => {
     try {
+
       const whereClause = {
         expired: {
           [db.Sequelize.Op.gte]: moment().format(),
@@ -36,6 +46,7 @@ module.exports = {
       }
       return await db.Token.findOne({
         where: whereClause,
+
       });
     } catch (err) {
       return err;

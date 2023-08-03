@@ -13,6 +13,7 @@ router.post(
   categoryController.addCategory
 );
 router.get("/", categoryController.getAllCategory);
+
 router.get("/:id", roleDecoder.checkSuper, categoryController.getCategoryById);
 router.patch(
   "/:id",
@@ -23,6 +24,7 @@ router.patch(
   }).single("category"),
   categoryController.editCategory
 );
+
 router.delete(
   "/:id",
   roleDecoder.checkSuper,

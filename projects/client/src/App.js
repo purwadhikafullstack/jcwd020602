@@ -9,21 +9,8 @@ export const ThemeContext = createContext(null);
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
-  const [theme, setTheme] = useState("light");
-
-  const toggleTheme = () => {
-    setTheme((curr) => {
-      const newTheme = curr == "light" ? "dark" : "light";
-      localStorage.setItem("theme", newTheme);
-      return newTheme;
-    });
-  };
 
   useEffect(() => {
-    const themeNow = localStorage.getItem("theme");
-    if (themeNow) {
-      setTheme(themeNow);
-    }
     setTimeout(() => {
       setIsLoading(false);
     }, 3000);
@@ -36,11 +23,7 @@ function App() {
           <Spinner />
         </Center>
       ) : (
-        <ThemeContext.Provider value={{ theme, toggleTheme }}>
-          <div id={theme}>
-            <Routes>{routes.map((val) => val)}</Routes>
-          </div>
-        </ThemeContext.Provider>
+        <Routes>{routes.map((val) => val)}</Routes>
       )}
     </>
   );

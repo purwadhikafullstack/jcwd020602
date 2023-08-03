@@ -74,15 +74,17 @@ export default function Navbar() {
             fontSize={"10px"}
           >
             <text>Help</text>
-            <text>
-              {userSelector?.role ? (
-                <text>Hi, {userSelector?.role}</text>
-              ) : (
-                <Link to={"/auth"}>
-                  <text>Login/Signup</text>
-                </Link>
-              )}
-            </text>
+            <Link to="/profile">
+              <Box>
+                {userSelector?.role ? (
+                  <text>Hi, {userSelector?.name}</text>
+                ) : (
+                  <Link to={"/auth"}>
+                    <text>Login/Signup</text>
+                  </Link>
+                )}
+              </Box>
+            </Link>
           </Box>
           <Divider className="navbar-atas" mb={1} />
           {/* bawah */}

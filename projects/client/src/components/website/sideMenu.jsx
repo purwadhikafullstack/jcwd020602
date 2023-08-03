@@ -18,12 +18,14 @@ import {
 import logo from "../../assets/newlogo.png";
 import { useFetchCategory } from "../../hooks/useFetchCategory";
 import { useFetchBrand } from "../../hooks/useFetchBrand";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 export default function SideMenu(props) {
   const { categories } = useFetchCategory();
   const { brands } = useFetchBrand();
   const userSelector = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
   return (
     <>
       <Drawer isOpen={props.isOpen} placement={"left"} onClose={props.onClose}>
@@ -57,17 +59,28 @@ export default function SideMenu(props) {
                     flexDir={"column"}
                     gap={2}
                   >
-                    <text>Profile</text>
+                    <Link to="/profile">
+                      <text>Profile</text>
+                    </Link>
                     <text>Orders</text>
                     <text>Favorites</text>
                     <text>Account Settings</text>
-                    <text>Log Out</text>
+                    <text
+                      onClick={() => {
+                        localStorage.removeItem("user");
+                        dispatch({
+                          type: "logout",
+                        });
+                      }}
+                    >
+                      Log Out
+                    </text>
                   </AccordionPanel>
                 </AccordionItem>
               ) : (
                 <AccordionItem>
                   <AccordionButton fontWeight={"bold"}>
-                    Login/Signup
+                    <a href="/auth"> Login/Signup</a>
                   </AccordionButton>
                 </AccordionItem>
               )}

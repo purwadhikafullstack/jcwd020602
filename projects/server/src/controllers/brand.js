@@ -33,6 +33,20 @@ const brandController = {
       return res.status(500).send(err.message);
     }
   },
+  deleteBrand: async (req, res) => {
+    const t = await db.sequelize.transaction();
+    try {
+      await db.Brand.destroy(
+        { where: { id: req.params.id } },
+        { transaction: t }
+      );
+      await t.commit();
+      return res.status(200).send({ message: "success delete brand" });
+    } catch (err) {
+      await t.rollback();
+      return res.status(500).send(err.message);
+    }
+  },
 };
 
 module.exports = brandController;

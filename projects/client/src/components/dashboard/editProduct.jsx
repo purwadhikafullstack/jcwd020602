@@ -22,7 +22,7 @@ import {
   useFetchCategory,
   useFetchSubcategory,
 } from "../../hooks/useFetchCategory";
-export default function AddShoe(props) {
+export default function EditProduct(props) {
   const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const { brands } = useFetchBrand();
@@ -31,17 +31,23 @@ export default function AddShoe(props) {
   const [selectedImages, setSelectedImages] = useState([]);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [sub, setSub] = useState();
-  const [shoe, setShoe] = useState({
-    name: "",
-    description: "",
-    price: "",
-    weight: "",
-    brand_id: 0,
-    category_id: 0,
-    subcategory_id: 0,
-    shoe_img: [],
-  });
+  const [shoe, setShoe] = useState({});
   console.log(shoe);
+
+  useEffect(() => {
+    if (props.id) {
+      fetchProductId();
+    }
+  }, [props.id]);
+
+  const fetchProductId = async () => {
+    const res = await api.get("/shoes/" + props.id);
+    setShoe(res.data);
+    const { ShoeImages } = res.data;
+    const images = ShoeImages.map((val) => val.shoe_img);
+    setSelectedImages(images);
+  };
+
   function inputHandler(e) {
     const { id, value } = e.target;
     const temp = { ...shoe };
@@ -49,7 +55,7 @@ export default function AddShoe(props) {
     setShoe(temp);
   }
 
-  const uploadShoe = () => {
+  const editShoe = () => {
     const formData = new FormData();
     formData.append("name", shoe.name);
     formData.append("description", shoe.description);
@@ -58,11 +64,13 @@ export default function AddShoe(props) {
     formData.append("brand_id", shoe.brand_id);
     formData.append("category_id", shoe.category_id);
     formData.append("subcategory_id", shoe.subcategory_id);
-    for (const files of selectedFiles) {
-      formData.append("shoe", files);
+    if (selectedFiles) {
+      for (const files of selectedFiles) {
+        formData.append("shoe", files);
+      }
     }
     api
-      .post("/shoes", formData)
+      .patch("/shoes/" + props.id, formData)
       .then((res) => {
         toast({
           title: res.data.message,
@@ -70,6 +78,7 @@ export default function AddShoe(props) {
           position: "top",
         });
         props.fetch();
+        clearS();
         props.onClose();
       })
       .catch((err) => console.log(err));
@@ -94,12 +103,21 @@ export default function AddShoe(props) {
     }
     setShoe((prevShoe) => ({ ...prevShoe, shoe_img: shoeImages }));
   };
+
+  const clearS = () => {
+    setShoe({});
+    setSelectedFiles(null);
+    props.setId(null);
+  };
   return (
     <>
       <Modal
         scrollBehavior="inside"
         isOpen={props.isOpen}
-        onClose={props.onClose}
+        onClose={() => {
+          clearS();
+          props.onClose();
+        }}
       >
         <ModalOverlay />
         <ModalContent>
@@ -107,28 +125,47 @@ export default function AddShoe(props) {
           <ModalCloseButton />
           <ModalBody display={"flex"} flexDir={"column"} gap={2}>
             <Box>
-              name: <Input id="name" type="text" onChange={inputHandler} />
+              name:{" "}
+              <Input
+                id="name"
+                type="text"
+                onChange={inputHandler}
+                defaultValue={shoe.name}
+              />
             </Box>
             <Box>
               description:
-              <Textarea id="description" onChange={inputHandler} />
+              <Textarea
+                id="description"
+                onChange={inputHandler}
+                defaultValue={shoe.description}
+              />
             </Box>
             <Box>
               price:
-              <Input id="price" type={"number"} onChange={inputHandler} />
+              <Input
+                id="price"
+                type={"number"}
+                onChange={inputHandler}
+                defaultValue={shoe.price}
+              />
             </Box>
             <Box>
               weight:
-              <Input id="weight" type={"number"} onChange={inputHandler} />
+              <Input
+                id="weight"
+                type={"number"}
+                onChange={inputHandler}
+                defaultValue={shoe.weight}
+              />
             </Box>
             <Box>
               Brand:
               <Select
                 id="brand_id"
                 placeholder="choose Brand.."
-                onChange={(e) => {
-                  inputHandler(e);
-                }}
+                value={shoe.brand_id}
+                onChange={inputHandler}
               >
                 {brands &&
                   brands.map((val, idx) => (
@@ -143,6 +180,7 @@ export default function AddShoe(props) {
               <Select
                 id="category_id"
                 placeholder="choose category.."
+                value={shoe.category_id}
                 onChange={(e) => {
                   inputHandler(e);
                   setSub(e.target.value);
@@ -160,10 +198,9 @@ export default function AddShoe(props) {
               Subcategory:
               <Select
                 id="subcategory_id"
-                placeholder="choose Brand.."
-                onChange={(e) => {
-                  inputHandler(e);
-                }}
+                placeholder="choose subcategory.."
+                value={shoe.subcategory_id}
+                onChange={inputHandler}
               >
                 {subcategories &&
                   subcategories
@@ -207,7 +244,7 @@ export default function AddShoe(props) {
                 setIsLoading(true);
                 setTimeout(() => {
                   setIsLoading(false);
-                  uploadShoe();
+                  editShoe();
                 }, 2000);
               }}
             >

@@ -1,19 +1,4 @@
-import {
-  Box,
-  Button,
-  Flex,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  Heading,
-  Icon,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  Stack,
-  Text,
-  useToast,
-} from "@chakra-ui/react";
+import { Box, Button, Flex, Text } from "@chakra-ui/react";
 
 import Login from "../components/auth/login";
 import Register from "../components/auth/register";

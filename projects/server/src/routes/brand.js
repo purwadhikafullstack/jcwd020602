@@ -14,4 +14,5 @@ router.post(
 );
 router.get("/", brandController.getAll);
 // router.delete("/:id", roleDecoder.checkSuper, brandController.deleteBrand);
+
 module.exports = router;

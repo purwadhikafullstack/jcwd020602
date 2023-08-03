@@ -38,7 +38,7 @@ const uploud = multer({
     const file_type = file.mimetype.split("/")[0];
     const format_file = file.mimetype.split("/")[1];
 
-    if (file_type != "image" && format_file != ("jpg" || "png")) {
+    if (file_type != "image" && format_file != ("jpg" || "png" || "WEBP")) {
       return cb(null, false);
     }
     cb(null, true);

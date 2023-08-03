@@ -16,8 +16,10 @@ import {
 } from "@chakra-ui/react";
 import { Link, useLocation } from "react-router-dom";
 import logo from "../../assets/newlogo.png";
+import { useDispatch } from "react-redux";
 
 export default function Sidebar(props) {
+  const dispatch = useDispatch();
   return (
     <>
       <Drawer isOpen={props.isOpen} placement={"left"} onClose={props.onClose}>
@@ -93,7 +95,7 @@ export default function Sidebar(props) {
                   <AccordionIcon />
                 </AccordionButton>
                 <AccordionPanel display={"flex"} flexDir={"column"} p={0}>
-                  <Link to="/stock">
+                  <Link to="/inventory">
                     <Box id="asyu">Stock</Box>
                   </Link>
                   <Link to="/stockHistory">
@@ -139,7 +141,15 @@ export default function Sidebar(props) {
                 </AccordionItem>
               </Link>
 
-              <AccordionItem className="accordion-item">
+              <AccordionItem
+                className="accordion-item"
+                onClick={() => {
+                  localStorage.removeItem("user");
+                  dispatch({
+                    type: "logout",
+                  });
+                }}
+              >
                 <AccordionButton _expanded={{ bg: "black", color: "white" }}>
                   <Box fontWeight={"bold"}>Log out</Box>
                 </AccordionButton>

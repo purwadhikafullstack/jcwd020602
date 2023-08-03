@@ -14,6 +14,7 @@ router.post(
 );
 router.get("/", shoeController.getAll);
 router.get("/:id", shoeController.getById);
+
 // router.patch(
 //   "/:id",
 //   roleDecoder.checkSuper,
@@ -25,5 +26,6 @@ router.get("/:id", shoeController.getById);
 // );
 
 // router.delete("/:id", roleDecoder.checkSuper, shoeController.deleteShoe);
+
 
 module.exports = router;

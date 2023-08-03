@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Center,
   Flex,
   FormControl,
   FormErrorMessage,
@@ -15,18 +16,10 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import {
-  FaUser,
-  FaLock,
-  FaEnvelope,
-  FaFacebookF,
-  FaTwitter,
-  FaGoogle,
-  FaLinkedinIn,
-} from "react-icons/fa";
-import { AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai";
+
+import { TbAlertCircleFilled } from "react-icons/tb";
+import { ViewOffIcon, ViewIcon, EmailIcon } from "@chakra-ui/icons";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
 import { useDispatch } from "react-redux";
 import React, { useState } from "react";
 import * as Yup from "yup";
@@ -39,6 +32,8 @@ export default function Login() {
   const nav = useNavigate();
   const [show, setShow] = React.useState(false);
   const handleClick = () => setShow(!show);
+  const [isLoading, setIsLoading] = useState(false);
+  const [formField, setFormField] = useState("");
 
   const formik = useFormik({
     initialValues: {
@@ -48,61 +43,12 @@ export default function Login() {
     validationSchema: Yup.object({
       email: Yup.string().email("Invalid email address").required("Required"),
       password: Yup.string()
-        .min(6, "Must be at least 6 characters")
+        .min(8, "Must be at least 8 characters")
         .required("Required"),
     }),
-    onSubmit: (values) => {
-      login(values);
-    },
-  });
-
-  const login = async (values) => {
-    try {
-      if (!values.email || !values.password) {
-        toast({
-          title: "fill in all data.",
-          status: "warning",
-          position: "top",
-          duration: 1000,
-          isClosable: true,
-        });
-      } else {
+    onSubmit: async () => {
+      try {
         let token;
-<<<<<<< Updated upstream
-        await api
-          .post("/auth/login", values)
-          .then((res) => {
-            localStorage.setItem("user", JSON.stringify(res.data.token));
-
-            token = res.data.token;
-          })
-          .catch((err) =>
-            toast({
-              title: err.response?.data,
-              status: "error",
-              position: "top",
-              duration: 1000,
-              isClosable: true,
-            })
-          );
-
-        await api
-          .get("/auth/userbytoken", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            // params: {
-            //   token,
-            // },
-          })
-          .then((res) => {
-            dispatch({
-              type: "login",
-              payload: res.data,
-            });
-            nav("/");
-          });
-=======
         const res = await api.post("/auth/login", formik.values);
         localStorage.setItem("user", JSON.stringify(res.data.token));
         token = res.data.token;
@@ -126,14 +72,15 @@ export default function Login() {
           isClosable: true,
         });
         console.log(err.message);
->>>>>>> Stashed changes
       }
-    } catch (err) {
-      console.log(err.message);
-    }
+    },
+  });
 
-    return;
-  };
+  function inputHandler(e) {
+    const { value, id } = e.target;
+    formik.setFieldValue(id, value);
+    setFormField(id);
+  }
 
   return (
     <Box>
@@ -141,82 +88,89 @@ export default function Login() {
         Sign in
       </Heading>
 
-      <Stack spacing={4}>
-        <form onSubmit={formik.handleSubmit}>
-          <FormControl
-            id="email"
-            isRequired
-            isInvalid={formik.touched.email && formik.errors.email}
+      <Stack>
+        <FormControl isInvalid={formField === "email" && formik.errors.email}>
+          <Box
+            className={`inputbox ${
+              formik.values.email ? "input-has-value" : ""
+            }`}
           >
-            <InputGroup>
-              <InputLeftElement children={<Icon as={FaUser} />} />
+            <InputGroup size="md">
               <Input
-                type="email"
-                placeholder="Email"
                 id="email"
-                name="email"
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
                 value={formik.values.email}
+                onChange={inputHandler}
               />
+              <label>Email</label>
+              <InputRightElement width="4rem">
+                <Icon as={EmailIcon} />
+              </InputRightElement>
             </InputGroup>
-            <Box h={"20px"}>
-              <FormErrorMessage fontSize={"2xs"}>
-                {formik.errors.email}
+            <Box h={8}>
+              <FormErrorMessage>
+                <Center>
+                  <Icon as={TbAlertCircleFilled} w="16px" h="16px" />
+                </Center>
+                <Text fontSize={10}>{formik.errors.email}</Text>
               </FormErrorMessage>
             </Box>
-          </FormControl>
-          <FormControl
-            id="password"
-            mt={"10px"}
-            isRequired
-            isInvalid={formik.touched.password && formik.errors.password}
+          </Box>
+        </FormControl>
+
+        {/* confirm password */}
+        <FormControl
+          isInvalid={formField === "password" && formik.errors.password}
+        >
+          <Box
+            className={`inputbox ${
+              formik.values.password ? "input-has-value" : ""
+            }`}
           >
-            <InputGroup>
-              <InputLeftElement children={<Icon as={FaLock} />} />
+            <InputGroup size="md">
               <Input
-                type={show ? "text" : "password"}
-                placeholder="Password"
                 id="password"
-                onChange={formik.handleChange}
                 value={formik.values.password}
+                onChange={inputHandler}
+                type={show ? "text" : "password"}
               />
-              <InputRightElement width="4.5rem">
-                <Button
-                  h="1.75rem"
-                  size="sm"
-                  onClick={handleClick}
-                  bgColor={"white"}
-                  _hover={"white"}
-                >
-                  {show ? (
-                    <Icon as={AiOutlineEye} w={"100%"} h={"100%"}></Icon>
-                  ) : (
-                    <Icon
-                      as={AiOutlineEyeInvisible}
-                      w={"100%"}
-                      h={"100%"}
-                    ></Icon>
-                  )}
+              <label>Confirm Password</label>
+              <InputRightElement width="4rem">
+                <Button h="1.75rem" size="sm" onClick={handleClick}>
+                  {show ? <ViewOffIcon /> : <ViewIcon />}
                 </Button>
               </InputRightElement>
             </InputGroup>
-            <Box h={"20px"}>
-              <FormErrorMessage fontSize={"2xs"}>
-                {formik.errors.password}
+            <Box h={8}>
+              <FormErrorMessage>
+                <Center>
+                  <Icon as={TbAlertCircleFilled} w="16px" h="16px" />
+                </Center>
+                <Text fontSize={10}>{formik.errors.password}</Text>
               </FormErrorMessage>
             </Box>
-          </FormControl>
-          <Button
-            w={"100%"}
-            colorScheme="blue.100"
-            size="lg"
-            type="submit"
-            bgColor={"black"}
-          >
-            Login
-          </Button>
-        </form>
+          </Box>
+        </FormControl>
+        <Button
+          isDisabled={
+            formik.values.email && formik.values.password ? false : true
+          }
+          isLoading={isLoading}
+          onClick={() => {
+            setIsLoading(true);
+            setTimeout(() => {
+              setIsLoading(false);
+              formik.handleSubmit();
+            }, 2000);
+          }}
+        >
+          login
+        </Button>
+        <Flex justify={"center"} gap={2}>
+          Forgot password?
+          <Link to="/forgot-password">
+            <Box _hover={{ color: "blue.500" }}> click here</Box>
+          </Link>
+        </Flex>
       </Stack>
     </Box>
   );

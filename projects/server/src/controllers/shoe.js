@@ -194,6 +194,75 @@ const shoeController = {
       return res.status(500).send(err.message);
     }
   },
+  deleteShoe: async (req, res) => {
+    const t = await db.sequelize.transaction();
+    try {
+      await db.Shoe.destroy(
+        { where: { id: req.params.id } },
+        { transaction: t }
+      );
+      await db.ShoeImage.destroy(
+        { where: { shoe_id: req.params.id } },
+        { transaction: t }
+      );
+      await t.commit();
+      return res.status(200).send({ message: "success delete product" });
+    } catch (err) {
+      await t.rollback();
+      return res.status(500).dend(err.message);
+    }
+  },
+  editShoe: async (req, res) => {
+    const t = await db.sequelize.transaction();
+    try {
+      const {
+        name,
+        description,
+        price,
+        weight,
+        brand_id,
+        category_id,
+        subcategory_id,
+      } = req.body;
+
+      await db.Shoe.update(
+        {
+          name,
+          description,
+          price,
+          weight,
+          brand_id,
+          category_id,
+          subcategory_id,
+        },
+        { where: { id: req.params.id } },
+        { transaction: t }
+      );
+
+      console.log(req.body);
+
+      if (req.files && req.files.length > 0) {
+        const imageArr = [];
+        for (const file of req.files) {
+          const filename = file.filename;
+          const imageUrl = SHOE_URL + filename;
+          imageArr.push({ shoe_id: req.params.id, shoe_img: imageUrl });
+        }
+        await db.ShoeImage.destroy(
+          { where: { shoe_id: req.params.id } },
+          { transaction: t }
+        );
+        await db.ShoeImage.bulkCreate(imageArr, { transaction: t });
+      }
+
+      await t.commit();
+      return res.status(200).send({ message: "success update shoe" });
+    } catch (err) {
+      await t.rollback();
+      console.log(err.message);
+      return res.status(500).send(err.message);
+    }
+  },
 };
 
 module.exports = shoeController;

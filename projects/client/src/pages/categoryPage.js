@@ -23,6 +23,7 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
+  Image,
 } from "@chakra-ui/react";
 import { AiOutlinePlus } from "react-icons/ai";
 import { GrClose, GrMenu } from "react-icons/gr";
@@ -30,15 +31,17 @@ import { FaSearch } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { useEffect, useRef, useState } from "react";
 import { useFetchCategory } from "../hooks/useFetchCategory";
-import { Link, useNavigate } from "react-router-dom";
 import {
   AddCategory,
   AddSubCategory,
 } from "../components/dashboard/addCategory";
 import { EditCategory } from "../components/dashboard/editCategory";
 import { DeleteCategory } from "../components/dashboard/deleteCategory";
+import ImageModal from "../components/dashboard/imageModal";
 
 export default function CategoryPage() {
+  const { isOpen, onClose, onOpen } = useDisclosure();
+  const [img, setImg] = useState();
   const addModal = useDisclosure();
   const addSub = useDisclosure();
   const deleteModal = useDisclosure();
@@ -48,7 +51,7 @@ export default function CategoryPage() {
   const [search, setSearch] = useState();
   const { categories, fetch } = useFetchCategory();
   const [categoyId, setCategoryId] = useState();
-  // console.log(categories);
+  console.log(categories);
   return (
     <>
       <Box id="content" pt={"52px"}>
@@ -112,7 +115,7 @@ export default function CategoryPage() {
           <Box id="card-content" display={"none"}>
             <Flex flexDir={"column"} py={1}>
               {categories &&
-                categories.map((category, idx) => (
+                categories?.map((category, idx) => (
                   <Flex
                     p={1}
                     m={1}
@@ -163,7 +166,7 @@ export default function CategoryPage() {
                         </Menu>
                       ) : null}
                     </Flex>
-                    <Box>name: {category.name}</Box>
+                    <Box>name: {category?.name}</Box>
                     <Divider />
                     {category?.subcategories?.length == 0 ? (
                       <Box>subcategory: No have subcategory</Box>
@@ -171,10 +174,12 @@ export default function CategoryPage() {
                       <Box py={1}>
                         subcategory:
                         {category?.subcategories?.map((val, idx) => (
-                          <Tag mx={1}>{val.name}</Tag>
+                          <Tag mx={1}>{val?.name}</Tag>
                         ))}
                       </Box>
                     )}
+                    <Divider />
+                    <Image src={category.category_img} />
                   </Flex>
                 ))}
             </Flex>
@@ -185,6 +190,7 @@ export default function CategoryPage() {
               <Thead>
                 <Tr>
                   <Th>#</Th>
+                  <Th>Image</Th>
                   <Th>name</Th>
                   <Th>Subcategory</Th>
                   <Th>Action</Th>
@@ -192,15 +198,27 @@ export default function CategoryPage() {
               </Thead>
               <Tbody>
                 {categories &&
-                  categories.map((category, idx) => (
+                  categories?.map((category, idx) => (
                     <Tr>
                       <Td w={"5%"}>{idx + 1}</Td>
+                      <Td>
+                        <Image
+                          cursor={"pointer"}
+                          onClick={() => {
+                            setImg(category.category_img);
+                            onOpen();
+                          }}
+                          src={category.category_img}
+                          w={"30px"}
+                        />
+                      </Td>
                       <Td>{category.name}</Td>
+
                       {category?.subcategories?.length == 0 ? (
                         <Td>no hve subcategory</Td>
                       ) : (
                         <Td>
-                          {category.subcategories.map((val, idx) => (
+                          {category?.subcategories?.map((val, idx) => (
                             <Tag mr={1}>{val.name}</Tag>
                           ))}
                         </Td>
@@ -266,6 +284,7 @@ export default function CategoryPage() {
                 onClose={deleteModal.onClose}
                 fetch={fetch}
               />
+              <ImageModal isOpen={isOpen} onClose={onClose} image={img} />
             </Table>
           </TableContainer>
         </Box>

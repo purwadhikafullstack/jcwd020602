@@ -29,11 +29,12 @@ import { AiOutlinePlus } from "react-icons/ai";
 import { GrClose, GrMenu } from "react-icons/gr";
 import { FaSearch } from "react-icons/fa";
 import { useSelector } from "react-redux";
-import { useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useRef, useState } from "react";
 import { useFetchShoe } from "../hooks/useFetchShoe";
-import AddShoe from "../components/dashboard/addShoe";
+import AddShoe from "../components/dashboard/addProduct";
 import ImageModal from "../components/dashboard/imageModal";
+import { DeleteProduct } from "../components/dashboard/deleteProduct";
+import EditProduct from "../components/dashboard/editProduct";
 
 export default function ProductPage() {
   const { isOpen, onClose, onOpen } = useDisclosure();
@@ -253,20 +254,19 @@ export default function ProductPage() {
                   ))}
               </Tbody>
               <ImageModal isOpen={isOpen} onClose={onClose} image={img} />
-
-              {/* <EditCategory
-                id={categoyId}
-                isOpen={editModal.isOpen}
-                onClose={editModal.onClose}
-                fetch={fetch}
-                setId={setCategoryId}
-              />
-              <DeleteCategory
-                id={categoyId}
+              <DeleteProduct
+                id={shoeId}
                 isOpen={deleteModal.isOpen}
                 onClose={deleteModal.onClose}
                 fetch={fetch}
-              />  */}
+              />
+              <EditProduct
+                id={shoeId}
+                isOpen={editModal.isOpen}
+                onClose={editModal.onClose}
+                fetch={fetch}
+                setId={setShoeId}
+              />
             </Table>
           </TableContainer>
         </Box>

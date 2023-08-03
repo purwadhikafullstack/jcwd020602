@@ -5,7 +5,7 @@ import { api } from "../api/api";
 export default function AuthProvider({ children }) {
   const dispatch = useDispatch();
   const userSelector = useSelector((state) => state.auth);
-
+  console.log(userSelector);
   useEffect(() => {
     fetch();
   }, []);
@@ -16,7 +16,7 @@ export default function AuthProvider({ children }) {
       if (token) {
 <<<<<<< Updated upstream
         const user = await api
-          .get("/auth/v3", {
+          .get("/auth/userbytoken", {
             headers: {
               Authorization: `Bearer ${token}`,
             },
