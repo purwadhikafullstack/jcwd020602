@@ -1,6 +1,7 @@
 const db = require("../models");
 const { nanoid } = require("nanoid");
-const { Op } = require("sequelize");
+const { Op, where } = require("sequelize");
+
 const bcrypt = require("bcrypt");
 const moment = require("moment");
 
@@ -27,7 +28,6 @@ module.exports = {
           },
           valid: { [Op.like]: `%${body?.valid || 1}%` },
           status: { [Op.like]: `%${body?.status || ""}%` },
-        },
       });
     } catch (err) {
       return err;

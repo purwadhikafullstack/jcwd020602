@@ -26,12 +26,13 @@ export default function InventoryPage() {
   const [province, setprovince] = useState(0);
   const { cities } = useFetchWareCity(province);
   const [stockId, setStockId] = useState();
+  const [wareAdmin, setWareAdmin] = useState({});
   const [filter, setFilter] = useState({
     page: 1,
     sort: "",
     order: "ASC",
     search: "",
-    city: "",
+    city_id: "",
   });
   //pagination ------------------------------------------------------
   const [pages, setPages] = useState([]);
@@ -55,22 +56,15 @@ export default function InventoryPage() {
   //-------------------------------------------------------------
 
   useEffect(() => {
-    if (userSelector.role != "SUPERADMIN") {
-      const token = JSON.parse(localStorage.getItem("user"));
-      if (token) {
-        warehouseAdmin(token);
-      }
-    } else if (userSelector.role == "SUPERADMIN") {
-      setFilter({ ...filter, city: "Jakarta Selatan" });
-    }
+    warehouseAdmin();
   }, []);
-  async function warehouseAdmin(token) {
-    const warehouse = await api.get("/auth/warehousebytoken", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+  async function warehouseAdmin() {
+    const warehouse = await api.get("/auth/warehousebytoken");
+    setWareAdmin(warehouse?.data?.warehouse);
+    setFilter({
+      ...filter,
+      city_id: warehouse?.data?.city_id || warehouse.data,
     });
-    setFilter({ ...filter, city: warehouse?.data?.city?.city_name });
   }
   return (
     <>
@@ -92,7 +86,7 @@ export default function InventoryPage() {
               isOpen={isOpen}
               onClose={onClose}
               fetch={fetch}
-              city={filter.city}
+              ware={wareAdmin}
               setShown={setShown}
             />
           </Flex>
@@ -140,11 +134,11 @@ export default function InventoryPage() {
                     <Select
                       onChange={(e) => {
                         setShown({ page: 1 });
-                        setFilter({ ...filter, city: e.target.value });
+                        setFilter({ ...filter, city_id: e.target.value });
                       }}
                       id="city"
                       size={"sm"}
-                      value={filter.city}
+                      value={filter.city_id}
                     >
                       <option key={""} value={""}>
                         choose city..
@@ -153,9 +147,9 @@ export default function InventoryPage() {
                         cities.map((val, idx) => (
                           <option
                             key={val.city.city_name}
-                            value={val.city.city_name}
+                            value={val.city.city_id}
                           >
-                            {val.city.city_name}
+                            {`${val.city.type} ${val.city.city_name}`}
                           </option>
                         ))}
                     </Select>
@@ -213,7 +207,8 @@ export default function InventoryPage() {
                   >
                     <Flex justify={"space-between"}>
                       <Box>#{idx + 1}</Box>{" "}
-                      {userSelector.role != "ADMIN" ? (
+                      {userSelector.role == "SUPERADMIN" ||
+                      userSelector.role == "ADMIN" ? (
                         <Flex gap={1}>
                           <Menu>
                             {({ isOpen }) => (
@@ -282,7 +277,8 @@ export default function InventoryPage() {
                       <Td>{`${stock.Sho.name} (${stock.Sho.brand.name})`}</Td>
                       <Td w={"10%"}>{stock.warehouse.name}</Td>
                       <Td w={"5%"}>
-                        {userSelector.role == "SUPERADMIN" ? (
+                        {userSelector.role == "SUPERADMIN" ||
+                        userSelector.role == "ADMIN" ? (
                           <Flex justify={"space-between"} gap={1}>
                             <Menu>
                               {({ isOpen }) => (

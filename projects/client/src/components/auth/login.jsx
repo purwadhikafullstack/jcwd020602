@@ -53,6 +53,7 @@ export default function Login() {
           duration: 1000,
         });
         return nav("/");
+
       } catch (err) {
         toast({
           title: err.response?.data,

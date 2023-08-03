@@ -1,9 +1,11 @@
 const brandController = require("../controllers").brandController;
 const router = require("express").Router();
 const { fileUploader } = require("../middlewares/multer");
+const roleDecoder = require("../middlewares/roleDecoder");
 
 router.post(
   "/",
+  roleDecoder.checkSuper,
   fileUploader({
     destinationFolder: "brand",
     fileType: "image",
@@ -13,5 +15,6 @@ router.post(
 
 router.get("/", brandController.getAll);
 
-router.delete("/:id", brandController.deleteBrand);
+ router.delete("/:id", roleDecoder.checkSuper, brandController.deleteBrand);
+
 module.exports = router;

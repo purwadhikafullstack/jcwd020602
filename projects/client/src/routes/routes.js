@@ -22,6 +22,12 @@ import ChangePassword from "../components/auth/changePassword";
 import ProductList from "../pages/productList";
 import ProductDetailPage from "../pages/productDetailPage";
 
+import Cart from "../pages/cartPages";
+import Cartx from "../pages/cartPagesx";
+
+import StockMutationPage from "../pages/stockMutationPage";
+
+
 const routes = [
   <Route
     path="/"
@@ -122,6 +128,24 @@ const routes = [
       </ProtectedPage>
     }
   />,
+  <Route
+    path="/cart"
+    element={
+      <>
+        <Navbar />
+        <Cart />
+      </>
+    }
+  />,
+  <Route
+    path="/cartx"
+    element={
+      <>
+        <Navbar />
+        <Cartx />
+      </>
+    }
+  />,
   //------------------------------------- admin
 
   <Route
@@ -201,6 +225,16 @@ const routes = [
         <NavbarDashboard />
         <Sidebar />
         <StockHistoryPage />
+      </ProtectedPage>
+    }
+  />,
+  <Route
+    path="/stockMutation"
+    element={
+      <ProtectedPage needLogin={true} guestOnly={false}>
+        <NavbarDashboard />
+        <Sidebar />
+        <StockMutationPage />
       </ProtectedPage>
     }
   />,

@@ -98,9 +98,7 @@ export default function AddStock(props) {
                 id="warehouse_id"
               >
                 {userSelector.role != "SUPERADMIN" ? (
-                  <option key={props.city} value={props.city}>
-                    {props.city}
-                  </option>
+                  <option value={props.ware.id}>{props.ware.name}</option>
                 ) : (
                   <>
                     {warehouses &&

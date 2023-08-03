@@ -300,15 +300,11 @@ const userController = {
   },
   getWarehouseCity: async (req, res, next) => {
     try {
-      const result = await db.User.findOne({
-        where: { ...req.user },
-        include: [{ model: db.Warehouse, include: [{ model: db.City }] }],
+      let result = await db.Warehouse.findOne({
+        where: { id: req.user.warehouse_id },
       });
-      delete result.dataValues.password;
-      delete result.dataValues.id;
-      res.status(200).send(result);
+      return res.status(200).send(result || `153`);
     } catch (err) {
-      console.log(err);
       return res.status(500).send({ message: err.message });
     }
   },

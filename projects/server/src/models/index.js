@@ -73,19 +73,43 @@ db.Warehouse.hasMany(db.StockMutation, {
   foreignKey: "from_warehouse_id",
   targetKey: "id",
 });
+db.StockMutation.belongsTo(db.Warehouse, {
+  foreignKey: "from_warehouse_id",
+  targetKey: "id",
+  as: "fromWarehouse",
+});
 db.Warehouse.hasMany(db.StockMutation, {
   foreignKey: "to_warehouse_id",
   targetKey: "id",
+});
+db.StockMutation.belongsTo(db.Warehouse, {
+  foreignKey: "to_warehouse_id",
+  targetKey: "id",
+  as: "toWarehouse",
 });
 db.User.hasMany(db.StockMutation, {
   foreignKey: "req_admin_id",
   targetKey: "id",
 });
+db.StockMutation.belongsTo(db.User, {
+  foreignKey: "req_admin_id",
+  targetKey: "id",
+  as: "requestedBy",
+});
 db.User.hasMany(db.StockMutation, {
   foreignKey: "res_admin_id",
   targetKey: "id",
 });
+db.StockMutation.belongsTo(db.User, {
+  foreignKey: "res_admin_id",
+  targetKey: "id",
+  as: "respondedBy",
+});
 db.Stock.hasMany(db.StockMutation, {
+  foreignKey: "stock_id",
+  targetKey: "id",
+});
+db.StockMutation.belongsTo(db.Stock, {
   foreignKey: "stock_id",
   targetKey: "id",
 });
@@ -150,8 +174,13 @@ db.Warehouse.belongsTo(db.City, {
 });
 
 //db.Cart foreignKey
-db.Shoe.hasMany(db.Cart, { foreignKey: "shoe_id", targetKey: "id" });
-db.User.hasMany(db.Cart, { foreignKey: "user_id", targetKey: "id" });
+// db.Shoe.hasMany(db.Cart, { foreignKey: "shoe_id", targetKey: "id" });
+db.Cart.belongsTo(db.Shoe, {
+  foreignKey: "shoe_id",
+  targetKey: "id",
+  as: "Shoes",
+});
+db.Cart.belongsTo(db.User, { foreignKey: "user_id", targetKey: "id" });
 
 // db.User foreignKey
 db.Warehouse.hasMany(db.User, {

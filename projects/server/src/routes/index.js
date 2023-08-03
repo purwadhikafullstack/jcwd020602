@@ -10,6 +10,7 @@ const shoeSizeRoutes = require("./shoeSize");
 const stockRoutes = require("./stock");
 const stockHistoryRoutes = require("./stockHistory");
 const stockMutationRoutes = require("./stockMutation");
+const cartRoutes = require("./cart");
 
 module.exports = {
   provinceCityRoutes,
@@ -24,4 +25,5 @@ module.exports = {
   subcategoryRoutes,
   shoeSizeRoutes,
   stockMutationRoutes,
+  cartRoutes,
 };

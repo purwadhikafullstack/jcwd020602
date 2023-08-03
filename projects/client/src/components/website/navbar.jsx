@@ -125,6 +125,7 @@ export default function Navbar() {
                             {val.name}
                           </Box>
                         </Link>
+
                       ))}
                   </Box>
                 </Box>
