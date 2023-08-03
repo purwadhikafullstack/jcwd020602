@@ -14,22 +14,16 @@ router.post(
 );
 router.get("/", shoeController.getAll);
 router.get("/:id", shoeController.getById);
-<<<<<<< Updated upstream
-router.get("/category/:category_id", shoeController.getByCategory);
-router.get("/subcategory/:subcategory_id", shoeController.getBySubcategory);
-router.get("/brand/:brand_id", shoeController.getByBrand);
-=======
-router.patch(
-  "/:id",
-  roleDecoder.checkSuper,
-  fileUploader({
-    destinationFolder: "shoe",
-    fileType: "image",
-  }).array("shoe", 4),
-  shoeController.editShoe
-);
+// router.patch(
+//   "/:id",
+//   roleDecoder.checkSuper,
+//   fileUploader({
+//     destinationFolder: "shoe",
+//     fileType: "image",
+//   }).array("shoe", 4),
+//   shoeController.editShoe
+// );
 
-router.delete("/:id", roleDecoder.checkSuper, shoeController.deleteShoe);
->>>>>>> Stashed changes
+// router.delete("/:id", roleDecoder.checkSuper, shoeController.deleteShoe);
 
 module.exports = router;

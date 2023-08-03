@@ -1,15 +1,9 @@
 const db = require("../models");
-<<<<<<< Updated upstream
-const dotenv = require("dotenv");
-dotenv.config();
-const { Op } = require("sequelize");
-=======
 const { nanoid } = require("nanoid");
 const { Op, where } = require("sequelize");
 const bcrypt = require("bcrypt");
 const moment = require("moment");
 
->>>>>>> Stashed changes
 module.exports = {
   roleChecker: async (id) => {
     try {
@@ -21,8 +15,6 @@ module.exports = {
       return err;
     }
   },
-<<<<<<< Updated upstream
-=======
   findToken: async (body) => {
     try {
       const whereClause = {
@@ -103,5 +95,4 @@ module.exports = {
       return err;
     }
   },
->>>>>>> Stashed changes
 };

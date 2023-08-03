@@ -13,8 +13,5 @@ router.post(
   brandController.addBrand
 );
 router.get("/", brandController.getAll);
-<<<<<<< Updated upstream
-=======
-router.delete("/:id", roleDecoder.checkSuper, brandController.deleteBrand);
->>>>>>> Stashed changes
+// router.delete("/:id", roleDecoder.checkSuper, brandController.deleteBrand);
 module.exports = router;

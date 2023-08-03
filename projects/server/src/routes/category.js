@@ -13,11 +13,6 @@ router.post(
   categoryController.addCategory
 );
 router.get("/", categoryController.getAllCategory);
-<<<<<<< Updated upstream
-router.get("/:id", categoryController.getCategoryById);
-router.patch("/:id", categoryController.editCategory);
-router.delete("/:id", categoryController.deleteCategory);
-=======
 router.get("/:id", roleDecoder.checkSuper, categoryController.getCategoryById);
 router.patch(
   "/:id",
@@ -33,6 +28,5 @@ router.delete(
   roleDecoder.checkSuper,
   categoryController.deleteCategory
 );
->>>>>>> Stashed changes
 
 module.exports = router;

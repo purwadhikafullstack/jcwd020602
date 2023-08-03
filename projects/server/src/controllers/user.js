@@ -102,50 +102,15 @@ const userController = {
       if (!match) {
         throw new Error("Wrong password");
       }
-<<<<<<< Updated upstream
-=======
       const id = JSON.stringify({ id: user.dataValues.id });
       const generateToken = nanoid();
       let token = await findToken({ userId: id, valid: 1, status: "LOGIN" });
-      console.log(token);
       if (!token) {
         await createToken(id, generateToken, true, "LOGIN", t);
       } else {
         await updateToken(id, generateToken, true, "LOGIN", t);
       }
->>>>>>> Stashed changes
 
-      const userId = { id: user.dataValues.id };
-
-      let token = await db.Token.findOne({
-        where: {
-          userId: JSON.stringify(userId),
-          expired: {
-            [db.Sequelize.Op.gte]: moment().format(),
-          },
-          valid: true,
-          status: "LOGIN",
-        },
-      });
-
-      if (!token) {
-        token = await db.Token.create({
-          expired: moment().add(1, "h").format(),
-          token: nanoid(),
-          userId: JSON.stringify(userId),
-          status: "LOGIN",
-        });
-      } else {
-        token = await db.Token.update(
-          {
-            expired: moment().add(1, "h").format(),
-            token: nanoid(),
-          },
-          {
-            where: { userId: JSON.stringify(userId), status: "LOGIN" },
-          }
-        );
-      }
       t.commit();
       delete user.dataValues.password;
       delete user.dataValues.id;
