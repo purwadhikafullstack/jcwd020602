@@ -31,7 +31,9 @@ export default function EditProduct(props) {
     const res = await api.get("/shoes/" + props.id);
     setShoe(res.data);
     const { ShoeImages } = res.data;
-    const images = ShoeImages.map((val) => val.shoe_img);
+    const images = ShoeImages.map(
+      (val) => `${process.env.REACT_APP_API_BASE_URL}/${val.shoe_img}`
+    );
     setSelectedImages(images);
   };
 

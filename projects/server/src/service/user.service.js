@@ -28,6 +28,7 @@ module.exports = {
           },
           valid: { [Op.like]: `%${body?.valid || 1}%` },
           status: { [Op.like]: `%${body?.status || ""}%` },
+        },
       });
     } catch (err) {
       return err;

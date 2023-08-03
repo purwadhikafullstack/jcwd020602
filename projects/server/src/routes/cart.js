@@ -7,6 +7,5 @@ const tokenDecoder = require("../middlewares/tokenDecoder");
 router.post("/addCart", tokenDecoder, cartController.addShoe);
 router.get("/getCart", tokenDecoder, cartController.getCartData);
 // testing token decoder
-router.get("/v3", tokenDecoder, cartController.getUserByToken);
 
 module.exports = router;

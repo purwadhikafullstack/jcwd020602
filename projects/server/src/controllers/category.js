@@ -1,5 +1,4 @@
 const db = require("../models");
-const CATEGORY_URL = process.env.CATEGORY_URL;
 const fs = require("fs");
 
 const categoryController = {
@@ -15,7 +14,7 @@ const categoryController = {
         return res.status(400).send({ message: "name alrdy exist" });
       }
       await db.Category.create(
-        { name, category_img: CATEGORY_URL + filename },
+        { name, category_img: "category/" + filename },
         { transaction: t }
       );
       await t.commit();
@@ -88,7 +87,7 @@ const categoryController = {
       if (check?.dataValues?.category_img) {
         fs.unlinkSync(
           `${__dirname}/../public/category/${
-            check.dataValues.category_img.split("/")[5]
+            check.dataValues.category_img.split("/")[1]
           }`
         );
       }
@@ -98,7 +97,7 @@ const categoryController = {
           name,
           category_img: !req?.file?.filename
             ? category
-            : CATEGORY_URL + filename,
+            : "category/" + filename,
         },
         { where: { id: req.params.id } },
         { transaction: t }
@@ -140,7 +139,7 @@ const categoryController = {
       if (check?.dataValues?.category_img) {
         fs.unlinkSync(
           `${__dirname}/../public/category/${
-            check.dataValues.category_img.split("/")[5]
+            check.dataValues.category_img.split("/")[1]
           }`
         );
       }
