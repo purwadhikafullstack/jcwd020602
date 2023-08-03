@@ -14,22 +14,20 @@ export default function AuthProvider({ children }) {
     try {
       const token = JSON.parse(localStorage.getItem("user"));
       if (token) {
-        const user = await api
-          .get("/auth/userbytoken", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          })
-          .then((res) => res.data);
+        const user = await api.get("/auth/userbytoken", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         if (user) {
           dispatch({
             type: "login",
-            payload: user,
+            payload: user.data,
           });
         }
       }
     } catch (err) {
-      console.log(err);
+      console.log(err.response.data);
     }
   }
 

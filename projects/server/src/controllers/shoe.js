@@ -1,5 +1,30 @@
 const db = require("../models");
 SHOE_URL = process.env.SHOE_URL;
+const { Op, where } = require("sequelize");
+const fs = require("fs");
+const includeOptions = [
+  {
+    model: db.Brand,
+    attributes: ["id", "name", "logo_img", "brand_img"],
+  },
+  {
+    model: db.Category,
+    attributes: ["id", "name", "category_img"],
+  },
+  {
+    model: db.SubCategory,
+    attributes: ["id", "name"],
+  },
+  {
+    model: db.ShoeImage,
+    attributes: ["id", "shoe_img"],
+  },
+  {
+    model: db.Stock,
+    attributes: ["stock"],
+    include: [db.ShoeSize],
+  },
+];
 
 const shoeController = {
   addShoe: async (req, res) => {
@@ -32,158 +57,74 @@ const shoeController = {
       return res.status(200).send({ message: "success add shoe" });
     } catch (err) {
       await t.rollback();
-      return res.status(500).send(err.message);
-    }
-  },
-  getAll: async (req, res) => {
-    try {
-      const shoes = await db.Shoe.findAll({
-        include: [
-          {
-            model: db.Brand,
-            attributes: ["id", "name", "logo_img", "brand_img"],
-          },
-          {
-            model: db.Category,
-            attributes: ["id", "name", "category_img"],
-          },
-          {
-            model: db.SubCategory,
-            attributes: ["id", "name"],
-          },
-          {
-            model: db.ShoeImage,
-            attributes: ["id", "shoe_img"],
-          },
-        ],
-      });
-      return res.status(200).send(shoes);
-    } catch (err) {
-      return res.status(500).send(err.message);
-    }
-  },
-  getById: async (req, res) => {
-    try {
-      const { id } = req.params;
-      const shoe = await db.Shoe.findOne({
-        include: [
-          {
-            model: db.Brand,
-            attributes: ["id", "name", "logo_img", "brand_img"],
-          },
-          {
-            model: db.Category,
-            attributes: ["id", "name", "category_img"],
-          },
-          {
-            model: db.SubCategory,
-            attributes: ["id", "name"],
-          },
-          {
-            model: db.ShoeImage,
-            attributes: ["id", "shoe_img"],
-          },
-        ],
-        where: { id },
-      });
-
-      if (!shoe) {
-        throw new Error("shoe not found");
+      if (req.files) {
+        for (const file of req.files) {
+          const { filename } = file;
+          fs.unlinkSync(`${__dirname}/../public/shoe/${filename}`);
+        }
       }
-      return res.status(200).send(shoe);
-    } catch (err) {
       return res.status(500).send(err.message);
     }
   },
-  getByCategory: async (req, res) => {
+  getAllShoe: async (req, res) => {
     try {
-      const { category_id } = req.params;
-      const shoe = await db.Shoe.findOne({
-        include: [
-          {
-            model: db.Brand,
-            attributes: ["id", "name", "logo_img", "brand_img"],
-          },
-          {
-            model: db.Category,
-            attributes: ["id", "name", "category_img"],
-          },
-          {
-            model: db.SubCategory,
-            attributes: ["id", "name"],
-          },
-          {
-            model: db.ShoeImage,
-            attributes: ["id", "shoe_img"],
-          },
-        ],
-        where: { category_id },
-      });
+      const category = req?.query?.category || "";
+      const sub = req?.query?.sub || "";
+      const gender = req?.query?.filter?.gender;
+      const sort = req?.query?.filter?.sort || "id";
+      const order = req?.query?.filter?.order || "ASC";
+      const brand = req?.query?.filter?.brand || "";
+      const limit = req?.query?.filter?.limit || 4;
+      const page = req?.query?.filter?.page || 1;
+      const offset = (parseInt(page) - 1) * limit;
 
-      if (!shoe) {
-        throw new Error("shoe not found");
+      const whereClause = { [Op.and]: [] };
+      if (category && sub) {
+        whereClause[Op.and].push({
+          [Op.and]: [
+            { "$Category.name$": { [Op.like]: `${category}%` } },
+            { "$subcategory.name$": { [Op.like]: `%${sub}%` } },
+          ],
+        });
+      } else if (category) {
+        whereClause[Op.and].push({
+          [Op.or]: [
+            { "$Category.name$": { [Op.like]: `${category}%` } },
+            { "$brand.name$": { [Op.like]: `%${category}%` } },
+          ],
+        });
       }
-      return res.status(200).send(shoe);
-    } catch (err) {
-      return res.status(500).send(err.message);
-    }
-  },
-  getBySubcategory: async (req, res) => {
-    try {
-      const { subcategory_id } = req.params;
-      const shoe = await db.Shoe.findOne({
-        include: [
-          {
-            model: db.Brand,
-            attributes: ["id", "name", "logo_img", "brand_img"],
-          },
-          {
-            model: db.Category,
-            attributes: ["id", "name", "category_img"],
-          },
-          {
-            model: db.SubCategory,
-            attributes: ["id", "name"],
-          },
-          {
-            model: db.ShoeImage,
-            attributes: ["id", "shoe_img"],
-          },
-        ],
-        where: { subcategory_id },
+      if (brand) {
+        whereClause[Op.and].push({
+          "$brand.name$": brand,
+        });
+      }
+      if (gender) {
+        whereClause[Op.and].push({
+          "$Category.name$": gender,
+        });
+      }
+      const shoes = await db.Shoe.findAndCountAll({
+        include: includeOptions,
+        where: whereClause,
+        distinct: true,
+        order: [[sort, order]],
       });
-
-      if (!shoe) {
-        throw new Error("shoe not found");
-      }
-      return res.status(200).send(shoe);
+      shoes.rows = shoes.rows.slice(offset, page * limit);
+      return res
+        .status(200)
+        .send({ ...shoes, totalPages: Math.ceil(shoes.count / limit) });
     } catch (err) {
       return res.status(500).send(err.message);
     }
   },
-  getByBrand: async (req, res) => {
+  getShoeByName: async (req, res) => {
     try {
-      const { brand_id } = req.params;
+      const name = req?.params?.name;
+      // const id = req?.params?.id;
       const shoe = await db.Shoe.findOne({
-        include: [
-          {
-            model: db.Brand,
-            attributes: ["id", "name", "logo_img", "brand_img"],
-          },
-          {
-            model: db.Category,
-            attributes: ["id", "name", "category_img"],
-          },
-          {
-            model: db.SubCategory,
-            attributes: ["id", "name"],
-          },
-          {
-            model: db.ShoeImage,
-            attributes: ["id", "shoe_img"],
-          },
-        ],
-        where: { brand_id },
+        include: includeOptions,
+        where: { [Op.or]: [{ name }, { id: name }] },
       });
 
       if (!shoe) {
@@ -197,14 +138,31 @@ const shoeController = {
   deleteShoe: async (req, res) => {
     const t = await db.sequelize.transaction();
     try {
+      const check = await db.ShoeImage.findAll({
+        where: { shoe_id: req.params.id },
+      });
+
       await db.Shoe.destroy(
         { where: { id: req.params.id } },
         { transaction: t }
       );
+
+      if (check?.length > 0) {
+        const images = check.map((image) => image.shoe_img);
+        for (img of images) {
+          try {
+            fs.unlinkSync(`${__dirname}/../public/shoe/${img.split("/")[5]}`);
+            console.log(`berhasil delete sepatu ${img}`);
+          } catch (err) {
+            console.log(err.message);
+          }
+        }
+      }
       await db.ShoeImage.destroy(
         { where: { shoe_id: req.params.id } },
         { transaction: t }
       );
+
       await t.commit();
       return res.status(200).send({ message: "success delete product" });
     } catch (err) {
@@ -239,8 +197,6 @@ const shoeController = {
         { transaction: t }
       );
 
-      console.log(req.body);
-
       if (req.files && req.files.length > 0) {
         const imageArr = [];
         for (const file of req.files) {
@@ -248,6 +204,22 @@ const shoeController = {
           const imageUrl = SHOE_URL + filename;
           imageArr.push({ shoe_id: req.params.id, shoe_img: imageUrl });
         }
+
+        const check = await db.ShoeImage.findAll({
+          where: { shoe_id: req.params.id },
+        });
+        if (check?.length > 0) {
+          const images = check.map((image) => image.shoe_img);
+          for (img of images) {
+            try {
+              fs.unlinkSync(`${__dirname}/../public/shoe/${img.split("/")[5]}`);
+              console.log(`berhasil delete sepatu ${img}`);
+            } catch (err) {
+              console.log(err.message);
+            }
+          }
+        }
+
         await db.ShoeImage.destroy(
           { where: { shoe_id: req.params.id } },
           { transaction: t }
@@ -259,7 +231,12 @@ const shoeController = {
       return res.status(200).send({ message: "success update shoe" });
     } catch (err) {
       await t.rollback();
-      console.log(err.message);
+      if (req.files) {
+        for (const file of req.files) {
+          const { filename } = file;
+          fs.unlinkSync(`${__dirname}/../public/shoe/${filename}`);
+        }
+      }
       return res.status(500).send(err.message);
     }
   },

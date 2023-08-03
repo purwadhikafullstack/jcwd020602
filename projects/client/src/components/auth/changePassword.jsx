@@ -1,18 +1,6 @@
-import Footer from "../website/footer";
-import {
-  Button,
-  Center,
-  Flex,
-  Input,
-  InputGroup,
-  Icon,
-  Box,
-  useToast,
-  FormControl,
-  FormErrorMessage,
-  Text,
-  InputRightElement,
-} from "@chakra-ui/react";
+import { useToast, Text, InputRightElement } from "@chakra-ui/react";
+import { Button, Center, Flex, Input, InputGroup } from "@chakra-ui/react";
+import { FormControl, FormErrorMessage, Icon, Box } from "@chakra-ui/react";
 import { TbAlertCircleFilled } from "react-icons/tb";
 import { ViewOffIcon, ViewIcon } from "@chakra-ui/icons";
 import React, { useEffect, useState } from "react";
@@ -21,6 +9,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import YupPassword from "yup-password";
 import { api } from "../../api/api";
+import Footer from "../website/footer";
 
 export default function ChangePassword() {
   YupPassword(Yup);
@@ -49,55 +38,48 @@ export default function ChangePassword() {
         .required("confirm your password")
         .oneOf([Yup.ref("password"), null], "passwords don't match"),
     }),
-    onSubmit: () => {
+    onSubmit: async () => {
       const password = formik.values.password;
-      api
-        .patch(
+      try {
+        const res = await api.patch(
           "/auth/forgot-password",
           { password },
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        )
-        .then((res) => {
-          toast({
-            title: res.data.message,
-            status: "success",
-            position: "top",
-          });
-          return nav("/auth");
-        })
-        .catch((err) => {
-          toast({
-            title: err.response.data,
-            status: "error",
-            position: "top",
-          });
-        })
-        .finally(() => {
-          setIsLoading(false);
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        toast({
+          title: res.data.message,
+          status: "success",
+          position: "top",
         });
+        return nav("/auth");
+      } catch (err) {
+        toast({
+          title: err.response.data,
+          status: "error",
+          position: "top",
+        });
+      }
     },
   });
+
   useEffect(() => {
     const pathToken = location.pathname.split("/")[2];
     fetchUser(pathToken);
     setToken(pathToken);
   }, []);
 
-  const fetchUser = (token) => {
+  const fetchUser = async (token) => {
     try {
-      api
-        .get("/auth/userbytoken", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        .then((res) => {
-          setUser(res.data);
-        });
+      const res = await api.get("/auth/userbytoken", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setUser(res.data);
     } catch (err) {
-      console.log(err.response.data);
+      toast({
+        title: err.response.data,
+        status: "error",
+        position: "top",
+      });
     }
   };
 
@@ -217,7 +199,7 @@ export default function ChangePassword() {
         </Center>
       ) : (
         <Center h={"100vh"}>
-          <Box>link has expired</Box>
+          <Box fontSize={"50px"}>link has expired</Box>
         </Center>
       )}
     </>

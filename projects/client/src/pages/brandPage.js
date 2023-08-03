@@ -1,30 +1,8 @@
-import {
-  Box,
-  Button,
-  ButtonGroup,
-  Divider,
-  Flex,
-  Icon,
-  IconButton,
-  Input,
-  InputGroup,
-  InputRightAddon,
-  Tag,
-  useDisclosure,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableContainer,
-  Select,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  Image,
-} from "@chakra-ui/react";
+import { InputRightAddon, InputGroup, ButtonGroup } from "@chakra-ui/react";
+import { useDisclosure, TableContainer, MenuButton } from "@chakra-ui/react";
+import { Select, Menu, MenuList, MenuItem, Image } from "@chakra-ui/react";
+import { Box, Button, Divider, Flex, Icon, Input } from "@chakra-ui/react";
+import { Table, Thead, Tbody, Tr, Th, Td, IconButton } from "@chakra-ui/react";
 import { AiOutlinePlus } from "react-icons/ai";
 import { GrClose, GrMenu } from "react-icons/gr";
 import { FaSearch } from "react-icons/fa";
@@ -37,17 +15,16 @@ import { DeleteBrand } from "../components/dashboard/deleteCategory";
 
 export default function BrandPage() {
   const { isOpen, onClose, onOpen } = useDisclosure();
-  const [img, setImg] = useState();
   const addModal = useDisclosure();
-  const addSub = useDisclosure();
   const deleteModal = useDisclosure();
   const editModal = useDisclosure();
+  const [img, setImg] = useState();
   const userSelector = useSelector((state) => state.auth);
   const inputFileRef = useRef(null);
   const [search, setSearch] = useState();
   const { brands, fetch } = useFetchBrand();
   const [brandId, setBrandId] = useState();
-  console.log(brands);
+
   return (
     <>
       <Box id="content" pt={"52px"}>

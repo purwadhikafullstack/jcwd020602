@@ -1,30 +1,8 @@
-import {
-  Box,
-  Button,
-  ButtonGroup,
-  Divider,
-  Flex,
-  Icon,
-  IconButton,
-  Input,
-  InputGroup,
-  InputRightAddon,
-  Tag,
-  useDisclosure,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableContainer,
-  Select,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  Image,
-} from "@chakra-ui/react";
+import { Icon, Input, InputGroup, InputRightAddon } from "@chakra-ui/react";
+import { useDisclosure, TableContainer, Select, Image } from "@chakra-ui/react";
+import { Box, Button, ButtonGroup, Divider, Flex, Tag } from "@chakra-ui/react";
+import { Table, Thead, Tbody, Tr, Th, Td, IconButton } from "@chakra-ui/react";
+import { Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
 import { AiOutlinePlus } from "react-icons/ai";
 import { GrClose, GrMenu } from "react-icons/gr";
 import { FaSearch } from "react-icons/fa";
@@ -38,16 +16,15 @@ import EditProduct from "../components/dashboard/editProduct";
 
 export default function ProductPage() {
   const { isOpen, onClose, onOpen } = useDisclosure();
-  const [img, setImg] = useState();
   const addModal = useDisclosure();
   const deleteModal = useDisclosure();
   const editModal = useDisclosure();
+  const [img, setImg] = useState();
   const userSelector = useSelector((state) => state.auth);
   const inputFileRef = useRef(null);
   const [search, setSearch] = useState();
   const [shoeId, setShoeId] = useState();
   const { shoes, fetch } = useFetchShoe();
-  console.log(shoes);
   return (
     <>
       <Box id="content" pt={"52px"}>
@@ -113,7 +90,7 @@ export default function ProductPage() {
           <Box id="card-content" display={"none"}>
             <Flex flexDir={"column"} py={1}>
               {shoes &&
-                shoes.map((shoe, idx) => (
+                shoes.rows.map((shoe, idx) => (
                   <Flex
                     p={1}
                     m={1}
@@ -196,7 +173,7 @@ export default function ProductPage() {
               </Thead>
               <Tbody>
                 {shoes &&
-                  shoes.map((shoe, idx) => (
+                  shoes.rows.map((shoe, idx) => (
                     <Tr>
                       <Td w={"5%"}>{idx + 1}</Td>
                       <Td>

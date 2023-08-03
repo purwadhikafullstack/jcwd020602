@@ -1,29 +1,9 @@
-import {
-  Box,
-  Button,
-  ButtonGroup,
-  Divider,
-  Flex,
-  Icon,
-  IconButton,
-  Input,
-  InputGroup,
-  InputRightAddon,
-  useDisclosure,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableContainer,
-  Select,
-  Avatar,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-} from "@chakra-ui/react";
+import { Flex, Icon, IconButton } from "@chakra-ui/react";
+import { Box, Button, ButtonGroup, Divider } from "@chakra-ui/react";
+import { Input, InputGroup, InputRightAddon } from "@chakra-ui/react";
+import { useDisclosure, Table, Thead, Tbody } from "@chakra-ui/react";
+import { Tr, Th, Td, TableContainer, Select, Avatar } from "@chakra-ui/react";
+import { Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
 import { AiOutlinePlus } from "react-icons/ai";
 import { FaSearch } from "react-icons/fa";
 import { GrClose, GrMenu } from "react-icons/gr";

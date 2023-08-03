@@ -1,17 +1,6 @@
-import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  Button,
-  Input,
-  Select,
-  useToast,
-  Box,
-} from "@chakra-ui/react";
+import { ModalOverlay, ModalContent, ModalHeader } from "@chakra-ui/react";
+import { ModalFooter, ModalBody, ModalCloseButton } from "@chakra-ui/react";
+import { Button, Input, Select, useToast, Box, Modal } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { api } from "../../api/api";
 import { useFetchWarehouse } from "../../hooks/useFetchWarehouse";
@@ -20,9 +9,6 @@ import { useFetchShoeSize } from "../../hooks/useFetchShoeSize";
 
 export default function EditStock(props) {
   const toast = useToast();
-  const { shoes } = useFetchShoe();
-  const { warehouses } = useFetchWarehouse();
-  const { sizes } = useFetchShoeSize();
   const [isLoading, setIsLoading] = useState(false);
   const [stock, setStock] = useState({});
 
@@ -49,18 +35,18 @@ export default function EditStock(props) {
     props.onClose();
   }
   const updateStock = async () => {
-    await api
-      .patch("/stocks/" + stock.id, stock)
-      .then((res) => {
-        toast({
-          title: res.data.message,
-          status: "success",
-          position: "top",
-        });
-        props.fetch();
-        clearData();
-      })
-      .catch((err) => console.log(err));
+    try {
+      const res = await api.patch("/stocks/" + stock.id, stock);
+      toast({
+        title: res.data.message,
+        status: "success",
+        position: "top",
+      });
+      props.fetch();
+      clearData();
+    } catch (err) {
+      console.log(err.response.data);
+    }
   };
   return (
     <>

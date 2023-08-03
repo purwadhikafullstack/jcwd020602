@@ -17,19 +17,19 @@ export function DeleteCategory(props) {
   const cancelRef = React.useRef();
   const toast = useToast();
 
-  const deleteCategory = () => {
-    api
-      .delete("/categories/" + props.id)
-      .then((res) => {
-        toast({
-          title: res.data.message,
-          status: "success",
-          position: "top",
-        });
-        props.fetch();
-        props.onClose();
-      })
-      .catch((err) => console.log(err));
+  const deleteCategory = async () => {
+    try {
+      const res = await api.delete("/categories/" + props.id);
+      toast({
+        title: res.data.message,
+        status: "success",
+        position: "top",
+      });
+      props.fetch();
+      props.onClose();
+    } catch (err) {
+      console.log(err.response.data);
+    }
   };
 
   return (
@@ -77,19 +77,19 @@ export function DeleteSubcategory(props) {
   const cancelRef = React.useRef();
   const toast = useToast();
 
-  const deleteSub = () => {
-    api
-      .delete("/subcategories/" + props.id)
-      .then((res) => {
-        toast({
-          title: res.data.message,
-          status: "success",
-          position: "top",
-        });
-        props.fetch();
-        props.onClose();
-      })
-      .catch((err) => console.log(err));
+  const deleteSub = async () => {
+    try {
+      const res = await api.delete("/subcategories/" + props.id);
+      toast({
+        title: res.data.message,
+        status: "success",
+        position: "top",
+      });
+      props.fetch();
+      props.onClose();
+    } catch (err) {
+      console.log(err.response.data);
+    }
   };
 
   return (
@@ -137,19 +137,19 @@ export function DeleteBrand(props) {
   const cancelRef = React.useRef();
   const toast = useToast();
 
-  const deleteSub = () => {
-    api
-      .delete("/brands/" + props.id)
-      .then((res) => {
-        toast({
-          title: res.data.message,
-          status: "success",
-          position: "top",
-        });
-        props.fetch();
-        props.onClose();
-      })
-      .catch((err) => console.log(err));
+  const deleteSub = async () => {
+    try {
+      const res = await api.delete("/brands/" + props.id);
+      toast({
+        title: res.data.message,
+        status: "success",
+        position: "top",
+      });
+      props.fetch();
+      props.onClose();
+    } catch (err) {
+      console.log(err.response.data);
+    }
   };
 
   return (

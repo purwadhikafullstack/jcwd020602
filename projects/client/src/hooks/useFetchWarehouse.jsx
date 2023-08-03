@@ -3,13 +3,13 @@ import { api } from "../api/api";
 
 export const useFetchWarehouse = () => {
   const [warehouses, setWarehouses] = useState([]);
+
   const fetch = async () => {
     try {
-      api.get(`/warehouses`).then((res) => {
-        setWarehouses(res.data);
-      });
+      const res = await api.get(`/warehouses`);
+      setWarehouses(res.data);
     } catch (err) {
-      console.log(err);
+      console.log(err.response.data);
     }
   };
   useEffect(() => {
@@ -20,13 +20,13 @@ export const useFetchWarehouse = () => {
 
 export const useFetchWareProv = () => {
   const [provinces, setProvinces] = useState([]);
-  const fetch = () => {
+
+  const fetch = async () => {
     try {
-      api.get(`/warehouses/prov`).then((res) => {
-        setProvinces(res.data);
-      });
+      const res = await api.get(`/warehouses/prov`);
+      setProvinces(res.data);
     } catch (err) {
-      console.log(err);
+      console.log(err.response.data);
     }
   };
   useEffect(() => {
@@ -36,17 +36,15 @@ export const useFetchWareProv = () => {
 };
 export const useFetchWareCity = (province) => {
   const [cities, setCities] = useState([]);
+
   const fetch = async () => {
     try {
       if (province) {
-        await api
-          .get("/warehouses/city", { params: { province } })
-          .then((res) => {
-            setCities(res.data);
-          });
+        const res = await api.get("/warehouses/city", { params: { province } });
+        setCities(res.data);
       }
     } catch (err) {
-      console.log(err);
+      console.log(err.response.data);
     }
   };
 

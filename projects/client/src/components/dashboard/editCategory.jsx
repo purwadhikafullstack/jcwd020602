@@ -6,12 +6,8 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
-  Button,
-  Input,
-  useToast,
-  Box,
-  Image,
 } from "@chakra-ui/react";
+import { Button, Input, useToast, Box, Image } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { api } from "../../api/api";
 
@@ -34,25 +30,25 @@ export function EditCategory(props) {
     setImage(res.data.category_img);
   };
 
-  const updateCategory = () => {
+  const updateCategory = async () => {
     const formData = new FormData();
     formData.append("name", category.name);
     formData.append(
       "category",
       !selectedFile ? category.category_img : selectedFile
     );
-    api
-      .patch("/categories/" + props.id, formData)
-      .then((res) => {
-        toast({
-          title: res.data.message,
-          status: "success",
-          position: "top",
-        });
-        props.fetch();
-        clearS();
-      })
-      .catch((err) => console.log(err));
+    try {
+      const res = await api.patch("/categories/" + props.id, formData);
+      toast({
+        title: res.data.message,
+        status: "success",
+        position: "top",
+      });
+      props.fetch();
+      clearS();
+    } catch (err) {
+      console.log(err.response.data);
+    }
   };
 
   const clearS = () => {
@@ -137,20 +133,20 @@ export function EditSubcategory(props) {
     setName(res.data.name);
   };
 
-  const updateSubcategory = () => {
-    api
-      .patch("/subcategories/" + props.id, { name })
-      .then((res) => {
-        toast({
-          title: res.data.message,
-          status: "success",
-          position: "top",
-        });
-        props.fetch();
-        clearS();
-        props.onClose();
-      })
-      .catch((err) => console.log(err));
+  const updateSubcategory = async () => {
+    try {
+      const res = await api.patch("/subcategories/" + props.id, { name });
+      toast({
+        title: res.data.message,
+        status: "success",
+        position: "top",
+      });
+      props.fetch();
+      clearS();
+      props.onClose();
+    } catch (err) {
+      console.log(err.response.data);
+    }
   };
 
   const clearS = () => {

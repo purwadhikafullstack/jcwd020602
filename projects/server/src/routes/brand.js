@@ -10,6 +10,8 @@ router.post(
   }).array("brand", 2),
   brandController.addBrand
 );
+
 router.get("/", brandController.getAll);
+
 router.delete("/:id", brandController.deleteBrand);
 module.exports = router;

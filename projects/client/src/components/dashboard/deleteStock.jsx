@@ -23,7 +23,8 @@ export default function DeleteStock(props) {
   }
 
   const deleteStock = async () => {
-    await api.delete("/stocks/" + props.id).then((res) => {
+    try {
+      const res = await api.delete("/stocks/" + props.id);
       toast({
         title: res.data.message,
         status: "success",
@@ -32,7 +33,9 @@ export default function DeleteStock(props) {
       props.setShown({ page: 1 });
       props.fetch();
       clearData();
-    });
+    } catch (err) {
+      console.log(err.response.data);
+    }
   };
 
   return (

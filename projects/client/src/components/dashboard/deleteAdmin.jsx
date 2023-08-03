@@ -17,19 +17,19 @@ export default function DeleteAdmin(props) {
   const cancelRef = React.useRef();
   const toast = useToast();
 
-  const deleteAdmin = () => {
-    api
-      .delete("/auth/" + props.id)
-      .then((res) => {
-        toast({
-          title: res.data.message,
-          status: "success",
-          position: "top",
-        });
-        props.fetch();
-        props.onClose();
-      })
-      .catch((err) => console.log(err));
+  const deleteAdmin = async () => {
+    try {
+      const res = await api.delete("/auth/" + props.id);
+      toast({
+        title: res.data.message,
+        status: "success",
+        position: "top",
+      });
+      props.fetch();
+      props.onClose();
+    } catch (err) {
+      console.log(err.response.data);
+    }
   };
 
   return (

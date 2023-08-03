@@ -5,15 +5,16 @@ export const useFetchShoeSize = () => {
   const [sizes, setSizes] = useState([]);
   const fetch = async () => {
     try {
-      await api.get(`/shoeSizes`).then((res) => {
-        setSizes(res.data);
-      });
+      const res = await api.get(`/shoeSizes`);
+      setSizes(res.data);
     } catch (err) {
-      console.log(err);
+      console.log(err.response.data);
     }
   };
+
   useEffect(() => {
     fetch();
   }, []);
+
   return { sizes, fetch };
 };

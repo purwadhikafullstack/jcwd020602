@@ -1,18 +1,11 @@
 import {
-  Modal,
   ModalOverlay,
   ModalContent,
   ModalHeader,
   ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  Button,
-  Input,
-  Textarea,
-  Select,
-  useToast,
-  Box,
 } from "@chakra-ui/react";
+import { Box, ModalBody, ModalCloseButton, Modal } from "@chakra-ui/react";
+import { Button, Input, Textarea, Select, useToast } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { api } from "../../api/api";
 import { useFetchCity, useFetchProv } from "../../hooks/useFetchProvCity";
@@ -44,33 +37,31 @@ export default function EditWarehouse(props) {
     setWarehouse(temp);
   }
 
-  const updateWarehouse = () => {
-    api
-      .patch("/warehouses/" + warehouse.id, warehouse)
-      .then((res) => {
-        toast({
-          title: res.data.message,
-          status: "success",
-          position: "top",
-        });
-        props.fetch();
-        props.onClose();
-      })
-      .catch((err) => console.log(err));
+  const updateWarehouse = async () => {
+    try {
+      const res = await api.patch("/warehouses/" + warehouse.id, warehouse);
+      toast({
+        title: res.data.message,
+        status: "success",
+        position: "top",
+      });
+      props.fetch();
+      clearWarehouse();
+    } catch (err) {
+      console.log(err.response.message);
+    }
   };
 
   const clearWarehouse = () => {
     setWarehouse({});
+    props.onClose();
   };
   return (
     <>
       <Modal
         scrollBehavior="inside"
         isOpen={props.isOpen}
-        onClose={() => {
-          props.onClose();
-          clearWarehouse();
-        }}
+        onClose={clearWarehouse}
         closeOnOverlayClick={false}
       >
         <ModalOverlay />
@@ -148,7 +139,6 @@ export default function EditWarehouse(props) {
                 setTimeout(() => {
                   setIsLoading(false);
                   updateWarehouse();
-                  clearWarehouse();
                 }, 2000);
               }}
             >

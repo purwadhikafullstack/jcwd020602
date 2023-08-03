@@ -9,14 +9,7 @@ module.exports = {
     try {
       return await db.User.findOne({
         where: {
-          [Op.or]: [
-            {
-              email: user,
-            },
-            {
-              id: user,
-            },
-          ],
+          [Op.or]: [{ email: user }, { id: user }],
         },
       });
     } catch (err) {
@@ -25,7 +18,6 @@ module.exports = {
   },
   findToken: async (body) => {
     try {
-      console.log(body);
       return await db.Token.findOne({
         where: {
           userId: { [Op.like]: `%${body?.id || ""}%` },

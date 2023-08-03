@@ -1,33 +1,13 @@
-import {
-  Box,
-  Button,
-  ButtonGroup,
-  Divider,
-  Flex,
-  Icon,
-  Input,
-  InputGroup,
-  InputRightAddon,
-  useDisclosure,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableContainer,
-  Select,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-} from "@chakra-ui/react";
+import { Box, Button } from "@chakra-ui/react";
+import { Divider, Flex, Icon, Input, Table } from "@chakra-ui/react";
+import { InputGroup, InputRightAddon, useDisclosure } from "@chakra-ui/react";
+import { Thead, Tbody, Tr, Th, Td, TableContainer } from "@chakra-ui/react";
+import { Select, Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
 import { GrClose, GrMenu } from "react-icons/gr";
 import { FaSearch } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { useEffect, useRef, useState } from "react";
 import { useFetchSubcategory } from "../hooks/useFetchCategory";
-import { Link } from "react-router-dom";
 import { EditSubcategory } from "../components/dashboard/editCategory";
 import { DeleteSubcategory } from "../components/dashboard/deleteCategory";
 
@@ -39,7 +19,6 @@ export default function SubcategoryPage() {
   const [search, setSearch] = useState();
   const { sub: subcategory, fetch } = useFetchSubcategory();
   const [subId, setSubId] = useState();
-  console.log(subcategory);
   return (
     <>
       <Box id="content" pt={"52px"}>

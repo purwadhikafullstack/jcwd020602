@@ -1,22 +1,7 @@
-import {
-  Flex,
-  Box,
-  Button,
-  Center,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  Heading,
-  Icon,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  Stack,
-  useToast,
-} from "@chakra-ui/react";
+import { Box, Button, FormControl, FormErrorMessage } from "@chakra-ui/react";
+import { InputGroup, InputLeftElement, useToast } from "@chakra-ui/react";
+import { FormLabel, Heading, Icon, Input, Stack } from "@chakra-ui/react";
 import { FaEnvelope } from "react-icons/fa";
-import { useState } from "react";
-import axios from "axios";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
@@ -25,44 +10,37 @@ import { api } from "../../api/api";
 export default function Register() {
   const toast = useToast({ position: "top" });
   const nav = useNavigate();
-
-  const validationSchema = Yup.object().shape({
-    email: Yup.string()
-      .email(
-        "* email is invalid. Make sure it's written like example@email.com"
-      )
-      .required("* Email is required"),
-  });
-
   const formik = useFormik({
     initialValues: {
       email: "",
     },
-    validationSchema: validationSchema,
-    onSubmit: async (values) => {
-      await register(values);
+    validationSchema: Yup.object().shape({
+      email: Yup.string()
+        .email(
+          "* email is invalid. Make sure it's written like example@email.com"
+        )
+        .required("* Email is required"),
+    }),
+    onSubmit: async () => {
+      try {
+        const res = await api.post("/auth/register", formik.values);
+        toast({
+          title: res.data.message,
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+        nav("/auth");
+      } catch (err) {
+        toast({
+          title: err.response?.data,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
     },
   });
-
-  const register = async (values) => {
-    try {
-      await api.post("/auth/register", values);
-      toast({
-        title: "Check your email for verification",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
-      nav("/auth");
-    } catch (err) {
-      toast({
-        title: err.response?.data,
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    }
-  };
 
   return (
     <Box>

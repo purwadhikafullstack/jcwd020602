@@ -10,8 +10,11 @@ router.post(
   }).single("category"),
   categoryController.addCategory
 );
+
 router.get("/", categoryController.getAllCategory);
+
 router.get("/:id", categoryController.getCategoryById);
+
 router.patch(
   "/:id",
   fileUploader({
@@ -20,6 +23,7 @@ router.patch(
   }).single("category"),
   categoryController.editCategory
 );
+
 router.delete("/:id", categoryController.deleteCategory);
 
 module.exports = router;
