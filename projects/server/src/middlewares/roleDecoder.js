@@ -71,7 +71,8 @@ const roleDecoder = {
   checkSuper: async (req, res, next) => {
     try {
       const token = req.headers.authorization.split(" ")[1];
-      const find = findToken({ token, valid: 1 });
+      const find = await findToken({ token, valid: 1 });
+      console.log(find);
 
       if (!find) {
         throw new UnauthorizedError(
@@ -83,6 +84,7 @@ const roleDecoder = {
           id: JSON.parse(find?.dataValues?.userId).id,
         },
       });
+      console.log(user.role);
       if (user.role != "SUPERADMIN") {
         throw new UnauthorizedError(
           "You are a staff and is not authorized to access this feature."

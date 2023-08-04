@@ -3,7 +3,7 @@ const router = require("express").Router();
 const roleDecoder = require("../middlewares/roleDecoder");
 
 router.post("/", roleDecoder.checkSuper, categoryController.addSubcategory);
-router.get("/", roleDecoder.checkAdmin, categoryController.getAllSub);
+router.get("/", categoryController.getAllSub);
 router.get(
   "/:id",
   roleDecoder.checkSuper,

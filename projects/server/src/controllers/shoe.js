@@ -70,15 +70,17 @@ const shoeController = {
     try {
       const category = req?.query?.category || "";
       const sub = req?.query?.sub || "";
-      const gender = req?.query?.filter?.gender;
+      const gender = req?.query?.filter?.gender || "";
+      const size = req?.query?.filter?.size || "";
+      const brand = req?.query?.filter?.brand || "";
+      const search = req?.query?.filter?.search || "";
       const sort = req?.query?.filter?.sort || "id";
       const order = req?.query?.filter?.order || "ASC";
-      const brand = req?.query?.filter?.brand || "";
-      const limit = req?.query?.filter?.limit || 4;
+      const limit = req?.query?.filter?.limit || 8;
       const page = req?.query?.filter?.page || 1;
       const offset = (parseInt(page) - 1) * limit;
-
       const whereClause = { [Op.and]: [] };
+
       if (category && sub) {
         whereClause[Op.and].push({
           [Op.and]: [
@@ -93,17 +95,45 @@ const shoeController = {
             { "$brand.name$": { [Op.like]: `%${category}%` } },
           ],
         });
+      } else if (search) {
+        whereClause[Op.and].push({
+          [Op.or]: [
+            { name: { [Op.like]: `%${search}%` } },
+            { "$Category.name$": { [Op.like]: `${search}%` } },
+            { "$brand.name$": { [Op.like]: `%${search}%` } },
+            { "$subcategory.name$": { [Op.like]: `%${search}%` } },
+          ],
+        });
       }
-      if (brand) {
+
+      if (brand && size) {
+        whereClause[Op.and].push({
+          [Op.and]: [
+            { "$brand.name$": brand },
+            { "$stocks.shoeSize.size$": size },
+          ],
+        });
+      } else if (gender && size) {
+        whereClause[Op.and].push({
+          [Op.and]: [
+            { "$Category.name$": gender },
+            { "$stocks.shoeSize.size$": size },
+          ],
+        });
+      } else if (brand) {
         whereClause[Op.and].push({
           "$brand.name$": brand,
         });
-      }
-      if (gender) {
+      } else if (gender) {
         whereClause[Op.and].push({
           "$Category.name$": gender,
         });
+      } else if (size) {
+        whereClause[Op.and].push({
+          "$stocks.shoeSize.size$": size,
+        });
       }
+
       const shoes = await db.Shoe.findAndCountAll({
         include: includeOptions,
         where: whereClause,

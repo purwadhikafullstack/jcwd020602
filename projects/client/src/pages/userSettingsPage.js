@@ -16,6 +16,7 @@ import AssignAdmin, {
 import AddAdmin from "../components/dashboard/addAdmin";
 import EditAdmin from "../components/dashboard/editAdmin";
 import DeleteAdmin from "../components/dashboard/deleteAdmin";
+import { api } from "../api/api";
 
 export default function UserSettingsPage() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -28,6 +29,8 @@ export default function UserSettingsPage() {
   const [search, setSearch] = useState();
   const { users, fetch } = useFetchUser();
   const [adminId, setAdminId] = useState();
+  console.log(users);
+
   return (
     <>
       <Box id="content" pt={"52px"}>
