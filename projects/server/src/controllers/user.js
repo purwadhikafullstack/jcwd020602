@@ -1,7 +1,6 @@
 const db = require("../models");
 const bcrypt = require("bcrypt");
 const { nanoid } = require("nanoid");
-const moment = require("moment");
 const mailer = require("../lib/nodemailer");
 const fs = require("fs");
 const handlebars = require("handlebars");
@@ -12,7 +11,6 @@ const {
   findToken,
   updateUser,
 } = require("../service/user.service");
-const AVATAR_URL = process.env.AVATAR_URL;
 
 const userController = {
   register: async (req, res) => {
@@ -32,10 +30,7 @@ const userController = {
         const generateToken = nanoid();
         await createToken(id, generateToken, true, "VERIFY", t);
 
-        const template = await fs.readFile(
-          "./src/template/register.html",
-          "utf-8"
-        );
+        const template = fs.readFile("./src/template/register.html", "utf-8");
         let compiledTemplate = handlebars.compile(template);
         let registerTemplate = compiledTemplate({
           registrationLink: `${process.env.URL}/verify/${generateToken}`,
@@ -148,7 +143,7 @@ const userController = {
           await createToken(id, generateToken, true, "FORGOT-PASSWORD", t);
         }
 
-        const template = await fs.readFile(
+        const template = fs.readFile(
           "./src/template/forgotPassword.html",
           "utf-8"
         );
@@ -195,12 +190,12 @@ const userController = {
     const t = await db.sequelize.transaction();
     try {
       const { name, email, phone, password } = req.body;
-      const { filename } = req.file;
+      const { filename } = req?.file;
       const hashPassword = await bcrypt.hash(password, 10);
       const check = await findUser(email);
 
       if (check) {
-        fs.unlinkSync(req.file.path);
+        fs.unlinkSync(req?.file?.path);
         return res.status(400).send({ message: "email alrdy exist" });
       }
 
@@ -219,7 +214,7 @@ const userController = {
       await t.commit();
       return res.status(200).send({ message: "success add admin" });
     } catch (err) {
-      fs.unlinkSync(req.file.path);
+      // fs.unlinkSync(req?.file?.path);
       await t.rollback();
       return res.status(500).send(err.message);
     }

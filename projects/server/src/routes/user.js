@@ -28,17 +28,15 @@ router.get(
   userController.getUserByToken
 );
 
-
 //token forgot password
-// router.get("/generate-token/email", userController.generateTokenByEmail);
+router.get("/generate-token/email", userController.generateTokenByEmail);
 
 //forgot password
-// router.patch(
-//   "/forgot-password",
-//   userController.tokenDecoder,
-//   userController.forgotPassword
-// );
-
+router.patch(
+  "/forgot-password",
+  userController.tokenDecoder,
+  userController.forgotPassword
+);
 
 // ------------- admin
 router.post(

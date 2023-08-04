@@ -19,9 +19,11 @@ export default function ProductList() {
     order: "",
     brand: "",
     gender: "",
+    size: "",
   });
   const { shoes, fetch } = useFetchShoe(category, sub, filter);
-
+  console.log(shoes);
+  console.log(filter);
   // -------------------------- pagination
   const [pages, setPages] = useState([]);
   const [shown, setShown] = useState({ page: 1 });
@@ -48,7 +50,7 @@ export default function ProductList() {
   }, [category, sub, filter]);
 
   useEffect(() => {
-    setFilter({ ...filter, brand: "", gender: "" });
+    setFilter({ ...filter, brand: "", gender: "", size: "" });
     setShown({ page: 1 });
   }, [category, sub]);
 
@@ -81,7 +83,7 @@ export default function ProductList() {
               value={filter?.brand}
               defaultValue={""}
               onChange={(e) => {
-                setFilter({ brand: e.target.value });
+                setFilter({ ...filter, brand: e.target.value });
               }}
             >
               <option value={""}>FILTER BY BRAND:</option>
@@ -93,9 +95,16 @@ export default function ProductList() {
               <option value={"New balance"}>New balance</option>
             </Select>
           )}
-          <Select id="select" placeholder="FILTER BY SIZE:">
+          <Select
+            id="select"
+            value={filter.size}
+            placeholder="FILTER BY SIZE:"
+            onChange={(e) => {
+              setFilter({ ...filter, size: e.target.value });
+            }}
+          >
             {sizes.map((val) => (
-              <option>{val}</option>
+              <option value={val}>{val}</option>
             ))}
           </Select>
           <Select
@@ -103,6 +112,7 @@ export default function ProductList() {
             placeholder="SORT BY:"
             onChange={(e) => {
               setFilter({
+                ...filter,
                 sort: e.target.value.split(",")[0],
                 order: e.target.value.split(",")[1],
               });

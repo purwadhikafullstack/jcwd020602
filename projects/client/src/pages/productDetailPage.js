@@ -97,7 +97,7 @@ export default function ProductDetailPage() {
             <Box id="detail"> select size:</Box>
             <Flex gap={2} flexWrap={"wrap"}>
               {shoe?.stocks?.map((val) =>
-                val.stock < 10 ? (
+                val.stock <= 0 ? (
                   <Button
                     isDisabled
                     variant={"outline"}

@@ -47,7 +47,7 @@ const brandController = {
     const t = await db.sequelize.transaction();
     try {
       const check = await db.Brand.findOne({ where: { id: req.params.id } });
-
+      console.log(check?.dataValues?.logo_img.split("/")[1]);
       if (check?.dataValues?.logo_img) {
         `${__dirname}/../public/brand/${
           check?.dataValues?.logo_img.split("/")[1]
