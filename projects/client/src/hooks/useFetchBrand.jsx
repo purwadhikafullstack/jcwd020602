@@ -9,7 +9,7 @@ export const useFetchBrand = () => {
       const res = await api.get(`/brands`);
       setBrands(res.data);
     } catch (err) {
-      console.log(err.response.data);
+      console.log(err?.response?.data);
     }
   };
 

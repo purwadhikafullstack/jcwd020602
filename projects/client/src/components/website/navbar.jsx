@@ -33,7 +33,6 @@ export default function Navbar() {
   const { brands } = useFetchBrand();
   const { categories } = useFetchCategory();
   const userSelector = useSelector((state) => state.auth);
-  const [filter, setFilter] = useState({ search: "" });
 
   window.addEventListener("scroll", function () {
     var navbar = document.querySelector(".navbar");
@@ -126,6 +125,7 @@ export default function Navbar() {
                             {val.name}
                           </Box>
                         </Link>
+
                       ))}
                   </Box>
                 </Box>

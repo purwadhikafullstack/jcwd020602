@@ -156,9 +156,7 @@ export default function CategoryPage() {
                       </Box>
                     )}
                     <Divider />
-                    <Image
-                      src={`${process.env.REACT_APP_API_BASE_URL}/${category.category_img}`}
-                    />
+                    <Image src={category.category_img} />
                   </Flex>
                 ))}
             </Flex>
@@ -184,12 +182,10 @@ export default function CategoryPage() {
                         <Image
                           cursor={"pointer"}
                           onClick={() => {
-                            setImg(
-                              `${process.env.REACT_APP_API_BASE_URL}/${category.category_img}`
-                            );
+                            setImg(category.category_img);
                             onOpen();
                           }}
-                          src={`${process.env.REACT_APP_API_BASE_URL}/${category.category_img}`}
+                          src={category.category_img}
                           w={"30px"}
                         />
                       </Td>

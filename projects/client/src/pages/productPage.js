@@ -146,12 +146,10 @@ export default function ProductPage() {
                         <Image
                           cursor={"pointer"}
                           onClick={() => {
-                            setImg(
-                              `${process.env.REACT_APP_API_BASE_URL}/${val.shoe_img}`
-                            );
+                            setImg(val.shoe_img);
                             onOpen();
                           }}
-                          src={`${process.env.REACT_APP_API_BASE_URL}/${val?.shoe_img}`}
+                          src={val?.shoe_img}
                           w={10}
                         />
                       ))}
@@ -184,12 +182,10 @@ export default function ProductPage() {
                             <Image
                               cursor={"pointer"}
                               onClick={() => {
-                                setImg(
-                                  `${process.env.REACT_APP_API_BASE_URL}/${val.shoe_img}`
-                                );
+                                setImg(val.shoe_img);
                                 onOpen();
                               }}
-                              src={`${process.env.REACT_APP_API_BASE_URL}/${val?.shoe_img}`}
+                              src={val?.shoe_img}
                               w={10}
                             />
                           ))}

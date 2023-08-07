@@ -1,6 +1,7 @@
 const db = require("../models");
 const bcrypt = require("bcrypt");
 const { nanoid } = require("nanoid");
+const moment = require("moment");
 const mailer = require("../lib/nodemailer");
 const fs = require("fs");
 const handlebars = require("handlebars");
@@ -11,6 +12,7 @@ const {
   findToken,
   updateUser,
 } = require("../service/user.service");
+const AVATAR_URL = process.env.AVATAR_URL;
 
 const userController = {
   register: async (req, res) => {
@@ -30,7 +32,10 @@ const userController = {
         const generateToken = nanoid();
         await createToken(id, generateToken, true, "VERIFY", t);
 
-        const template = fs.readFile("./src/template/register.html", "utf-8");
+        const template = fs.readFileSync(
+          "./src/template/register.html",
+          "utf-8"
+        );
         let compiledTemplate = handlebars.compile(template);
         let registerTemplate = compiledTemplate({
           registrationLink: `${process.env.URL}/verify/${generateToken}`,
@@ -89,7 +94,6 @@ const userController = {
       } else {
         await updateToken(id, generateToken, true, "LOGIN", t);
       }
-
       t.commit();
       delete user.dataValues.password;
       delete user.dataValues.id;
@@ -106,8 +110,8 @@ const userController = {
   tokenDecoder: async (req, res, next) => {
     try {
       const token = req.headers.authorization.split(" ")[1];
-      console.log(token);
       let p = await findToken({ token: token, valid: 1 });
+      console.log(p);
       if (!p) {
         throw new Error("token has expired");
       }
@@ -143,7 +147,7 @@ const userController = {
           await createToken(id, generateToken, true, "FORGOT-PASSWORD", t);
         }
 
-        const template = fs.readFile(
+        const template = await fs.readFile(
           "./src/template/forgotPassword.html",
           "utf-8"
         );
@@ -190,12 +194,12 @@ const userController = {
     const t = await db.sequelize.transaction();
     try {
       const { name, email, phone, password } = req.body;
-      const { filename } = req?.file;
+      const { filename } = req.file;
       const hashPassword = await bcrypt.hash(password, 10);
       const check = await findUser(email);
 
       if (check) {
-        fs.unlinkSync(req?.file?.path);
+        fs.unlinkSync(req.file.path);
         return res.status(400).send({ message: "email alrdy exist" });
       }
 
@@ -205,7 +209,7 @@ const userController = {
           email,
           phone,
           password: hashPassword,
-          avatar_url: "avatar/" + filename,
+          avatar_url: AVATAR_URL + filename,
           role: "ADMIN",
           status: "verified",
         },
@@ -214,7 +218,7 @@ const userController = {
       await t.commit();
       return res.status(200).send({ message: "success add admin" });
     } catch (err) {
-      // fs.unlinkSync(req?.file?.path);
+      fs.unlinkSync(req.file.path);
       await t.rollback();
       return res.status(500).send(err.message);
     }
@@ -246,7 +250,7 @@ const userController = {
       if (check?.dataValues?.avatar_url) {
         fs.unlinkSync(
           `${__dirname}/../public/avatar/${
-            check.dataValues.avatar_url.split("/")[1]
+            check.dataValues.avatar_url.split("/")[5]
           }`
         );
       }
@@ -257,7 +261,7 @@ const userController = {
           email,
           phone,
           password: hashPassword,
-          avatar_url: !req?.file?.filename ? avatar : "avatar/" + filename,
+          avatar_url: !req?.file?.filename ? avatar : AVATAR_URL + filename,
         },
         { where: { id: req.params.id } },
         { transaction: t }
@@ -280,7 +284,7 @@ const userController = {
       if (check?.dataValues?.avatar_url) {
         fs.unlinkSync(
           `${__dirname}/../public/avatar/${
-            check.dataValues.avatar_url.split("/")[1]
+            check.dataValues.avatar_url.split("/")[5]
           }`
         );
       }

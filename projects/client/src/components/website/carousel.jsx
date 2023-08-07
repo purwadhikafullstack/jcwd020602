@@ -27,7 +27,6 @@ export function Recommend() {
           <Swiper
             className="swiper_container_rec"
             centeredSlides
-            loop
             slidesPerView={"auto"}
             navigation={{
               prevEl: ".swiper-button-prev",
@@ -37,11 +36,11 @@ export function Recommend() {
             modules={[Navigation]}
           >
             {shoes &&
-              shoes?.rows.map((shoe, idx) => (
-                <SwiperSlide key={idx} className="recommend">
+              shoes?.rows.map((shoe) => (
+                <SwiperSlide className="recommend">
                   <Box border={"1px"} h={"100%"} cursor={"pointer"}>
                     <Image
-                      src={`${process.env.REACT_APP_API_BASE_URL}/${shoe.ShoeImages[0]?.shoe_img}`}
+                      src={shoe.ShoeImages[0]?.shoe_img}
                       h={"100%"}
                       objectFit={"cover"}
                     />

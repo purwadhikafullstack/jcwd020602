@@ -29,7 +29,7 @@ export default function EditAdmin(props) {
   const fetchAdminbyId = async () => {
     const res = await api.get("/auth/" + props.id);
     setAdmin(res.data);
-    setImage(`${process.env.REACT_APP_API_BASE_URL}/${res.data.avatar_url}`);
+    setImage(res.data.avatar_url);
   };
 
   const editAdmin = async () => {

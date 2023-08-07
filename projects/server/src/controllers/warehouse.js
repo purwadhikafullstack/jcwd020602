@@ -139,8 +139,7 @@ const warehouseControllers = {
         await user.save({ transaction: t });
         await db.User.update(
           { warehouse_id: req.body.warehouse_id },
-          { where: { id: user_id } },
-          { transaction: t }
+          { where: { id: user_id }, transaction: t }
         );
       }
       await t.commit();

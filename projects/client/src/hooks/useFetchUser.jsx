@@ -9,7 +9,7 @@ export const useFetchUser = () => {
       const res = await api.get(`/auth`);
       setUsers(res.data);
     } catch (err) {
-      console.log("error: " + err.response.data.message);
+      console.log(err.response.data);
     }
   };
 
