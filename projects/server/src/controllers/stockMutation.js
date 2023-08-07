@@ -120,11 +120,10 @@ const stockMutationController = {
       const limit = 2;
       const page = req?.query?.page || 1;
       const offset = (parseInt(page) - 1) * limit;
-      let sort = req?.query?.sort || "id";
+      let sort = req?.query?.sort || "createdAt";
       const order = req?.query?.order || "DESC";
       const search = req?.query?.search || "";
       let city_id = req?.query?.city_id || 153;
-      const shoe_id = req?.query?.shoe_id || "";
       const time = req.query.time || moment().format();
       const city = await db.User.findOne({
         where: { ...req.user },
@@ -143,6 +142,7 @@ const stockMutationController = {
           },
           {
             [Op.or]: [
+              { "$stock.shoeSizes.size$": { [Op.like]: `%${search}%` } },
               { "$stock.Sho.name$": { [Op.like]: `%${search}%` } },
               { "$stock.Sho.brand.name$": { [Op.like]: `%${search}%` } },
               { mutation_code: { [Op.like]: `%${search}%` } },
@@ -150,9 +150,6 @@ const stockMutationController = {
           },
         ],
       };
-      if (shoe_id) {
-        whereClause[Op.and].push({ "$stock.Sho.id$": shoe_id });
-      }
       if (time) {
         whereClause[Op.and].push(
           {

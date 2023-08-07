@@ -9,8 +9,6 @@ import Pagination from "../components/dashboard/pagination";
 import { api } from "../api/api";
 import { useFetchStockHistory } from "../hooks/useFetchStockHistory";
 import moment from "moment";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 
 export default function StockHistoryPage() {
   const userSelector = useSelector((state) => state.auth);
@@ -46,7 +44,6 @@ export default function StockHistoryPage() {
     }
   }, [shown]);
   //-------------------------------------------------------------
-
   useEffect(() => {
     const token = JSON.parse(localStorage.getItem("user"));
     if (token) {
@@ -86,19 +83,6 @@ export default function StockHistoryPage() {
         <Box mx={2} my={3}>
           <Flex justify={"space-between"} flexWrap={"wrap"}>
             <Box fontSize={"30px"}>Stock History</Box>
-            {/* <InputGroup size={"sm"} w={"500px"}>
-              <DatePicker
-                selected={moment().format("MM/yyyy")}
-                onChange={(e) => {
-                  setShown({ page: 1 });
-                  setFilter({ ...filter, time: e.target.value });
-                }}
-                dateFormat="MM/yyyy"
-                showMonthYearPicker
-                placeholderText="Month & Year..."
-                className="input-datepicker"
-              />
-            </InputGroup> */}
           </Flex>
 
           <Flex flexWrap={"wrap"} gap={2} my={2} justify={"space-between"}>
@@ -164,7 +148,18 @@ export default function StockHistoryPage() {
                     </Select>
                   </>
                 )}
-
+                <Box whiteSpace={"nowrap"}>Date Range:</Box>
+                <InputGroup size={"sm"}>
+                  <Input
+                    id="time"
+                    placeholder="Month & Year..."
+                    type="month"
+                    onChange={(e) => {
+                      setShown({ page: 1 });
+                      setFilter({ ...filter, time: e.target.value });
+                    }}
+                  />
+                </InputGroup>
                 <Box whiteSpace={"nowrap"}> Sort By:</Box>
                 <Select
                   onChange={(e) => {

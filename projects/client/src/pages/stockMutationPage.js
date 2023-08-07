@@ -36,6 +36,7 @@ import AddStockMutation from "../components/dashboard/addStockMutation";
 import DeleteStockMutation from "../components/dashboard/deleteStockMutation";
 import EditStockMutation from "../components/dashboard/editStockMutation";
 import ConfirmStockMutation from "../components/dashboard/confirmStockMutation";
+import moment from "moment";
 
 export default function StockMutationPage() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -53,7 +54,7 @@ export default function StockMutationPage() {
   const [filter, setFilter] = useState({
     page: 1,
     sort: "",
-    order: "ASC",
+    order: "DESC",
     search: "",
     city_id: "",
     time: "",
@@ -142,6 +143,7 @@ export default function StockMutationPage() {
                 <Icon as={FaSearch} color={"black"} />
               </InputRightAddon>
             </InputGroup>
+
             <Flex gap={2} flexWrap={"wrap"}>
               <Flex align={"center"} gap={1}>
                 {userSelector.role != "SUPERADMIN" ? null : (
@@ -193,7 +195,18 @@ export default function StockMutationPage() {
                     </Select>
                   </>
                 )}
-
+                <Box whiteSpace={"nowrap"}>Date Range:</Box>
+                <InputGroup size={"sm"}>
+                  <Input
+                    id="time"
+                    placeholder="Month & Year..."
+                    type="month"
+                    onChange={(e) => {
+                      setShown({ page: 1 });
+                      setFilter({ ...filter, time: e.target.value });
+                    }}
+                  />
+                </InputGroup>
                 <Box whiteSpace={"nowrap"}> Sort By:</Box>
                 <Select
                   onChange={(e) => {
@@ -207,9 +220,13 @@ export default function StockMutationPage() {
                   size={"sm"}
                 >
                   <option value={""}>select..</option>
-                  <option value={"stock"}>Stock</option>
+                  <option value={"createdAt"} selected>
+                    Date Time
+                  </option>
+                  <option value={`status`}>Status</option>
+                  <option value={`qty`}>Quantity</option>
                   <option value={`brand`}>Brand</option>
-                  <option value={"name"}>Name</option>
+                  <option value={"name"}>Product Name</option>
                   <option value={"size"}>Size</option>
                 </Select>
               </Flex>
@@ -225,7 +242,9 @@ export default function StockMutationPage() {
                   placeholder="select.."
                 >
                   <option value={"ASC"}>ASC</option>
-                  <option value={"DESC"}>DESC</option>
+                  <option value={"DESC"} selected>
+                    DESC
+                  </option>
                 </Select>
               </Flex>
             </Flex>
@@ -344,6 +363,14 @@ export default function StockMutationPage() {
                     <Divider />
                     <Box>Status: {stockMutation?.status}</Box>
                     <Divider />
+                    <Divider />
+                    <Box>
+                      Date Time:{" "}
+                      {moment(stockMutation?.createdAt).format(
+                        "DD/MM/YYYY, HH:MM"
+                      )}
+                    </Box>
+                    <Divider />
                   </Flex>
                 ))}
             </Flex>
@@ -361,6 +388,7 @@ export default function StockMutationPage() {
                   <Th>Shoe</Th>
                   <Th>Stock</Th>
                   <Th>Status</Th>
+                  <Th>Date Time</Th>
                   <Th>Action</Th>
                 </Tr>
               </Thead>
@@ -393,6 +421,11 @@ export default function StockMutationPage() {
                         {stockMutation?.qty}
                       </Td>
                       <Td>{stockMutation?.status}</Td>
+                      <Td>
+                        {moment(stockMutation?.createdAt).format(
+                          "DD/MM/YYYY, HH:MM"
+                        )}
+                      </Td>
                       <Td w={"5%"}>
                         {stockMutation?.status == "PENDING" ? (
                           <Flex justify={"space-between"} gap={1}>

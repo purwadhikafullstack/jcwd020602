@@ -46,10 +46,7 @@ export default function SideMenu(props) {
                   >
                     <AccordionButton>
                       <Flex fontWeight={"bold"} alignItems={"center"} gap={2}>
-                        <Avatar
-                          size={"sm"}
-                          src={`${process.env.REACT_APP_API_BASE_URL}/${userSelector.avatar_url}`}
-                        />
+                        <Avatar size={"sm"} />
                         <Box>Hi, {userSelector.name}</Box>
                       </Flex>
                     </AccordionButton>

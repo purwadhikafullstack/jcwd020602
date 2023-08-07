@@ -16,7 +16,6 @@ import AssignAdmin, {
 import AddAdmin from "../components/dashboard/addAdmin";
 import EditAdmin from "../components/dashboard/editAdmin";
 import DeleteAdmin from "../components/dashboard/deleteAdmin";
-import { api } from "../api/api";
 
 export default function UserSettingsPage() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -29,8 +28,6 @@ export default function UserSettingsPage() {
   const [search, setSearch] = useState();
   const { users, fetch } = useFetchUser();
   const [adminId, setAdminId] = useState();
-  console.log(users);
-
   return (
     <>
       <Box id="content" pt={"52px"}>
@@ -95,9 +92,7 @@ export default function UserSettingsPage() {
                     gap={1}
                   >
                     <Flex justifyContent={"space-between"} align={"center"}>
-                      <Avatar
-                        src={`${process.env.REACT_APP_API_BASE_URL}/${user.avatar_url}`}
-                      />
+                      <Avatar src={user.avatar_url} />
                       {userSelector.role == "SUPERADMIN" ? (
                         user.role == "ADMIN" ? (
                           <Menu>
@@ -180,10 +175,7 @@ export default function UserSettingsPage() {
                     <Tr>
                       <Td w={"5%"}>{idx + 1}</Td>
                       <Td w={"5%"}>
-                        <Avatar
-                          src={`${process.env.REACT_APP_API_BASE_URL}/${user.avatar_url}`}
-                          size={"sm"}
-                        />
+                        <Avatar src={user.avatar_url} size={"sm"} />
                       </Td>
                       <Td>{user.name}</Td>
                       <Td>{user.phone}</Td>

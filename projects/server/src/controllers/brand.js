@@ -1,4 +1,5 @@
 const db = require("../models");
+const BRAND_URL = process.env.BRAND_URL;
 const fs = require("fs");
 const brandController = {
   addBrand: async (req, res) => {
@@ -18,8 +19,8 @@ const brandController = {
       await db.Brand.create(
         {
           name,
-          logo_img: "brand/" + filenames[0],
-          brand_img: "brand/" + filenames[1],
+          logo_img: BRAND_URL + filenames[0],
+          brand_img: BRAND_URL + filenames[1],
         },
         { transaction: t }
       );
@@ -47,15 +48,15 @@ const brandController = {
     const t = await db.sequelize.transaction();
     try {
       const check = await db.Brand.findOne({ where: { id: req.params.id } });
-      console.log(check?.dataValues?.logo_img.split("/")[1]);
+
       if (check?.dataValues?.logo_img) {
         `${__dirname}/../public/brand/${
-          check?.dataValues?.logo_img.split("/")[1]
+          check?.dataValues?.logo_img.split("/")[5]
         }`;
       }
       if (check?.dataValues?.brand_img) {
         `${__dirname}/../public/brand/${
-          check?.dataValues?.brand_img.split("/")[1]
+          check?.dataValues?.brand_img.split("/")[5]
         }`;
       }
 

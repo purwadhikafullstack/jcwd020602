@@ -19,6 +19,7 @@ export default function Navbar() {
   const { brands } = useFetchBrand();
   const { categories } = useFetchCategory();
   const userSelector = useSelector((state) => state.auth);
+
   const [keyword, setKeyword] = useState();
   const dispatch = useDispatch();
   window.addEventListener("scroll", function () {
@@ -107,6 +108,7 @@ export default function Navbar() {
                             {val.name}
                           </Box>
                         </Link>
+
                       ))}
                   </Box>
                 </Box>

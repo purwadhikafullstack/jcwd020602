@@ -11,7 +11,7 @@ export const useFetchUser = () => {
       });
       setUsers(res.data);
     } catch (err) {
-      console.log("error: " + err.response.data.message);
+      console.log(err.response.data);
     }
   };
 

@@ -20,10 +20,8 @@ export default function ProductList() {
     order: "",
     brand: "",
     gender: "",
-    size: "",
   });
-  const { shoes, fetch } = useFetchShoe(category, sub, { ...filter, search });
-
+ const { shoes, fetch } = useFetchShoe(category, sub, { ...filter, search });
   // -------------------------- pagination
   const [pages, setPages] = useState([]);
   const [shown, setShown] = useState({ page: 1 });
@@ -50,7 +48,7 @@ export default function ProductList() {
   }, [category, sub, filter, search]);
 
   useEffect(() => {
-    setFilter({ ...filter, brand: "", gender: "", size: "" });
+    setFilter({ ...filter, brand: "", gender: "" });
     setShown({ page: 1 });
   }, [category, sub]);
 
@@ -83,7 +81,7 @@ export default function ProductList() {
               value={filter?.brand}
               defaultValue={""}
               onChange={(e) => {
-                setFilter({ ...filter, brand: e.target.value });
+                setFilter({ brand: e.target.value });
               }}
             >
               <option value={""}>FILTER BY BRAND:</option>
@@ -95,16 +93,9 @@ export default function ProductList() {
               <option value={"New balance"}>New balance</option>
             </Select>
           )}
-          <Select
-            id="select"
-            value={filter.size}
-            placeholder="FILTER BY SIZE:"
-            onChange={(e) => {
-              setFilter({ ...filter, size: e.target.value });
-            }}
-          >
+          <Select id="select" placeholder="FILTER BY SIZE:">
             {sizes.map((val) => (
-              <option value={val}>{val}</option>
+              <option>{val}</option>
             ))}
           </Select>
           <Select
@@ -112,7 +103,6 @@ export default function ProductList() {
             placeholder="SORT BY:"
             onChange={(e) => {
               setFilter({
-                ...filter,
                 sort: e.target.value.split(",")[0],
                 order: e.target.value.split(",")[1],
               });
@@ -151,7 +141,7 @@ export default function ProductList() {
                     }}
                   >
                     <Image
-                      src={`${process.env.REACT_APP_API_BASE_URL}/${shoe.ShoeImages[0]?.shoe_img}`}
+                      src={shoe.ShoeImages[0]?.shoe_img}
                       objectFit={"cover"}
                       maxH={"330px"}
                       w={"100%"}
@@ -159,7 +149,7 @@ export default function ProductList() {
                     <Image
                       maxH={"330px"}
                       w={"100%"}
-                      src={`${process.env.REACT_APP_API_BASE_URL}/${shoe.ShoeImages[1]?.shoe_img}`}
+                      src={shoe.ShoeImages[1]?.shoe_img}
                       objectFit={"cover"}
                       pos={"absolute"}
                       top={0}

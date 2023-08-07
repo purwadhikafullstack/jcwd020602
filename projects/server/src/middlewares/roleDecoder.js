@@ -50,7 +50,6 @@ const roleDecoder = {
           "Token has expired. Please log in again(staff)."
         );
       }
-
       const user = await db.User.findOne({
         where: {
           id: JSON.parse(find?.dataValues?.userId).id,
@@ -84,7 +83,6 @@ const roleDecoder = {
           id: JSON.parse(find?.dataValues?.userId).id,
         },
       });
-      console.log(user.role);
       if (user.role != "SUPERADMIN") {
         throw new UnauthorizedError(
           "You are a staff and is not authorized to access this feature."

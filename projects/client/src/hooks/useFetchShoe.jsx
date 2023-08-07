@@ -11,7 +11,7 @@ export const useFetchShoe = (category, sub, filter) => {
       });
       setShoes(res.data);
     } catch (err) {
-      console.log(err.response);
+      console.log(err?.response);
     }
   };
 

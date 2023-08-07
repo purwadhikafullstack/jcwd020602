@@ -1,6 +1,7 @@
 const db = require("../models");
 const bcrypt = require("bcrypt");
 const { nanoid } = require("nanoid");
+const moment = require("moment");
 const mailer = require("../lib/nodemailer");
 const fs = require("fs");
 const handlebars = require("handlebars");
@@ -11,6 +12,7 @@ const {
   findToken,
   updateUser,
 } = require("../service/user.service");
+const AVATAR_URL = process.env.AVATAR_URL;
 
 const userController = {
   register: async (req, res) => {
@@ -90,7 +92,6 @@ const userController = {
       } else {
         await updateToken(id, generateToken, 1, "LOGIN", t);
       }
-
       t.commit();
       delete user.dataValues.password;
       delete user.dataValues.id;
@@ -108,7 +109,6 @@ const userController = {
     try {
       const token = req.headers.authorization.split(" ")[1];
       let p = await findToken({ token: token, valid: 1 });
-
       if (!p) {
         return res.status(200).send({ message: "token has expired" });
       }
@@ -186,6 +186,7 @@ const userController = {
     const { filename } = req?.file;
     try {
       const { name, email, phone, password } = req.body;
+      const { filename } = req.file;
       const hashPassword = await bcrypt.hash(password, 10);
       const check = await findUser(email);
 
@@ -202,7 +203,7 @@ const userController = {
           email,
           phone,
           password: hashPassword,
-          avatar_url: "avatar/" + filename,
+          avatar_url: AVATAR_URL + filename,
           role: "ADMIN",
           status: "verified",
         },
@@ -245,7 +246,7 @@ const userController = {
       if (check?.dataValues?.avatar_url) {
         fs.unlinkSync(
           `${__dirname}/../public/avatar/${
-            check.dataValues.avatar_url.split("/")[1]
+            check.dataValues.avatar_url.split("/")[5]
           }`
         );
       }
@@ -256,7 +257,7 @@ const userController = {
           email,
           phone,
           password: hashPassword,
-          avatar_url: !req?.file?.filename ? avatar : "avatar/" + filename,
+          avatar_url: !req?.file?.filename ? avatar : AVATAR_URL + filename,
         },
         { where: { id: req.params.id } },
         { transaction: t }
@@ -279,7 +280,7 @@ const userController = {
       if (check?.dataValues?.avatar_url) {
         fs.unlinkSync(
           `${__dirname}/../public/avatar/${
-            check.dataValues.avatar_url.split("/")[1]
+            check.dataValues.avatar_url.split("/")[5]
           }`
         );
       }

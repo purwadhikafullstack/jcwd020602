@@ -7,7 +7,7 @@ router.post("/", roleDecoder.checkSuper, warehouseController.addWarehouse);
 
 router.post(
   "/admin/:user_id",
-  roleDecoder.checkSuper,
+  // roleDecoder.checkSuper,
   warehouseController.addAdminWarehouse
 );
 router.patch(

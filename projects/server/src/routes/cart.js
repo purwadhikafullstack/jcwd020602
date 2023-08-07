@@ -6,6 +6,5 @@ const tokenDecoder = require("../middlewares/tokenDecoder");
 // MENAMBAHKAN PRODUCT TO CART
 router.post("/addCart", tokenDecoder, cartController.addShoe);
 router.get("/getCart", tokenDecoder, cartController.getCartData);
-// testing token decoder
 
 module.exports = router;
