@@ -69,6 +69,7 @@ const shoeController = {
   },
   getAllShoe: async (req, res) => {
     try {
+      console.log(req.query);
       const category = req?.query?.category || "";
       const sub = req?.query?.sub || "";
       const gender = req?.query?.filter?.gender;
