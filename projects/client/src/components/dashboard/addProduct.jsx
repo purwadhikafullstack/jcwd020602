@@ -24,6 +24,7 @@ export default function AddShoe(props) {
     description: "",
     price: "",
     weight: "",
+    status: "",
     brand_id: 0,
     category_id: 0,
     subcategory_id: 0,
@@ -42,6 +43,7 @@ export default function AddShoe(props) {
     formData.append("description", shoe.description);
     formData.append("price", shoe.price);
     formData.append("weight", shoe.weight);
+    formData.append("status", shoe.status);
     formData.append("brand_id", shoe.brand_id);
     formData.append("category_id", shoe.category_id);
     formData.append("subcategory_id", shoe.subcategory_id);
@@ -49,7 +51,10 @@ export default function AddShoe(props) {
       formData.append("shoe", files);
     }
     try {
-      const res = await api.post("/shoes", formData);
+      const token = JSON.parse(localStorage.getItem("user"));
+      const res = await api.post("/shoes", formData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       toast({
         title: res.data.message,
         status: "success",
@@ -58,7 +63,7 @@ export default function AddShoe(props) {
       props.fetch();
       clear();
     } catch (err) {
-      console.log(err.response.data);
+      console.log(err);
     }
   };
 
@@ -103,6 +108,14 @@ export default function AddShoe(props) {
             <Box>
               weight:
               <Input id="weight" type={"number"} onChange={inputHandler} />
+            </Box>
+            <Box>
+              status:
+              <Select id="status" onChange={inputHandler}>
+                <option value={"NORMAL"}>NORMAL</option>
+                <option value={"BESTSELLER"}>BESTSELLER</option>
+                <option value={"DISCOUNT"}>DISCOUNT</option>
+              </Select>
             </Box>
             <Box>
               Brand:

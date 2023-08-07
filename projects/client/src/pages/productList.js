@@ -11,7 +11,8 @@ export default function ProductList() {
   const loc = useLocation();
   const sizes = [40, 41, 42, 43, 44, 45];
   const b = loc.pathname.split("/")[1];
-  const category = loc.pathname.split("/")[2];
+  const search = loc?.search?.split("=")[1]?.replace(/-/g, " ");
+  const category = loc?.pathname?.split("/")[2]?.replace(/-/g, " ");
   const sub = loc.pathname.split("/")[3];
   const [filter, setFilter] = useState({
     page: 1,
@@ -20,8 +21,7 @@ export default function ProductList() {
     brand: "",
     gender: "",
   });
-  const { shoes, fetch } = useFetchShoe(category, sub, filter);
-
+ const { shoes, fetch } = useFetchShoe(category, sub, { ...filter, search });
   // -------------------------- pagination
   const [pages, setPages] = useState([]);
   const [shown, setShown] = useState({ page: 1 });
@@ -45,7 +45,7 @@ export default function ProductList() {
 
   useEffect(() => {
     fetch();
-  }, [category, sub, filter]);
+  }, [category, sub, filter, search]);
 
   useEffect(() => {
     setFilter({ ...filter, brand: "", gender: "" });

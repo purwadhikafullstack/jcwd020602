@@ -3,13 +3,27 @@
 * {
   font-family: "Poppins", sans-serif;
 }
-/*---------------------- navbar ----------------------*/
+/*---------------------- banner ----------------------*/
 .banner-carosel {
   border: 2px;
 }
 /*---------------------- navbar ----------------------*/
+.navbar {
+  background: rgba(255, 255, 255, 0.8);
+  width: 100vw;
+  position: fixed;
+  top: -3px;
+  z-index: 9;
+  border-bottom: 2px solid;
+}
 .navbar.sticky {
   background: white;
+}
+.navbar-atas {
+  gap: 5px;
+  margin-bottom: 2px;
+  cursor: pointer;
+  font-size: 10px;
 }
 .navbar-atas text {
   padding-left: 2px;
@@ -54,7 +68,7 @@
 .menubrands img {
   cursor: pointer;
 }
-@media (max-width: 850px) {
+@media (max-width: 750px) {
   .menu {
     display: none;
   }
@@ -235,6 +249,23 @@
 .category {
   grid-template-columns: 1fr 1fr 1fr;
 }
+/*---------------------- my-account ----------------------*/
+.my-account {
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+  padding-bottom: 100px;
+  gap: 10px;
+}
+
+.form-profile {
+  display: flex;
+  gap: 20px;
+}
+.form-profile input {
+  border: 2px solid;
+  border-radius: 0;
+}
+
 /*---------------------- @media ----------------------*/
 @media (max-width: 960px) {
   #brands-section {
@@ -283,6 +314,14 @@
     grid-template-columns: 1fr;
   }
 }
+@media (max-width: 560px) {
+  .my-account {
+    grid-template-columns: 1fr;
+  }
+  .form-profile {
+    flex-direction: column;
+  }
+}
 
 /*---------------------- banner ----------------------*/
 .banner {
@@ -318,7 +357,7 @@
   background: white;
   padding-left: 5px;
   padding-right: 5px;
-  font-size: 10px;
+  font-size: 12px;
 }
 input:focus ~ label {
   top: -1px;

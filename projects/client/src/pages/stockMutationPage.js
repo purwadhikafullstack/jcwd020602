@@ -114,6 +114,22 @@ export default function StockMutationPage() {
               setShown={setShown}
             />
           </Flex>
+          <InputGroup size={"sm"} maxW={"500px"}>
+            <Input
+              placeholder="Month & Year..."
+              type="month"
+              ref={inputFileRef}
+            />
+            <InputRightAddon
+              cursor={"pointer"}
+              onClick={() => {
+                setShown({ page: 1 });
+                setFilter({ ...filter, time: inputFileRef.current.value });
+              }}
+            >
+              <Icon as={FaSearch} color={"black"} />
+            </InputRightAddon>
+          </InputGroup>
           <Flex flexWrap={"wrap"} gap={2} my={2} justify={"space-between"}>
             <InputGroup size={"sm"} w={"500px"}>
               <Input placeholder="Search..." ref={inputFileRef} />

@@ -53,7 +53,6 @@ export default function Login() {
           duration: 1000,
         });
         return nav("/");
-
       } catch (err) {
         toast({
           title: err.response?.data,
@@ -88,6 +87,7 @@ export default function Login() {
             <InputGroup size="md">
               <Input
                 id="email"
+                bg={"white"}
                 value={formik.values.email}
                 onChange={inputHandler}
               />
@@ -123,7 +123,7 @@ export default function Login() {
                 onChange={inputHandler}
                 type={show ? "text" : "password"}
               />
-              <label>Confirm Password</label>
+              <label>Password</label>
               <InputRightElement width="4rem">
                 <Button h="1.75rem" size="sm" onClick={handleClick}>
                   {show ? <ViewOffIcon /> : <ViewIcon />}
@@ -141,6 +141,9 @@ export default function Login() {
           </Box>
         </FormControl>
         <Button
+          variant={"outline"}
+          border={"2px"}
+          _hover={{ bg: "black", color: "white" }}
           isDisabled={
             formik.values.email && formik.values.password ? false : true
           }
@@ -155,7 +158,7 @@ export default function Login() {
         >
           login
         </Button>
-        <Flex justify={"center"} gap={2}>
+        <Flex justify={"center"} gap={2} fontSize={"13px"}>
           Forgot password?
           <Link to="/forgot-password">
             <Box _hover={{ color: "blue.500" }}> click here</Box>

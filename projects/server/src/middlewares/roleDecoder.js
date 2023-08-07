@@ -70,8 +70,9 @@ const roleDecoder = {
   checkSuper: async (req, res, next) => {
     try {
       const token = req.headers.authorization.split(" ")[1];
+      console.log(token);
       const find = await findToken({ token, valid: 1 });
-
+      console.log(find);
       if (!find) {
         throw new UnauthorizedError(
           "Token has expired. Please log in again(super)."

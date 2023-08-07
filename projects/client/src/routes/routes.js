@@ -13,20 +13,17 @@ import InventoryPage from "../pages/inventoryPage";
 import CategoryPage from "../pages/categoryPage";
 import SubcategoryPage from "../pages/Subcategory";
 import ProductPage from "../pages/productPage";
-
 import StockHistoryPage from "../pages/stockHistoryPage";
 import BrandPage from "../pages/brandPage";
-import ProfilePage from "../pages/profilePage";
 import ForgotPassword from "../components/auth/forgotPassword";
 import ChangePassword from "../components/auth/changePassword";
 import ProductList from "../pages/productList";
 import ProductDetailPage from "../pages/productDetailPage";
-
 import Cart from "../pages/cartPages";
 import Cartx from "../pages/cartPagesx";
-
 import StockMutationPage from "../pages/stockMutationPage";
-
+import MyAccountPage from "../pages/MyAccountPage";
+import ProfilePage from "../pages/profilePage";
 
 const routes = [
   <Route
@@ -50,16 +47,25 @@ const routes = [
   <Route
     path="/verify/:token"
     element={
-      <ProtectedPage guestOnly={true}>
+      <>
         <Navbar />
         <Verify />
+      </>
+    }
+  />,
+  <Route
+    path="/my-account"
+    element={
+      <ProtectedPage userOnly={true}>
+        <Navbar />
+        <MyAccountPage />
       </ProtectedPage>
     }
   />,
   <Route
-    path="/profile"
+    path="/my-account/profile"
     element={
-      <ProtectedPage guestOnly={true} needLogin={true}>
+      <ProtectedPage userOnly={true}>
         <Navbar />
         <ProfilePage />
       </ProtectedPage>
@@ -120,6 +126,15 @@ const routes = [
     }
   />,
   <Route
+    path="/search"
+    element={
+      <ProtectedPage guestOnly={true}>
+        <Navbar />
+        <ProductList />
+      </ProtectedPage>
+    }
+  />,
+  <Route
     path="/:product_name"
     element={
       <ProtectedPage guestOnly={true}>
@@ -151,7 +166,7 @@ const routes = [
   <Route
     path="/dashboard"
     element={
-      <ProtectedPage needLogin={true} guestOnly={false}>
+      <ProtectedPage staffOnly={true} guestOnly={false}>
         <NavbarDashboard />
         <Sidebar />
         <Dashboard />
@@ -161,7 +176,7 @@ const routes = [
   <Route
     path="/product"
     element={
-      <ProtectedPage needLogin={true} guestOnly={false}>
+      <ProtectedPage staffOnly={true} guestOnly={false}>
         <NavbarDashboard />
         <Sidebar />
         <ProductPage />
@@ -171,7 +186,7 @@ const routes = [
   <Route
     path="/brand"
     element={
-      <ProtectedPage needLogin={true} guestOnly={false}>
+      <ProtectedPage staffOnly={true} guestOnly={false}>
         <NavbarDashboard />
         <Sidebar />
         <BrandPage />
@@ -181,7 +196,7 @@ const routes = [
   <Route
     path="/category"
     element={
-      <ProtectedPage needLogin={true} guestOnly={false}>
+      <ProtectedPage staffOnly={true} guestOnly={false}>
         <NavbarDashboard />
         <Sidebar />
         <CategoryPage />
@@ -191,7 +206,7 @@ const routes = [
   <Route
     path="/subcategory"
     element={
-      <ProtectedPage needLogin={true} guestOnly={false}>
+      <ProtectedPage staffOnly={true} guestOnly={false}>
         <NavbarDashboard />
         <Sidebar />
         <SubcategoryPage />
@@ -201,7 +216,7 @@ const routes = [
   <Route
     path="/warehouse"
     element={
-      <ProtectedPage needLogin={true} guestOnly={false}>
+      <ProtectedPage staffOnly={true} guestOnly={false}>
         <NavbarDashboard />
         <Sidebar />
         <WarehousePage />
@@ -211,7 +226,7 @@ const routes = [
   <Route
     path="/stock"
     element={
-      <ProtectedPage needLogin={true} guestOnly={false}>
+      <ProtectedPage staffOnly={true} guestOnly={false}>
         <NavbarDashboard />
         <Sidebar />
         <InventoryPage />
@@ -221,7 +236,7 @@ const routes = [
   <Route
     path="/stockHistory"
     element={
-      <ProtectedPage needLogin={true} guestOnly={false}>
+      <ProtectedPage staffOnly={true} guestOnly={false}>
         <NavbarDashboard />
         <Sidebar />
         <StockHistoryPage />
@@ -231,7 +246,7 @@ const routes = [
   <Route
     path="/stockMutation"
     element={
-      <ProtectedPage needLogin={true} guestOnly={false}>
+      <ProtectedPage staffOnly={true} guestOnly={false}>
         <NavbarDashboard />
         <Sidebar />
         <StockMutationPage />
@@ -241,7 +256,7 @@ const routes = [
   <Route
     path="/report"
     element={
-      <ProtectedPage needLogin={true} guestOnly={false}>
+      <ProtectedPage staffOnly={true} guestOnly={false}>
         <NavbarDashboard />
         <Sidebar />
         {/*  */}
@@ -251,7 +266,7 @@ const routes = [
   <Route
     path="/userSettings"
     element={
-      <ProtectedPage needLogin={true} guestOnly={false}>
+      <ProtectedPage staffOnly={true} guestOnly={false}>
         <NavbarDashboard />
         <Sidebar />
         <UserSettingsPage />
