@@ -137,12 +137,10 @@ export default function BrandPage() {
                       <Image
                         cursor={"pointer"}
                         onClick={() => {
-                          setImg(
-                            `${process.env.REACT_APP_API_BASE_URL}/${brand.logo_img}`
-                          );
+                          setImg(brand.logo_img);
                           onOpen();
                         }}
-                        src={brand?.logo_img}
+                        src={`${process.env.REACT_APP_API_BASE_URL}/${brand.logo_img}`}
                         w={"100px"}
                         h={"100px"}
                         objectFit={"cover"}
