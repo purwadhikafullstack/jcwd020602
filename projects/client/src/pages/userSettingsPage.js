@@ -175,7 +175,10 @@ export default function UserSettingsPage() {
                     <Tr>
                       <Td w={"5%"}>{idx + 1}</Td>
                       <Td w={"5%"}>
-                        <Avatar src={user.avatar_url} size={"sm"} />
+                        <Avatar
+                          src={`${process.env.REACT_APP_API_BASE_URL}/${user.avatar_url}`}
+                          size={"sm"}
+                        />
                       </Td>
                       <Td>{user.name}</Td>
                       <Td>{user.phone}</Td>

@@ -79,7 +79,7 @@ export default function AllBrand() {
                     <Image
                       w={"100%"}
                       h={"100%"}
-                      src={val.brand_img}
+                      src={`${process.env.REACT_APP_API_BASE_URL}/${val.brand_img}`}
                       objectFit={"cover"}
                     />
                     <Image
@@ -87,7 +87,7 @@ export default function AllBrand() {
                       h={"100%"}
                       top={0}
                       pos={"absolute"}
-                      src={val.logo_img}
+                      src={`${process.env.REACT_APP_API_BASE_URL}/${val.logo_img}`}
                       objectFit={"cover"}
                       objectPosition={"center"}
                       opacity={0}

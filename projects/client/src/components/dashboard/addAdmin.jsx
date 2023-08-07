@@ -49,7 +49,7 @@ export default function AddAdmin(props) {
       props.fetch();
       props.onClose();
     } catch (err) {
-      console.log(err.response.data);
+      console.log(err);
     }
   };
 
