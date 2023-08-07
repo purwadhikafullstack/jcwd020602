@@ -56,8 +56,8 @@ const stockHistoryController = {
             {
               [Op.or]: [
                 { reference: { [Op.like]: `%${search}%` } },
-                { "$stock.sho.name$": { [Op.like]: `%${search}%` } },
-                { "$stock.sho.brand.name$": { [Op.like]: `%${search}%` } },
+                { "$stock.Sho.name$": { [Op.like]: `%${search}%` } },
+                { "$stock.Sho.brand.name$": { [Op.like]: `%${search}%` } },
               ],
             },
             {

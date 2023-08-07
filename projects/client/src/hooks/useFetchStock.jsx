@@ -9,10 +9,10 @@ export const useFetchStock = (filter) => {
       const res = await api.get(`/stocks`, {
         params: { ...filter },
       });
+      console.log(res.data);
       setStocks(res.data);
-
     } catch (err) {
-      console.log(err.response.data);
+      console.log(err);
     }
   };
 

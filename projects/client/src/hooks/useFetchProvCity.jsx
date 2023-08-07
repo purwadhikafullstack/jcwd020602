@@ -9,7 +9,7 @@ export const useFetchProv = () => {
       const res = await api.get(`/province&city/prov`);
       setProvinces(res.data);
     } catch (err) {
-      console.log(err.response.data);
+      console.log(err);
     }
   };
 
@@ -32,7 +32,7 @@ export const useFetchCity = (province_id) => {
         setCities([]);
       }
     } catch (err) {
-      console.log(err.response.data);
+      console.log(err);
     }
   };
 

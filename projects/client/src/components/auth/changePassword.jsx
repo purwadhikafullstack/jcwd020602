@@ -177,6 +177,10 @@ export default function ChangePassword() {
                 </Box>
               </FormControl>
               <Button
+                type="submit"
+                variant={"outline"}
+                border={"2px"}
+                _hover={{ bg: "black", color: "white" }}
                 isDisabled={
                   formik.values.password && formik.values.confirmPassword
                     ? false
