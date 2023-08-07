@@ -1,29 +1,15 @@
-import {
-  Box,
-  Center,
-  Divider,
-  Flex,
-  Icon,
-  Image,
-  Input,
-  InputGroup,
-  InputRightAddon,
-  InputRightElement,
-  useDisclosure,
-} from "@chakra-ui/react";
-import {
-  AiOutlineShoppingCart,
-  AiOutlineSearch,
-  AiOutlineCloseCircle,
-} from "react-icons/ai";
+import { Box, Center, Divider, Flex, Icon, Image } from "@chakra-ui/react";
+import { InputGroup, useDisclosure, Input } from "@chakra-ui/react";
+import { InputRightAddon, InputRightElement } from "@chakra-ui/react";
+import { AiOutlineShoppingCart, AiOutlineSearch } from "react-icons/ai";
 import { BiMenuAltLeft } from "react-icons/bi";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import SideMenu from "./sideMenu";
 import logo from "../../assets/newlogo.png";
 import { useFetchCategory } from "../../hooks/useFetchCategory";
-import { useFetchBrand } from "../../hooks/useFetchBrand";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useFetchBrand } from "../../hooks/useFetchBrand";
 
 export default function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -33,8 +19,8 @@ export default function Navbar() {
   const { brands } = useFetchBrand();
   const { categories } = useFetchCategory();
   const userSelector = useSelector((state) => state.auth);
-  const [filter, setFilter] = useState({ search: "" });
-
+  const [keyword, setKeyword] = useState();
+  const dispatch = useDispatch();
   window.addEventListener("scroll", function () {
     var navbar = document.querySelector(".navbar");
     navbar.classList.toggle("sticky", window.scrollY > 550);
@@ -48,31 +34,26 @@ export default function Navbar() {
 
   return (
     <>
-      <Center
-        bg="rgba(255, 255, 255, 0.8)"
-        w={"100vw"}
-        h={"55x"}
-        pos={"fixed"}
-        top={-1}
-        zIndex={9}
-        className="navbar"
-        borderBottom={"2px"}
-      >
+      <Center className="navbar">
         <Box w={"100vw"} maxW={"1550px"} m={3}>
           {/* atas */}
-          <Box
-            className="navbar-atas"
-            cursor={"pointer"}
-            gap={2}
-            mb={1}
-            fontSize={"10px"}
-          >
+          <Box className="navbar-atas">
             <text>Help</text>
             <Box>
               {userSelector?.role ? (
-                <Link to="/profile">
-                  <text>Hi, {userSelector?.name}</text>
-                </Link>
+                <Flex gap={1}>
+                  <text
+                    onClick={() => {
+                      localStorage.removeItem("user");
+                      dispatch({ type: "logout" });
+                    }}
+                  >
+                    Log out
+                  </text>
+                  <Link to="/my-account">
+                    <text>Hi, {userSelector?.name}</text>
+                  </Link>
+                </Flex>
               ) : (
                 <Link to={"/auth"}>
                   <text>Login/Signup</text>
@@ -80,7 +61,7 @@ export default function Navbar() {
               )}
             </Box>
           </Box>
-          <Divider className="navbar-atas" mb={1} />
+          <Divider mb={1} />
           {/* bawah */}
           <Flex justify={"space-between"} align={"center"} h={"36px"}>
             <Box className="burger" onClick={onOpen}>
@@ -95,8 +76,8 @@ export default function Navbar() {
               <Flex flexDir={"column"} pos={"relative"}>
                 <Box
                   px={1}
-                  onMouseEnter={(e) => setBrand(true)}
-                  onMouseLeave={(e) => setBrand(false)}
+                  onMouseEnter={() => setBrand(true)}
+                  onMouseLeave={() => setBrand(false)}
                   border={brand ? "1px black solid" : ""}
                   color={brand ? "white" : ""}
                   bg={brand ? "black" : ""}
@@ -115,7 +96,7 @@ export default function Navbar() {
                   <Box align={"center"}>
                     {brands &&
                       brands?.map((val) => (
-                        <Link to={`/b/${val.name}`}>
+                        <Link to={`/b/${val.name.replace(/ /g, "-")}`}>
                           <Box
                             p={2}
                             whiteSpace={"nowrap"}
@@ -134,16 +115,24 @@ export default function Navbar() {
               {categories &&
                 categories?.map((category) => (
                   <Flex flexDir={"column"} key={category.id} pos={"relative"}>
-                    <Box
-                      px={1}
-                      onMouseEnter={() => handleCategoryMouseEnter(category.id)}
-                      onMouseLeave={() => handleCategoryMouseLeave(category.id)}
-                      bg={subCategory[category.id] ? "black" : ""}
-                      color={subCategory[category.id] ? "white" : ""}
-                      border={subCategory[category.id] ? "1px black solid" : ""}
-                    >
-                      {category.name}
-                    </Box>
+                    <Link to={`/c/${category.name}`}>
+                      <Box
+                        px={1}
+                        onMouseEnter={() =>
+                          handleCategoryMouseEnter(category.id)
+                        }
+                        onMouseLeave={() =>
+                          handleCategoryMouseLeave(category.id)
+                        }
+                        bg={subCategory[category.id] ? "black" : ""}
+                        color={subCategory[category.id] ? "white" : ""}
+                        border={
+                          subCategory[category.id] ? "1px black solid" : ""
+                        }
+                      >
+                        {category.name}
+                      </Box>
+                    </Link>
                     <Box
                       className="categorymenu"
                       bg={"white"}
@@ -185,10 +174,24 @@ export default function Navbar() {
               </Box>
               <Box className="input">
                 <InputGroup size={"sm"}>
-                  <Input w={"200px"} bg={"gray.100"} />
-                  <InputRightElement cursor={"pointer"}>
-                    <Icon as={AiOutlineSearch} />
-                  </InputRightElement>
+                  <Input
+                    w={"200px"}
+                    bg={"gray.100"}
+                    value={keyword}
+                    onChange={(e) => {
+                      setKeyword(e.target.value);
+                    }}
+                  />
+                  <Link
+                    to={
+                      keyword ? `/search?=${keyword.replace(/ /g, "-")}` : null
+                    }
+                    onClick={() => setKeyword("")}
+                  >
+                    <InputRightElement cursor={"pointer"}>
+                      <Icon as={AiOutlineSearch} />
+                    </InputRightElement>
+                  </Link>
                 </InputGroup>
               </Box>
 
@@ -221,17 +224,34 @@ export default function Navbar() {
               ) : null}
             </Flex>
           </Flex>
+
           {/* search */}
-          <Box display={search ? "flex" : "none"} alignItems={"center"}>
+          <Box
+            display={search ? "flex" : "none"}
+            alignItems={"center"}
+            flexDir={"column"}
+          >
+            <Divider my={2} />
             <InputGroup p={2}>
-              <Input bg={"gray.100"} />
-              <InputRightAddon bg={"white"} cursor={"pointer"}>
-                <Icon as={AiOutlineSearch} />
-              </InputRightAddon>
+              <Input
+                bg={"gray.100"}
+                value={keyword}
+                onChange={(e) => {
+                  setKeyword(e.target.value);
+                }}
+              />
+              <Link
+                to={keyword ? `/search?=${keyword.replace(/ /g, "-")}` : null}
+                onClick={() => {
+                  setKeyword("");
+                  setSearch(false);
+                }}
+              >
+                <InputRightAddon bg={"white"} cursor={"pointer"}>
+                  <Icon as={AiOutlineSearch} />
+                </InputRightAddon>
+              </Link>
             </InputGroup>
-            <Box cursor={"pointer"} onClick={() => setSearch(false)}>
-              <Image as={AiOutlineCloseCircle} boxSize={"30px"} />
-            </Box>
           </Box>
         </Box>
       </Center>

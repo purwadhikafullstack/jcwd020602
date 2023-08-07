@@ -99,7 +99,7 @@ export default function Sidebar(props) {
                   <AccordionIcon />
                 </AccordionButton>
                 <AccordionPanel display={"flex"} flexDir={"column"} p={0}>
-                  <Link to="/inventory">
+                  <Link to="/stock">
                     <Box id="asyu" onClick={props.onClose}>
                       Stock
                     </Box>

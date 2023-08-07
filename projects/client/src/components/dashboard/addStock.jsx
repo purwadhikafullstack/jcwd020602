@@ -27,7 +27,6 @@ export default function AddStock(props) {
     temp[id] = value;
     setStock(temp);
   }
-
   const uploadStock = async () => {
     try {
       const res = await api.post("/stocks", stock);
@@ -68,9 +67,9 @@ export default function AddStock(props) {
                 }}
               >
                 {shoes &&
-                  shoes.map((val, idx) => (
+                  shoes?.map((val, idx) => (
                     <option key={val.id} value={val.id}>
-                      {val.name}
+                      {val?.name}
                     </option>
                   ))}
               </Select>
@@ -83,9 +82,9 @@ export default function AddStock(props) {
                 id="shoe_size_id"
               >
                 {sizes &&
-                  sizes.map((val, idx) => (
+                  sizes?.map((val, idx) => (
                     <option key={val.id} value={val.id}>
-                      {val.size}
+                      {val?.size}
                     </option>
                   ))}
               </Select>
@@ -102,9 +101,9 @@ export default function AddStock(props) {
                 ) : (
                   <>
                     {warehouses &&
-                      warehouses.map((val, idx) => (
+                      warehouses?.map((val, idx) => (
                         <option key={val.name} value={val.id}>
-                          {val.name}
+                          {val?.name}
                         </option>
                       ))}
                   </>

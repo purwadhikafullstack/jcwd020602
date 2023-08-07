@@ -32,13 +32,14 @@ const shoeController = {
     try {
       const shoe = await db.Shoe.create(
         {
-          name: req.body.name,
-          description: req.body.description,
-          price: req.body.price,
-          weight: req.body.weight,
-          brand_id: req.body.brand_id,
-          category_id: req.body.category_id,
-          subcategory_id: req.body.subcategory_id,
+          name: req?.body?.name,
+          description: req?.body?.description,
+          price: req?.body?.price,
+          weight: req?.body?.weight,
+          brand_id: req?.body?.brand_id,
+          category_id: req?.body?.category_id,
+          subcategory_id: req?.body?.subcategory_id,
+          status: req?.body?.status,
         },
         { transaction: t }
       );

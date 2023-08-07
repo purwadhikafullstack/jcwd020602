@@ -46,6 +46,7 @@ const stockController = {
           sort = [sort];
           break;
       }
+      console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
       db.Stock.findAndCountAll({
         where: {
           [Op.and]: [

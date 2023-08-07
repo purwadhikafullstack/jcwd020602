@@ -113,7 +113,7 @@ export default function StockMutationPage() {
               setShown={setShown}
             />
           </Flex>
-          <InputGroup size={"sm"} w={"500px"}>
+          <InputGroup size={"sm"} maxW={"500px"}>
             <Input
               placeholder="Month & Year..."
               type="month"

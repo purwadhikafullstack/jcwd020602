@@ -12,12 +12,7 @@ const roleDecoder = require("../middlewares/roleDecoder");
 router.post("/register", validateRegister, userController.register);
 
 // VERIFICATION BY EMAIL
-router.patch(
-  "/verify",
-  roleDecoder.checkUser,
-  validateVerification,
-  userController.verify
-);
+router.patch("/verify", userController.verify);
 
 //login
 router.post("/login", userController.login);
