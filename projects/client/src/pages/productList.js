@@ -21,7 +21,7 @@ export default function ProductList() {
     brand: "",
     gender: "",
   });
- const { shoes, fetch } = useFetchShoe(category, sub, { ...filter, search });
+  const { shoes, fetch } = useFetchShoe(category, sub, { ...filter, search });
   // -------------------------- pagination
   const [pages, setPages] = useState([]);
   const [shown, setShown] = useState({ page: 1 });
@@ -81,7 +81,7 @@ export default function ProductList() {
               value={filter?.brand}
               defaultValue={""}
               onChange={(e) => {
-                setFilter({ brand: e.target.value });
+                setFilter({ ...filter, brand: e.target.value });
               }}
             >
               <option value={""}>FILTER BY BRAND:</option>
@@ -93,9 +93,16 @@ export default function ProductList() {
               <option value={"New balance"}>New balance</option>
             </Select>
           )}
-          <Select id="select" placeholder="FILTER BY SIZE:">
+          <Select
+            id="select"
+            value={filter.size}
+            placeholder="FILTER BY SIZE:"
+            onChange={(e) => {
+              setFilter({ ...filter, size: e.target.value });
+            }}
+          >
             {sizes.map((val) => (
-              <option>{val}</option>
+              <option value={val}>{val}</option>
             ))}
           </Select>
           <Select
@@ -103,6 +110,7 @@ export default function ProductList() {
             placeholder="SORT BY:"
             onChange={(e) => {
               setFilter({
+                ...filter,
                 sort: e.target.value.split(",")[0],
                 order: e.target.value.split(",")[1],
               });
@@ -141,7 +149,7 @@ export default function ProductList() {
                     }}
                   >
                     <Image
-                      src={shoe.ShoeImages[0]?.shoe_img}
+                      src={`${process.env.REACT_APP_API_BASE_URL}/${shoe.ShoeImages[0]?.shoe_img}`}
                       objectFit={"cover"}
                       maxH={"330px"}
                       w={"100%"}
@@ -149,7 +157,7 @@ export default function ProductList() {
                     <Image
                       maxH={"330px"}
                       w={"100%"}
-                      src={shoe.ShoeImages[1]?.shoe_img}
+                      src={`${process.env.REACT_APP_API_BASE_URL}/${shoe.ShoeImages[1]?.shoe_img}`}
                       objectFit={"cover"}
                       pos={"absolute"}
                       top={0}

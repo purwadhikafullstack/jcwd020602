@@ -67,7 +67,7 @@ export default function AddStock(props) {
                 }}
               >
                 {shoes.rows &&
-                  shoes.rows.map((val, idx) => (
+                  shoes?.rows?.map((val, idx) => (
                     <option key={val.id} value={val.id}>
                       {val?.name}
                     </option>

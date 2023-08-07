@@ -162,7 +162,7 @@ export default function ProductPage() {
           {/* tampilan mobile card */}
           <Box id="card-content" display={"none"}>
             <Flex flexDir={"column"} py={1}>
-              {shoes &&
+              {shoes.rows &&
                 shoes?.rows?.map((shoe, idx) => (
                   <Flex
                     p={1}
@@ -224,7 +224,7 @@ export default function ProductPage() {
                             setImg(val.shoe_img);
                             onOpen();
                           }}
-                          src={val?.shoe_img}
+                          src={`${process.env.REACT_APP_API_BASE_URL}/${val?.shoe_img}`}
                           w={10}
                         />
                       ))}
@@ -249,7 +249,7 @@ export default function ProductPage() {
                 </Tr>
               </Thead>
               <Tbody>
-                {shoes &&
+                {shoes?.rows &&
                   shoes?.rows?.map((shoe, idx) => (
                     <Tr>
                       <Td w={"5%"}>{idx + 1}</Td>

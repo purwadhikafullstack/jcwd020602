@@ -15,7 +15,10 @@ export default function ImageModal(props) {
         <ModalContent>
           <ModalCloseButton bg={"black"} color={"white"} />
           <ModalBody p={0}>
-            <Image src={props.image} w={"100%"} />
+            <Image
+              src={`${process.env.REACT_APP_API_BASE_URL}/${props.image}`}
+              w={"100%"}
+            />
           </ModalBody>
         </ModalContent>
       </Modal>

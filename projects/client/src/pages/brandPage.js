@@ -24,7 +24,7 @@ export default function BrandPage() {
   const [search, setSearch] = useState();
   const { brands, fetch } = useFetchBrand();
   const [brandId, setBrandId] = useState();
-
+  console.log(brands);
   return (
     <>
       <Box id="content" pt={"52px"}>
@@ -140,7 +140,7 @@ export default function BrandPage() {
                           setImg(brand.logo_img);
                           onOpen();
                         }}
-                        src={brand?.logo_img}
+                        src={`${process.env.REACT_APP_API_BASE_URL}/${brand.logo_img}`}
                         w={"100px"}
                         h={"100px"}
                         objectFit={"cover"}
@@ -151,7 +151,7 @@ export default function BrandPage() {
                           setImg(brand.brand_img);
                           onOpen();
                         }}
-                        src={brand?.brand_img}
+                        src={`${process.env.REACT_APP_API_BASE_URL}/${brand?.brand_img}`}
                         w={"100px"}
                         h={"100px"}
                         objectFit={"cover"}
@@ -185,7 +185,7 @@ export default function BrandPage() {
                               setImg(brand.logo_img);
                               onOpen();
                             }}
-                            src={brand.logo_img}
+                            src={`${process.env.REACT_APP_API_BASE_URL}/${brand.logo_img}`}
                             w={"50px"}
                             h={"50px"}
                             objectFit={"cover"}
@@ -196,7 +196,7 @@ export default function BrandPage() {
                               setImg(brand.brand_img);
                               onOpen();
                             }}
-                            src={brand.brand_img}
+                            src={`${process.env.REACT_APP_API_BASE_URL}/${brand.brand_img}`}
                             w={"50px"}
                             h={"50px"}
                             objectFit={"cover"}

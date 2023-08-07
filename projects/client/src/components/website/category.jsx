@@ -53,7 +53,7 @@ export default function Category() {
                       <Image
                         w={"100%"}
                         h={"100%"}
-                        src={val.category_img}
+                        src={`${process.env.REACT_APP_API_BASE_URL}/${val.category_img}`}
                         objectFit={"cover"}
                       />
                       <Center

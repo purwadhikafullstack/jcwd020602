@@ -53,8 +53,8 @@ const stockController = {
             { "$warehouse.city.city_id$": city_id },
             {
               [Op.or]: [
-                { "$sho.name$": { [Op.like]: `%${search}%` } },
-                { "$sho.brand.name$": { [Op.like]: `%${search}%` } },
+                { "$Sho.name$": { [Op.like]: `%${search}%` } },
+                { "$Sho.brand.name$": { [Op.like]: `%${search}%` } },
               ],
             },
           ],

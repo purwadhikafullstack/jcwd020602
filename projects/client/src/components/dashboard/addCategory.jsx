@@ -27,7 +27,7 @@ export function AddCategory(props) {
       props.onClose();
     } catch (err) {
       toast({
-        title: err.response.data,
+        title: err?.response?.data,
         status: "error",
         position: "top",
       });
@@ -94,7 +94,7 @@ export function AddSubCategory(props) {
       props.onClose();
     } catch (err) {
       toast({
-        title: err.response.data,
+        title: err?.response?.data,
         status: "success",
         position: "top",
       });
@@ -160,7 +160,7 @@ export function AddBrand(props) {
       props.fetch();
       clearB();
     } catch (err) {
-      console.log(err.response.data);
+      console.log(err);
     }
   };
 
