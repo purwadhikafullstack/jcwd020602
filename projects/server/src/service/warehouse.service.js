@@ -100,4 +100,14 @@ module.exports = {
       return err;
     }
   },
+  getCty: async (body) => {
+    try {
+      return await db.Warehouse.findOne({
+        where: { id: body?.id },
+        attribute: ["city_id"],
+      });
+    } catch (error) {
+      return error;
+    }
+  },
 };

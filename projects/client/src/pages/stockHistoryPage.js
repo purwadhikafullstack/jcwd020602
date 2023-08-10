@@ -9,6 +9,7 @@ import Pagination from "../components/dashboard/pagination";
 import { api } from "../api/api";
 import { useFetchStockHistory } from "../hooks/useFetchStockHistory";
 import moment from "moment";
+import { useFetchBrand } from "../hooks/useFetchBrand";
 
 export default function StockHistoryPage() {
   const userSelector = useSelector((state) => state.auth);
@@ -16,12 +17,14 @@ export default function StockHistoryPage() {
   const { provinces } = useFetchWareProv();
   const [province, setprovince] = useState(0);
   const { cities } = useFetchWareCity(province);
+  const { brands } = useFetchBrand();
   const [filter, setFilter] = useState({
     page: 1,
     sort: "",
     order: "ASC",
     search: "",
     city_id: "",
+    brand_id: "",
     time: "",
   });
   //pagination ------------------------------------------------------
@@ -159,6 +162,26 @@ export default function StockHistoryPage() {
                       setFilter({ ...filter, time: e.target.value });
                     }}
                   />
+                  <Box whiteSpace={"nowrap"}>Brand:</Box>
+                  <Select
+                    onChange={(e) => {
+                      setShown({ page: 1 });
+                      setFilter({ ...filter, brand_id: e.target.value });
+                    }}
+                    id="brand_id"
+                    size={"sm"}
+                    value={filter?.brand_id}
+                  >
+                    <option key={""} value={""}>
+                      choose brand..
+                    </option>
+                    {brands &&
+                      brands?.map((val, idx) => (
+                        <option key={val?.id} value={val?.id}>
+                          {val?.name}
+                        </option>
+                      ))}
+                  </Select>
                 </InputGroup>
                 <Box whiteSpace={"nowrap"}> Sort By:</Box>
                 <Select
@@ -289,17 +312,7 @@ export default function StockHistoryPage() {
               </Tbody>
             </Table>
           </TableContainer>
-          <Flex
-            justifyContent={"center"}
-            alignItems={"center"}
-            gap={"16px"}
-            h={"16px"}
-            fontFamily={"Roboto"}
-            fontStyle={"normal"}
-            fontWeight={"400"}
-            fontSize={"12px"}
-            lineHeight={"14px"}
-          >
+          <Flex p={2} m={2} justify={"center"} border={"2px"}>
             <Pagination
               shown={shown}
               setShown={setShown}

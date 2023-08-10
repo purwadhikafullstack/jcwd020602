@@ -37,6 +37,7 @@ import DeleteStockMutation from "../components/dashboard/deleteStockMutation";
 import EditStockMutation from "../components/dashboard/editStockMutation";
 import ConfirmStockMutation from "../components/dashboard/confirmStockMutation";
 import moment from "moment";
+import { useFetchBrand } from "../hooks/useFetchBrand";
 
 export default function StockMutationPage() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -48,6 +49,7 @@ export default function StockMutationPage() {
   const { provinces } = useFetchWareProv();
   const [province, setprovince] = useState(0);
   const { cities } = useFetchWareCity(province);
+  const { brands } = useFetchBrand();
   const [stockMutId, setStockMutId] = useState();
   const [status, setStatus] = useState();
   const [wareAdmin, setWareAdmin] = useState({});
@@ -58,6 +60,7 @@ export default function StockMutationPage() {
     search: "",
     city_id: "",
     time: "",
+    brand_id: "",
   });
   //pagination ------------------------------------------------------
   const [pages, setPages] = useState([]);
@@ -109,27 +112,10 @@ export default function StockMutationPage() {
             <AddStockMutation
               isOpen={isOpen}
               onClose={onClose}
-              fetch={fetch}
               ware={wareAdmin}
-              setShown={setShown}
+              fetch={fetch}
             />
           </Flex>
-          <InputGroup size={"sm"} maxW={"500px"}>
-            <Input
-              placeholder="Month & Year..."
-              type="month"
-              ref={inputFileRef}
-            />
-            <InputRightAddon
-              cursor={"pointer"}
-              onClick={() => {
-                setShown({ page: 1 });
-                setFilter({ ...filter, time: inputFileRef.current.value });
-              }}
-            >
-              <Icon as={FaSearch} color={"black"} />
-            </InputRightAddon>
-          </InputGroup>
           <Flex flexWrap={"wrap"} gap={2} my={2} justify={"space-between"}>
             <InputGroup size={"sm"} w={"500px"}>
               <Input placeholder="Search..." ref={inputFileRef} />
@@ -207,6 +193,26 @@ export default function StockMutationPage() {
                     }}
                   />
                 </InputGroup>
+                <Box whiteSpace={"nowrap"}>Brand:</Box>
+                <Select
+                  onChange={(e) => {
+                    setShown({ page: 1 });
+                    setFilter({ ...filter, brand_id: e.target.value });
+                  }}
+                  id="brand_id"
+                  size={"sm"}
+                  value={filter?.brand_id}
+                >
+                  <option key={""} value={""}>
+                    choose brand..
+                  </option>
+                  {brands &&
+                    brands?.map((val, idx) => (
+                      <option key={val?.id} value={val?.id}>
+                        {val?.name}
+                      </option>
+                    ))}
+                </Select>
                 <Box whiteSpace={"nowrap"}> Sort By:</Box>
                 <Select
                   onChange={(e) => {
@@ -252,8 +258,8 @@ export default function StockMutationPage() {
           {/* tampilan mobile card */}
           <Box id="card-content" display={"none"}>
             <Flex flexDir={"column"} py={1}>
-              {stockMutations &&
-                stockMutations.rows.map((stockMutation, idx) => (
+              {stockMutations?.rows &&
+                stockMutations?.rows.map((stockMutation, idx) => (
                   <Flex
                     p={1}
                     m={1}
@@ -393,8 +399,8 @@ export default function StockMutationPage() {
                 </Tr>
               </Thead>
               <Tbody>
-                {stockMutations &&
-                  stockMutations.rows.map((stockMutation, idx) => (
+                {stockMutations?.rows &&
+                  stockMutations?.rows.map((stockMutation, idx) => (
                     <Tr>
                       <Td w={"5%"}>{idx + 1}</Td>
                       <Td>
@@ -496,12 +502,10 @@ export default function StockMutationPage() {
                               setShown={setShown}
                               isOpen={deleteSM.isOpen}
                               onClose={deleteSM.onClose}
-                              fetch={fetch}
                               setId={setStockMutId}
                             />
                             <ConfirmStockMutation
                               id={stockMutId}
-                              setShown={setShown}
                               status={status}
                               setStatus={setStatus}
                               isOpen={confirmSM.isOpen}
@@ -517,17 +521,7 @@ export default function StockMutationPage() {
               </Tbody>
             </Table>
           </TableContainer>
-          <Flex
-            justifyContent={"center"}
-            alignItems={"center"}
-            gap={"16px"}
-            h={"16px"}
-            fontFamily={"Roboto"}
-            fontStyle={"normal"}
-            fontWeight={"400"}
-            fontSize={"12px"}
-            lineHeight={"14px"}
-          >
+          <Flex p={2} m={2} justify={"center"} border={"2px"}>
             <Pagination
               shown={shown}
               setShown={setShown}

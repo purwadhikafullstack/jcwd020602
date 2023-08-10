@@ -1,4 +1,5 @@
 import axios from "axios";
+
 const headers = {
   ["x-secret-key"]: "foothub55",
 };

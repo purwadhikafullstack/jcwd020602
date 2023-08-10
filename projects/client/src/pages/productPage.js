@@ -268,8 +268,8 @@ export default function ProductPage() {
                           ))}
                         </Grid>
                       </Td>
-                      <Td>{shoe.name}</Td>
-                      <Td>{shoe.price}</Td>
+                      <Td>{shoe?.name}</Td>
+                      <Td>{shoe?.price}</Td>
                       <Td>{shoe?.brand?.name}</Td>
                       <Td>{shoe?.Category?.name}</Td>
                       <Td>{shoe?.subcategory?.name}</Td>
