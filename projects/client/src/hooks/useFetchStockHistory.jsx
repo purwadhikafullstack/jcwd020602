@@ -8,14 +8,13 @@ export const useFetchStockHistory = (filter) => {
     try {
       const res = await api.get("/stockHistories", { params: filter });
       setStockHistories(res.data);
-
     } catch (err) {
       console.log(err.response.data);
     }
   };
 
   useEffect(() => {
-    if (filter.city_id != "") {
+    if (filter.city_id != "" || userSelector.role == "SUPERADMIN") {
       fetch();
     }
   }, [filter]);
