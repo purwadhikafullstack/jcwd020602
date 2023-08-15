@@ -18,6 +18,7 @@ const roleDecoder = {
   checkUser: async (req, res, next) => {
     try {
       const token = req.headers.authorization.split(" ")[1];
+      console.log(token);
       const find = await findToken({ token, valid: 1 });
       if (!find) {
         throw new UnauthorizedError(
@@ -50,7 +51,6 @@ const roleDecoder = {
           "Token has expired. Please log in again(staff)."
         );
       }
-
       const user = await db.User.findOne({
         where: {
           id: JSON.parse(find?.dataValues?.userId).id,
@@ -71,8 +71,9 @@ const roleDecoder = {
   checkSuper: async (req, res, next) => {
     try {
       const token = req.headers.authorization.split(" ")[1];
-      const find = findToken({ token, valid: 1 });
-
+      console.log(token);
+      const find = await findToken({ token, valid: 1 });
+      console.log(find);
       if (!find) {
         throw new UnauthorizedError(
           "Token has expired. Please log in again(super)."

@@ -66,7 +66,6 @@ const editPasswordSchema = Joi.object({
 
 const validate = (schema) => (req, res, next) => {
   const { error } = schema.validate(req.body);
-
   if (error) {
     return res.status(400).send({
       isError: true,
@@ -78,12 +77,26 @@ const validate = (schema) => (req, res, next) => {
   next();
 };
 
-const requestStockSchema = Joi.object({
-  from_warehouse_id: Joi.number().integer().required(),
-  to_warehouse_id: Joi.number().integer().required(),
-  products_id: Joi.number().integer().required(),
-  quantity: Joi.number().integer().min(1).required(),
+const stockSchema = Joi.object({
+  stock: Joi.number().integer().min(1).required(),
+  shoe_id: Joi.number().integer().required(),
+  shoe_size_id: Joi.number().integer().required(),
+  warehouse_id: Joi.number().integer().required(),
 });
+
+const editStockSchema = Joi.object({
+  stock: Joi.number().integer().min(1).required(),
+});
+
+const stockMutationSchema = Joi.object({
+  to_warehouse_id: Joi.number().integer().required(),
+  qty: Joi.number().integer().min(1).required(),
+  stock_id: Joi.number().integer().required(),
+});
+
+// const editStockMutationSchema = Joi.object({
+//   stock: Joi.number().integer().min(1).required(),
+// });
 
 // Export the validator function
 module.exports = {
@@ -91,7 +104,9 @@ module.exports = {
   validateVerification: validate(verifySchema),
   validateEditProfile: validate(editProfileSchema),
   validateEditPassword: validate(editPasswordSchema),
-  validateRequestStock: validate(requestStockSchema),
+  validateStockMutation: validate(stockMutationSchema),
+  validateStock: validate(stockSchema),
+  validateEditStock: validate(editStockSchema),
   validateLoginAdmin: validate(loginAdminSchema),
   validateAddWarehouse: validate(addWarehouseSchema),
   validateEditWarehouse: validate(editWarehouseSchema),

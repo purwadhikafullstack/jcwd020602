@@ -27,16 +27,15 @@ export function EditCategory(props) {
   const fetchCatId = async () => {
     const res = await api.get("/categories/" + props.id);
     setCategory(res.data);
-    setImage(`${process.env.REACT_APP_API_BASE_URL}/${res.data.category_img}`);
+    setImage(res.data.category_img);
   };
 
   const updateCategory = async () => {
     const formData = new FormData();
     formData.append("name", category.name);
-    formData.append(
-      "category",
-      !selectedFile ? category.category_img : selectedFile
-    );
+    if (selectedFile) {
+      formData.append("category", selectedFile);
+    }
     try {
       const res = await api.patch("/categories/" + props.id, formData);
       toast({

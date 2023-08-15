@@ -1,25 +1,26 @@
-import { Box, Button, FormControl, FormErrorMessage } from "@chakra-ui/react";
-import { InputGroup, InputLeftElement, useToast } from "@chakra-ui/react";
-import { FormLabel, Heading, Icon, Input, Stack } from "@chakra-ui/react";
-import { FaEnvelope } from "react-icons/fa";
+import { Box, Button, Center, FormErrorMessage } from "@chakra-ui/react";
+import { InputRightElement, Text } from "@chakra-ui/react";
+import { InputGroup, useToast, FormControl } from "@chakra-ui/react";
+import { Heading, Icon, Input, Stack } from "@chakra-ui/react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../api/api";
+import { useState } from "react";
+import { TbAlertCircleFilled } from "react-icons/tb";
+import { EmailIcon } from "@chakra-ui/icons";
 
 export default function Register() {
-  const toast = useToast({ position: "top" });
+  const toast = useToast({ duration: 3000, isClosable: true, position: "top" });
   const nav = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const [formField, setFormField] = useState("");
   const formik = useFormik({
     initialValues: {
       email: "",
     },
     validationSchema: Yup.object().shape({
-      email: Yup.string()
-        .email(
-          "* email is invalid. Make sure it's written like example@email.com"
-        )
-        .required("* Email is required"),
+      email: Yup.string().email("Invalid email address").required("required"),
     }),
     onSubmit: async () => {
       try {
@@ -27,20 +28,22 @@ export default function Register() {
         toast({
           title: res.data.message,
           status: "success",
-          duration: 3000,
-          isClosable: true,
         });
         nav("/auth");
       } catch (err) {
         toast({
-          title: err.response?.data,
+          title: err?.response?.data,
           status: "error",
-          duration: 3000,
-          isClosable: true,
         });
       }
     },
   });
+
+  function inputHandler(e) {
+    const { value, id } = e.target;
+    formik.setFieldValue(id, value);
+    setFormField(id);
+  }
 
   return (
     <Box>
@@ -48,45 +51,44 @@ export default function Register() {
         Sign up
       </Heading>
 
-      <Stack spacing={4}>
-        <form onSubmit={formik.handleSubmit}>
-          <FormControl
-            id="email"
-            isRequired
-            isInvalid={formik.touched.email && formik.errors.email}
+      <Stack spacing={"20px"}>
+        <FormControl isInvalid={formField === "email" && formik.errors.email}>
+          <Box
+            className={`inputbox ${
+              formik.values.email ? "input-has-value" : ""
+            }`}
           >
-            <FormLabel>Email</FormLabel>
-            <InputGroup>
-              <InputLeftElement>
-                <Icon as={FaEnvelope} />
-              </InputLeftElement>
+            <InputGroup size="md">
               <Input
-                type="email"
-                placeholder="Email"
                 id="email"
-                name="email"
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
                 value={formik.values.email}
+                onChange={inputHandler}
               />
+              <label>Email</label>
+              <InputRightElement width="4rem">
+                <Icon as={EmailIcon} />
+              </InputRightElement>
             </InputGroup>
-            <Box h={"30px"}>
-              <FormErrorMessage fontSize={"2xs"}>
-                {formik.errors.email}
-              </FormErrorMessage>
-            </Box>
-          </FormControl>
-
-          <Button
-            colorScheme="blue.100"
-            bgColor={"black"}
-            size="lg"
-            w={"100%"}
-            type="submit"
-          >
-            Sign up
-          </Button>
-        </form>
+            <FormErrorMessage>
+              <Icon as={TbAlertCircleFilled} w="16px" h="16px" />
+              <Text fontSize={10}>{formik.errors.email}</Text>
+            </FormErrorMessage>
+          </Box>
+        </FormControl>
+        <Button
+          id="button"
+          isDisabled={formik.values.email ? false : true}
+          isLoading={isLoading}
+          onClick={() => {
+            setIsLoading(true);
+            setTimeout(() => {
+              setIsLoading(false);
+              formik.handleSubmit();
+            }, 2000);
+          }}
+        >
+          Sign up
+        </Button>
       </Stack>
     </Box>
   );

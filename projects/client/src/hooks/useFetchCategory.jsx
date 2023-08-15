@@ -9,7 +9,7 @@ export const useFetchCategory = () => {
       const res = await api.get(`/categories`);
       setCategories(res.data);
     } catch (err) {
-      console.log(err.response.data);
+      console.log(err?.response?.data);
     }
   };
 
@@ -28,7 +28,7 @@ export const useFetchSubcategory = () => {
       const res = await api.get("/subcategories");
       setSub(res.data);
     } catch (err) {
-      console.log(err.response.data);
+      console.log(err?.response?.data);
     }
   };
 

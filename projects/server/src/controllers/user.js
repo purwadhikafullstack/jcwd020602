@@ -20,19 +20,16 @@ const userController = {
     try {
       const { email } = req.body;
       const findEmail = await findUser(email);
-      console.log(findEmail);
+
       if (findEmail) {
         throw new Error("Email was registered");
       } else {
-        const user = await db.User.create({
-          email,
-          role: "USER",
-        });
+        const user = await db.User.create({ email, role: "USER" });
         const id = JSON.stringify({ id: user.dataValues.id });
         const generateToken = nanoid();
-        await createToken(id, generateToken, true, "VERIFY", t);
+        await createToken(id, generateToken, 1, "VERIFY", t);
 
-        const template = await fs.readFile(
+        const template = fs.readFileSync(
           "./src/template/register.html",
           "utf-8"
         );
@@ -60,6 +57,12 @@ const userController = {
     const t = await db.sequelize.transaction();
     try {
       await updateUser(req.body, "", t); //req.body: pass, name, email
+      const user = await findUser(req.body.email);
+      const id = JSON.stringify({ id: user.dataValues.id });
+      await db.Token.update(
+        { valid: 0 },
+        { where: { userId: id }, transaction: t }
+      );
       t.commit();
       return res.status(201).send({ message: "Success create account" });
     } catch (err) {
@@ -72,29 +75,23 @@ const userController = {
     try {
       const { email, password } = req.body;
       const user = await findUser(email);
-      console.log(user);
       if (!user) {
         throw new Error("email not found");
       }
 
-      if (!user.dataValues.status) {
-        throw new Error("email not verified");
-      }
-
       const match = await bcrypt.compare(password, user.dataValues.password);
-
       if (!match) {
         throw new Error("Wrong password");
       }
+
       const id = JSON.stringify({ id: user.dataValues.id });
       const generateToken = nanoid();
-      let token = await findToken({ userId: id, valid: 1, status: "LOGIN" });
+      let token = await findToken({ userId: id });
       if (!token) {
-        await createToken(id, generateToken, true, "LOGIN", t);
+        await createToken(id, generateToken, 1, "LOGIN", t);
       } else {
-        await updateToken(id, generateToken, true, "LOGIN", t);
+        await updateToken(id, generateToken, 1, "LOGIN", t);
       }
-
       t.commit();
       delete user.dataValues.password;
       delete user.dataValues.id;
@@ -111,12 +108,13 @@ const userController = {
   tokenDecoder: async (req, res, next) => {
     try {
       const token = req.headers.authorization.split(" ")[1];
-      console.log(token);
       let p = await findToken({ token: token, valid: 1 });
       if (!p) {
-        throw new Error("token has expired");
+        return res.status(200).send({ message: "token has expired" });
       }
-      const user = await findUser(JSON.parse(p.dataValues.userId).id);
+
+      const id = JSON.parse(p.dataValues.userId).id;
+      const user = await findUser(id);
       delete user.dataValues.password;
       req.user = user;
       next();
@@ -137,18 +135,15 @@ const userController = {
 
       if (user) {
         const id = JSON.stringify({ id: user.dataValues.id });
-        const check = await findToken({
-          userId: id,
-          status: "FORGOT-PASSWORD",
-        });
+        const check = await findToken({ userId: id });
         const generateToken = nanoid();
         if (check) {
-          await updateToken(id, generateToken, true, "FORGOT-PASSWORD", t);
+          await updateToken(id, generateToken, 1, "FORGOT-PASSWORD", t);
         } else {
-          await createToken(id, generateToken, true, "FORGOT-PASSWORD", t);
+          await createToken(id, generateToken, 1, "FORGOT-PASSWORD", t);
         }
 
-        const template = await fs.readFile(
+        const template = fs.readFileSync(
           "./src/template/forgotPassword.html",
           "utf-8"
         );
@@ -175,15 +170,10 @@ const userController = {
     const t = await db.sequelize.transaction();
     try {
       let token = req.headers.authorization.split(" ")[1];
-      console.log(token);
       const { id } = req.user;
 
       await updateUser(req.body, id, t); //req.body: pass
-      await db.Token.update(
-        { valid: false },
-        { where: { token } },
-        { transaction: t }
-      );
+      await db.Token.update({ valid: 0 }, { where: { token }, transaction: t });
       await t.commit();
       return res.status(200).send({ message: "success change passowrd" });
     } catch (err) {
@@ -191,8 +181,78 @@ const userController = {
       return res.status(500).send({ message: err.message });
     }
   },
+  editProfile: async (req, res) => {
+    const t = await db.sequelize.transaction();
+    const filename = req?.file?.filename;
+    try {
+      const { name, phone, email } = req.body;
+      const check = await findUser(email);
+
+      await db.User.update(
+        {
+          name,
+          phone,
+          avatar_url: filename
+            ? "avatar/" + filename
+            : check?.dataValues?.avatar_url || null,
+        },
+        { where: { email }, transaction: t }
+      );
+
+      if (filename) {
+        if (check?.dataValues?.avatar_url) {
+          try {
+            fs.unlinkSync(
+              `${__dirname}/../public/avatar/${
+                check.dataValues.avatar_url.split("/")[1]
+              }`
+            );
+          } catch (err) {
+            console.log(err);
+          }
+        }
+      }
+
+      await t.commit();
+      return res
+        .status(200)
+        .send({ message: "Your changes has successfully saved" });
+    } catch (err) {
+      if (filename) {
+        fs.unlinkSync(`${__dirname}/../public/avatar/${filename}`);
+      }
+      await t.rollback();
+      return res.status(500).send(err.message);
+    }
+  },
+  editPassword: async (req, res) => {
+    const t = await db.sequelize.transaction();
+    try {
+      const { oldPassword, newPassword, email } = req.body;
+      const check = await findUser(email);
+      const match = await bcrypt.compare(
+        oldPassword,
+        check.dataValues.password
+      );
+      if (!match) {
+        return res.status(400).send({ message: "Password not match" });
+      }
+      const hashPassword = await bcrypt.hash(newPassword, 10);
+      await db.User.update(
+        { password: hashPassword },
+        { where: { email }, transaction: t }
+      );
+      await t.commit();
+      return res.status(200).send({ message: "success change password" });
+    } catch (err) {
+      await t.rollback();
+      return res.status(500).send(err.message);
+    }
+  },
+  // -------------------------- SUPERADMIN
   addAdmin: async (req, res) => {
     const t = await db.sequelize.transaction();
+    const { filename } = req?.file;
     try {
       const { name, email, phone, password } = req.body;
       const { filename } = req.file;
@@ -200,7 +260,9 @@ const userController = {
       const check = await findUser(email);
 
       if (check) {
-        fs.unlinkSync(req.file.path);
+        if (filename) {
+          fs.unlinkSync(`${__dirname}/../public/avatar/${filename}`);
+        }
         return res.status(400).send({ message: "email alrdy exist" });
       }
 
@@ -210,7 +272,7 @@ const userController = {
           email,
           phone,
           password: hashPassword,
-          avatar_url: "avatar/" + filename,
+          avatar_url: AVATAR_URL + filename,
           role: "ADMIN",
           status: "verified",
         },
@@ -219,7 +281,9 @@ const userController = {
       await t.commit();
       return res.status(200).send({ message: "success add admin" });
     } catch (err) {
-      fs.unlinkSync(req.file.path);
+      if (filename) {
+        fs.unlinkSync(`${__dirname}/../public/avatar/${filename}`);
+      }
       await t.rollback();
       return res.status(500).send(err.message);
     }
@@ -242,9 +306,9 @@ const userController = {
   },
   editAdminById: async (req, res) => {
     const t = await db.sequelize.transaction();
+    const filename = req?.file?.filename;
     try {
-      const { name, email, phone, password, avatar } = req.body;
-      const filename = req?.file?.filename || avatar;
+      const { name, email, phone, password } = req.body;
       const hashPassword = await bcrypt.hash(password, 10);
       const check = findUser(email);
 
@@ -262,10 +326,11 @@ const userController = {
           email,
           phone,
           password: hashPassword,
-          avatar_url: !req?.file?.filename ? avatar : "avatar/" + filename,
+          avatar_url: filename
+            ? "avatar/" + filename
+            : check?.dataValues?.avatar_url || null,
         },
-        { where: { id: req.params.id } },
-        { transaction: t }
+        { where: { id: req.params.id }, transaction: t }
       );
       await t.commit();
       return res.send({ message: "success update admin" });
@@ -296,16 +361,6 @@ const userController = {
     } catch (err) {
       await t.rollback();
       return res.status(500).send(err.message);
-    }
-  },
-  getWarehouseCity: async (req, res, next) => {
-    try {
-      let result = await db.Warehouse.findOne({
-        where: { id: req.user.warehouse_id },
-      });
-      return res.status(200).send(result || `153`);
-    } catch (err) {
-      return res.status(500).send({ message: err.message });
     }
   },
 };

@@ -20,7 +20,7 @@ export default function ChangePassword() {
   const handleClick = () => setShow(!show);
   const handleClick1 = () => setShow1(!show1);
   const [isLoading, setIsLoading] = useState(false);
-  const toast = useToast();
+  const toast = useToast({ duration: 3000, isClosable: true, position: "top" });
   const location = useLocation();
   const [user, setUser] = useState([]);
   const [token, setToken] = useState();
@@ -33,6 +33,7 @@ export default function ChangePassword() {
     validationSchema: Yup.object().shape({
       password: Yup.string()
         .min(8, "Must be at least 8 characters")
+        .minUppercase(1, "at least 1 capital letter")
         .required("Required"),
       confirmPassword: Yup.string()
         .required("confirm your password")
@@ -49,14 +50,12 @@ export default function ChangePassword() {
         toast({
           title: res.data.message,
           status: "success",
-          position: "top",
         });
         return nav("/auth");
       } catch (err) {
         toast({
           title: err.response.data,
           status: "error",
-          position: "top",
         });
       }
     },
@@ -96,16 +95,16 @@ export default function ChangePassword() {
           <Center h={"100vh"} maxH={"800px"} maxW={"1531px"} w={"100%"}>
             <Flex
               flexDir={"column"}
-              p={5}
-              m={5}
-              textAlign={"center"}
+              gap={5}
+              p={2}
+              m={2}
               border={"2px"}
               w={"100%"}
               maxW={"500px"}
             >
-              <Box fontSize={"25px"} mb={2}>
+              <Center fontSize={"25px"} mb={2}>
                 Change Password
-              </Box>
+              </Center>
               {/* password */}
               <FormControl
                 isInvalid={formField === "password" && formik.errors.password}
@@ -129,14 +128,10 @@ export default function ChangePassword() {
                       </Button>
                     </InputRightElement>
                   </InputGroup>
-                  <Box w={"100%"} h={8}>
-                    <FormErrorMessage>
-                      <Center>
-                        <Icon as={TbAlertCircleFilled} w="16px" h="16px" />
-                      </Center>
-                      <Text fontSize={10}>{formik.errors.password}</Text>
-                    </FormErrorMessage>
-                  </Box>
+                  <FormErrorMessage>
+                    <Icon as={TbAlertCircleFilled} w="16px" h="16px" />
+                    <Text fontSize={10}>{formik.errors.password}</Text>
+                  </FormErrorMessage>
                 </Box>
               </FormControl>
 
@@ -166,17 +161,14 @@ export default function ChangePassword() {
                       </Button>
                     </InputRightElement>
                   </InputGroup>
-                  <Box w={"100%"} h={8}>
-                    <FormErrorMessage>
-                      <Center>
-                        <Icon as={TbAlertCircleFilled} w="16px" h="16px" />
-                      </Center>
-                      <Text fontSize={10}>{formik.errors.confirmPassword}</Text>
-                    </FormErrorMessage>
-                  </Box>
+                  <FormErrorMessage>
+                    <Icon as={TbAlertCircleFilled} w="16px" h="16px" />
+                    <Text fontSize={10}>{formik.errors.confirmPassword}</Text>
+                  </FormErrorMessage>
                 </Box>
               </FormControl>
               <Button
+                id="button"
                 isDisabled={
                   formik.values.password && formik.values.confirmPassword
                     ? false

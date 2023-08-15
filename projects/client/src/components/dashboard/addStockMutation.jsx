@@ -4,9 +4,6 @@ import {
   useToast,
   NumberInput,
   NumberInputField,
-  NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
   Flex,
   Button,
   FormErrorMessage,
@@ -18,7 +15,6 @@ import {
   ModalBody,
   ModalCloseButton,
   ModalFooter,
-  Input,
   Box,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
@@ -33,6 +29,7 @@ export default function AddStockMutation(props) {
   const toast = useToast();
   const { warehouses } = useFetchWarehouse();
   const [isLoading, setIsLoading] = useState(false);
+  const [maxStock, setMaxStock] = useState();
   const userSelector = useSelector((state) => state.auth);
   const formik = useFormik({
     initialValues: {
@@ -50,31 +47,34 @@ export default function AddStockMutation(props) {
         .required("Warehouse Name is required"),
       qty: Yup.number()
         .min(1, "Quantity must be greater than 0")
+        .max(maxStock || 0, "Stock insuficient")
         .required("quantity is required"),
       stock_id: Yup.number()
         .min(1, "Please select a product name")
         .required("Product name is required"),
     }),
     onSubmit: async () => {
-      const resPostMutation = await api
-        .post("/stockMutations", formik.values)
-        .catch((err) => {
-          toast({
-            title: `${err.response.data.message}`,
-            status: "error",
-            duration: 9000,
-            isClosable: true,
-          });
+      try {
+        delete formik.values.from_warehouse_id;
+        const resPostMutation = await api.post(
+          "/stockMutations",
+          formik.values
+        );
+        toast({
+          title: resPostMutation.data.message,
+          status: "success",
+          position: "top",
         });
-      toast({
-        title: resPostMutation.data.message,
-        status: "success",
-        position: "top",
-      });
-      props.fetch();
-      formik.resetForm();
-      props.setShown({ page: 1 });
-      props.onClose();
+        props.fetch();
+        clearData();
+      } catch (err) {
+        toast({
+          title: `${err.response.data.message}`,
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
+      }
     },
   });
   const { stocks } = useFetchFromStock(formik.values.from_warehouse_id);
@@ -82,14 +82,22 @@ export default function AddStockMutation(props) {
     const { value, id } = e.target;
     formik.setFieldValue(id, value);
   }
+  useEffect(() => {
+    if (formik?.values?.stock_id) {
+      setMaxStock(
+        stocks.find((val) => val?.id == formik?.values?.stock_id)?.stock
+      );
+    }
+  }, [formik.values.stock_id]);
+  function clearData() {
+    formik.resetForm();
+    setMaxStock(0);
+    props.onClose();
+  }
 
   return (
     <>
-      <Modal
-        scrollBehavior="inside"
-        isOpen={props.isOpen}
-        onClose={props.onClose}
-      >
+      <Modal scrollBehavior="inside" isOpen={props.isOpen} onClose={clearData}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader p={2}>Stock Mutation Form</ModalHeader>
@@ -103,8 +111,17 @@ export default function AddStockMutation(props) {
                 onChange={inputHandler}
                 isInvalid={formik.touched.qty && formik.errors.qty}
               >
-                <FormLabel>Quantity</FormLabel>
-                <NumberInput min={1}>
+                <FormLabel display={"flex"} gap={"3px"} alignItems={"center"}>
+                  Quantity
+                  <Box
+                    fontSize={"xs"}
+                    color={"blackAlpha.700"}
+                    textAlign={"center"}
+                  >
+                    (Stock available: {maxStock || "Select a stock"})
+                  </Box>
+                </FormLabel>
+                <NumberInput>
                   <NumberInputField placeholder="Qty" />
                 </NumberInput>
                 <FormErrorMessage>{formik.errors.qty}</FormErrorMessage>
@@ -123,11 +140,14 @@ export default function AddStockMutation(props) {
                 <FormLabel>Select Supplying Warehouse Name:</FormLabel>
                 <Select placeholder="Select Warehouse name">
                   {warehouses &&
-                    warehouses.map((val, idx) => (
-                      <option key={val.name} value={val.id}>
-                        {val.name}
-                      </option>
-                    ))}
+                    warehouses.map(
+                      (val, idx) =>
+                        val?.id != formik.values.to_warehouse_id && (
+                          <option key={val.id} value={val.id}>
+                            {val.name}
+                          </option>
+                        )
+                    )}
                 </Select>
                 <FormErrorMessage>
                   {formik.errors.from_warehouse_id}
@@ -141,7 +161,17 @@ export default function AddStockMutation(props) {
                 onChange={inputHandler}
                 isInvalid={formik.touched.stock_id && formik.errors.stock_id}
               >
-                <FormLabel>Stock Type:</FormLabel>
+                <FormLabel display={"flex"} gap={"3px"} alignItems={"center"}>
+                  Stock Type:
+                  <Box
+                    fontSize={"xs"}
+                    color={"blackAlpha.700"}
+                    textAlign={"center"}
+                  >
+                    {!formik.values.from_warehouse_id &&
+                      `(select supplying warehouse first)`}
+                  </Box>
+                </FormLabel>
                 <Select placeholder="Select Stock Type">
                   {stocks.length &&
                     stocks.map((val) => {
@@ -182,11 +212,14 @@ export default function AddStockMutation(props) {
                   ) : (
                     <>
                       {warehouses &&
-                        warehouses.map((val, idx) => (
-                          <option key={val.id} value={val.id}>
-                            {val.name}
-                          </option>
-                        ))}
+                        warehouses.map(
+                          (val, idx) =>
+                            val?.id != formik.values.from_warehouse_id && (
+                              <option key={val.id} value={val.id}>
+                                {val.name}
+                              </option>
+                            )
+                        )}
                     </>
                   )}
                 </Select>
@@ -199,15 +232,7 @@ export default function AddStockMutation(props) {
 
           <ModalFooter>
             <Flex gap={5}>
-              <Button
-                colorScheme="red"
-                onClick={() => {
-                  props.onClose();
-                  formik.resetForm();
-                }}
-              >
-                Cancel
-              </Button>
+              <Button onClick={clearData}>Cancel</Button>
               <Button
                 isLoading={isLoading}
                 onClick={() => {

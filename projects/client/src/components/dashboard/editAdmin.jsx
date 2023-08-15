@@ -29,7 +29,7 @@ export default function EditAdmin(props) {
   const fetchAdminbyId = async () => {
     const res = await api.get("/auth/" + props.id);
     setAdmin(res.data);
-    setImage(`${process.env.REACT_APP_API_BASE_URL}/${res.data.avatar_url}`);
+    setImage(res.data.avatar_url);
   };
 
   const editAdmin = async () => {
@@ -38,7 +38,10 @@ export default function EditAdmin(props) {
     formData.append("phone", admin.phone);
     formData.append("email", admin.email);
     formData.append("password", admin.password);
-    formData.append("avatar", !selectedFile ? admin.avatar_url : selectedFile);
+    if (selectedFile) {
+      formData.append("avatar", selectedFile);
+    }
+    // formData.append("avatar", !selectedFile ? admin.avatar_url : selectedFile);
 
     try {
       const response = await api.patch("/auth/admin/" + props.id, formData);

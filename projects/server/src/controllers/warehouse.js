@@ -1,15 +1,10 @@
 const db = require("../models");
 const axios = require("axios");
-const opencage = async (address, city, province) => {
-  return await axios.get("https://api.opencagedata.com/geocode/v1/json", {
-    params: {
-      q: `${address}, ${city},${province}`,
-      countrycode: "id",
-      limit: 1,
-      key: process.env.OpenCage_API_KEY,
-    },
-  });
-};
+
+const { openCage } = require("../service/opencage.service");
+
+const { getWarehouse } = require("../service/warehouse.service");
+
 
 const warehouseControllers = {
   addWarehouse: async (req, res) => {
@@ -19,7 +14,7 @@ const warehouseControllers = {
       const city = await db.City.findOne({
         where: { city_id },
       });
-      const response = await opencage(
+      const response = await openCage(
         address,
         city.dataValues.city_name,
         city.dataValues.province
@@ -139,8 +134,7 @@ const warehouseControllers = {
         await user.save({ transaction: t });
         await db.User.update(
           { warehouse_id: req.body.warehouse_id },
-          { where: { id: user_id } },
-          { transaction: t }
+          { where: { id: user_id }, transaction: t }
         );
       }
       await t.commit();
@@ -230,16 +224,23 @@ const warehouseControllers = {
   getCity: async (req, res) => {
     try {
       db.Warehouse.findAll({
-        include: [
-          { model: db.City, attributes: ["city_id", "city_name", "type"] },
-        ],
+        include: [{ model: db.City, attributes: ["city_name", "type"] }],
         where: {
           "$city.province$": req.query.province,
         },
-        distinc: true,
       }).then((result) => res.status(200).send(result));
     } catch (err) {
       return res.status(500).send(err.message);
+    }
+  },
+  getWarehouseCity: async (req, res, next) => {
+    try {
+      const result = await getWarehouse({
+        id: req?.user?.warehouse_id,
+      });
+      return res.status(200).send(result);
+    } catch (err) {
+      return res.status(500).send({ message: err.message });
     }
   },
 };

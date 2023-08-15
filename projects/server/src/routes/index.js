@@ -13,6 +13,8 @@ const stockMutationRoutes = require("./stockMutation");
 const cartRoutes = require("./cart");
 const checkOutRoutes = require("./checkOut");
 const orderRoutes = require("./order");
+const addressFRoutes = require("./addressF");
+
 
 module.exports = {
   provinceCityRoutes,
@@ -30,4 +32,5 @@ module.exports = {
   cartRoutes,
   checkOutRoutes,
   orderRoutes,
+  addressFRoutes,
 };

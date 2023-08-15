@@ -31,11 +31,9 @@ module.exports = (sequelize, Sequelize) => {
       paranoid: true,
       hooks: {
         afterCreate: async (instance, options) => {
-          const mutation_code = {
-            MUT: `${moment().format("DDMMYYYY")}${instance.id}${moment().format(
-              "HHmmss"
-            )}`,
-          };
+          const mutation_code = `MUT/${moment().format("DDMMYYYY")}${
+            instance.id
+          }${moment().format("HHmmss")}`;
           await instance.update(
             { mutation_code: JSON.stringify(mutation_code) },
             { transaction: options.transaction }

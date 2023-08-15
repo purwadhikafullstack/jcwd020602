@@ -12,12 +12,7 @@ const roleDecoder = require("../middlewares/roleDecoder");
 router.post("/register", validateRegister, userController.register);
 
 // VERIFICATION BY EMAIL
-router.patch(
-  "/verify",
-  roleDecoder.checkUser,
-  validateVerification,
-  userController.verify
-);
+router.patch("/verify", userController.verify);
 
 //login
 router.post("/login", userController.login);
@@ -28,17 +23,27 @@ router.get(
   userController.getUserByToken
 );
 
-
 //token forgot password
-// router.get("/generate-token/email", userController.generateTokenByEmail);
+router.get("/generate-token/email", userController.generateTokenByEmail);
 
 //forgot password
-// router.patch(
-//   "/forgot-password",
-//   userController.tokenDecoder,
-//   userController.forgotPassword
-// );
+router.patch(
+  "/forgot-password",
+  userController.tokenDecoder,
+  userController.forgotPassword
+);
 
+router.patch(
+  "/profile",
+  fileUploader({
+    destinationFolder: "avatar",
+    fileType: "image",
+  }).single("avatar"),
+  userController.editProfile
+);
+
+
+router.patch("/password", userController.editPassword);
 
 // ------------- admin
 router.post(
@@ -58,11 +63,6 @@ router.patch(
     fileType: "image",
   }).single("avatar"),
   userController.editAdminById
-);
-router.get(
-  "/warehousebytoken",
-  roleDecoder.checkAdmin,
-  userController.getWarehouseCity
 );
 router.get("/", roleDecoder.checkSuper, userController.getAllUser);
 router.get("/:id", roleDecoder.checkSuper, userController.getAdminById);

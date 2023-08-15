@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { api } from "../api/api";
 
 export const useFetchShoe = (category, sub, filter) => {
-  const [shoes, setShoes] = useState();
-
+  const [shoes, setShoes] = useState({ rows: [] });
+  // console.log(filter);
   const fetch = async () => {
     try {
       const res = await api.get(`/shoes`, {
@@ -11,7 +11,7 @@ export const useFetchShoe = (category, sub, filter) => {
       });
       setShoes(res.data);
     } catch (err) {
-      console.log(err.response.data);
+      console.log(err?.response);
     }
   };
 

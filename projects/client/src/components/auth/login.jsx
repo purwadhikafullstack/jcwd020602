@@ -1,5 +1,5 @@
-import { Box, Button, Center, Flex } from "@chakra-ui/react";
-import { FormControl, FormErrorMessage, FormLabel } from "@chakra-ui/react";
+import { Box, Button, Flex } from "@chakra-ui/react";
+import { FormControl, FormErrorMessage } from "@chakra-ui/react";
 import { Heading, Icon, Input, InputGroup } from "@chakra-ui/react";
 import { InputRightElement, Stack, Text, useToast } from "@chakra-ui/react";
 import { TbAlertCircleFilled } from "react-icons/tb";
@@ -10,15 +10,28 @@ import React, { useState } from "react";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { api } from "../../api/api";
+import YupPassword from "yup-password";
+import { fetch } from "../../hoc/authProvider";
+import { auth } from "../../lib/firebase";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+
 
 export default function Login() {
+  YupPassword(Yup);
   const dispatch = useDispatch();
-  const toast = useToast();
+  const toast = useToast({ duration: 3000, isClosable: true, position: "top" });
   const nav = useNavigate();
   const [show, setShow] = React.useState(false);
   const handleClick = () => setShow(!show);
   const [isLoading, setIsLoading] = useState(false);
   const [formField, setFormField] = useState("");
+
+  async function socialLogin() {
+    const provider = new GoogleAuthProvider();
+    signInWithPopup(auth, provider)
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
+  }
 
   const formik = useFormik({
     initialValues: {
@@ -28,7 +41,8 @@ export default function Login() {
     validationSchema: Yup.object({
       email: Yup.string().email("Invalid email address").required("Required"),
       password: Yup.string()
-        .min(8, "Must be at least 8 characters")
+        .min(8, "at least 8 characters")
+        .minUppercase(1, "at least 1 capital letter")
         .required("Required"),
     }),
     onSubmit: async () => {
@@ -46,21 +60,16 @@ export default function Login() {
           type: "login",
           payload: restoken.data,
         });
+        // fetch(dispatch);
         toast({
           title: res.data.message,
           status: "success",
-          position: "top",
-          duration: 1000,
         });
         return nav("/");
-
       } catch (err) {
         toast({
           title: err.response?.data,
           status: "error",
-          position: "top",
-          duration: 1000,
-          isClosable: true,
         });
       }
     },
@@ -78,7 +87,7 @@ export default function Login() {
         Sign in
       </Heading>
 
-      <Stack>
+      <Stack spacing={"20px"}>
         <FormControl isInvalid={formField === "email" && formik.errors.email}>
           <Box
             className={`inputbox ${
@@ -88,6 +97,7 @@ export default function Login() {
             <InputGroup size="md">
               <Input
                 id="email"
+                bg={"white"}
                 value={formik.values.email}
                 onChange={inputHandler}
               />
@@ -96,14 +106,10 @@ export default function Login() {
                 <Icon as={EmailIcon} />
               </InputRightElement>
             </InputGroup>
-            <Box h={8}>
-              <FormErrorMessage>
-                <Center>
-                  <Icon as={TbAlertCircleFilled} w="16px" h="16px" />
-                </Center>
-                <Text fontSize={10}>{formik.errors.email}</Text>
-              </FormErrorMessage>
-            </Box>
+            <FormErrorMessage>
+              <Icon as={TbAlertCircleFilled} w="16px" h="16px" />
+              <Text fontSize={10}>{formik.errors.email}</Text>
+            </FormErrorMessage>
           </Box>
         </FormControl>
 
@@ -123,24 +129,21 @@ export default function Login() {
                 onChange={inputHandler}
                 type={show ? "text" : "password"}
               />
-              <label>Confirm Password</label>
+              <label>Password</label>
               <InputRightElement width="4rem">
                 <Button h="1.75rem" size="sm" onClick={handleClick}>
                   {show ? <ViewOffIcon /> : <ViewIcon />}
                 </Button>
               </InputRightElement>
             </InputGroup>
-            <Box h={8}>
-              <FormErrorMessage>
-                <Center>
-                  <Icon as={TbAlertCircleFilled} w="16px" h="16px" />
-                </Center>
-                <Text fontSize={10}>{formik.errors.password}</Text>
-              </FormErrorMessage>
-            </Box>
+            <FormErrorMessage>
+              <Icon as={TbAlertCircleFilled} w="16px" h="16px" />
+              <Text fontSize={10}>{formik.errors.password}</Text>
+            </FormErrorMessage>
           </Box>
         </FormControl>
         <Button
+          id="button"
           isDisabled={
             formik.values.email && formik.values.password ? false : true
           }
@@ -155,11 +158,12 @@ export default function Login() {
         >
           login
         </Button>
-        <Flex justify={"center"} gap={2}>
+        <Flex justify={"center"} gap={2} fontSize={"13px"}>
           Forgot password?
           <Link to="/forgot-password">
             <Box _hover={{ color: "blue.500" }}> click here</Box>
           </Link>
+          <Button onClick={socialLogin}>login with google</Button>
         </Flex>
       </Stack>
     </Box>

@@ -3,13 +3,39 @@
 * {
   font-family: "Poppins", sans-serif;
 }
-/*---------------------- navbar ----------------------*/
+
+#button {
+  border-radius: 0;
+  background: white;
+  border: 2px solid;
+  max-width: 500px;
+}
+#button:hover {
+  background: black;
+  color: white;
+}
+
+/*---------------------- banner ----------------------*/
 .banner-carosel {
   border: 2px;
 }
 /*---------------------- navbar ----------------------*/
+.navbar {
+  background: rgba(255, 255, 255, 0.8);
+  width: 100vw;
+  position: fixed;
+  top: -3px;
+  z-index: 9;
+  border-bottom: 2px solid;
+}
 .navbar.sticky {
   background: white;
+}
+.navbar-atas {
+  gap: 5px;
+  margin-bottom: 2px;
+  cursor: pointer;
+  font-size: 10px;
 }
 .navbar-atas text {
   padding-left: 2px;
@@ -235,6 +261,23 @@
 .category {
   grid-template-columns: 1fr 1fr 1fr;
 }
+/*---------------------- my-account ----------------------*/
+.my-account {
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+  padding-bottom: 100px;
+  gap: 10px;
+}
+
+.form-profile {
+  display: flex;
+  gap: 20px;
+}
+.form-profile input {
+  border: 2px solid;
+  border-radius: 0;
+}
+
 /*---------------------- @media ----------------------*/
 @media (max-width: 960px) {
   #brands-section {
@@ -283,12 +326,20 @@
     grid-template-columns: 1fr;
   }
 }
+@media (max-width: 560px) {
+  .my-account {
+    grid-template-columns: 1fr;
+  }
+  .form-profile {
+    flex-direction: column;
+  }
+}
 
 /*---------------------- banner ----------------------*/
 .banner {
-  width: 35rem;
-  height: 40rem;
-  height: auto;
+  /* width: 35rem; */
+  /* height: 40rem; */
+
   position: relative;
   object-position: center;
   display: flex;
@@ -297,8 +348,8 @@
   border: 2px solid;
 }
 .banner img {
-  object-position: 50% 50%;
-  max-width: 1250px;
+  /* object-position: 50% 50%; */
+  /* max-width: 1250px; */
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -318,7 +369,7 @@
   background: white;
   padding-left: 5px;
   padding-right: 5px;
-  font-size: 10px;
+  font-size: 12px;
 }
 input:focus ~ label {
   top: -1px;

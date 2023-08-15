@@ -92,9 +92,7 @@ export default function UserSettingsPage() {
                     gap={1}
                   >
                     <Flex justifyContent={"space-between"} align={"center"}>
-                      <Avatar
-                        src={`${process.env.REACT_APP_API_BASE_URL}/${user.avatar_url}`}
-                      />
+                      <Avatar src={user.avatar_url} />
                       {userSelector.role == "SUPERADMIN" ? (
                         user.role == "ADMIN" ? (
                           <Menu>

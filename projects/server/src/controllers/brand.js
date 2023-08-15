@@ -1,43 +1,46 @@
 const db = require("../models");
 const fs = require("fs");
+
 const brandController = {
   addBrand: async (req, res) => {
     const t = await db.sequelize.transaction();
     try {
       const { name } = req.body;
-      const filenames = req.files.map((file) => file.filename);
+      const filenames = req?.files.map((file) => file.filename);
       const check = await db.Brand.findOne({ where: { name } });
 
       if (check) {
-        filenames.forEach((filename) => {
-          fs.unlinkSync(filename);
-        });
+        if (filenames) {
+          filenames.forEach((filename) => {
+            fs.unlinkSync(`${__dirname}/../public/brand/${filename}`);
+          });
+        }
         return res.status(409).send({ message: "name already exists." });
       }
 
       await db.Brand.create(
         {
           name,
-          logo_img: "brand/" + filenames[0],
-          brand_img: "brand/" + filenames[1],
+          logo_img: filenames[0] ? "brand/" + filenames[0] : null,
+          brand_img: filenames[1] ? "brand/" + filenames[1] : null,
         },
         { transaction: t }
       );
       await t.commit();
       return res.status(200).send({ message: "success add Brand" });
     } catch (err) {
-      filenames.forEach((filename) => {
-        fs.unlinkSync(filename);
-      });
+      if (filenames) {
+        filenames.forEach((filename) => {
+          fs.unlinkSync(`${__dirname}/../public/brand/${filename}`);
+        });
+      }
       await t.rollback();
       return res.status(500).send(err.message);
     }
   },
   getAll: async (req, res) => {
     try {
-      const brand = await db.Brand.findAll({
-        include: [db.Shoe],
-      });
+      const brand = await db.Brand.findAll({ include: [db.Shoe] });
       return res.status(200).send(brand);
     } catch (err) {
       return res.status(500).send(err.message);
@@ -59,10 +62,7 @@ const brandController = {
         }`;
       }
 
-      await db.Brand.destroy(
-        { where: { id: req.params.id } },
-        { transaction: t }
-      );
+      await db.Brand.destroy({ where: { id: req.params.id }, transaction: t });
 
       await t.commit();
       return res.status(200).send({ message: "success delete brand" });

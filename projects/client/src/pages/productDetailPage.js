@@ -26,13 +26,18 @@ export default function ProductDetailPage() {
   const [stock, setStock] = useState();
   const toast = useToast();
   const [selectedImage, setSelectedImage] = useState(0);
+  const [category, setCategory] = useState();
+  const [shoeId, setShoeId] = useState();
   // console.log(shoe);
-  console.log(size);
-  // console.log(name);
 
   useEffect(() => {
     getShoe();
   }, [name]);
+
+  useEffect(() => {
+    setCategory(shoe?.Category?.name);
+    setShoeId(shoe?.id);
+  }, [shoe]);
 
   const getShoe = async () => {
     const res = await api.get("/shoes/" + name);
@@ -126,7 +131,7 @@ export default function ProductDetailPage() {
             <Box id="detail"> select size:</Box>
             <Flex gap={2} flexWrap={"wrap"}>
               {shoe?.stocks?.map((val) =>
-                val.stock < shoe?.stocks ? (
+                val.stock <= 0 ? (
                   <Button
                     isDisabled
                     variant={"outline"}
@@ -155,7 +160,7 @@ export default function ProductDetailPage() {
               )}
             </Flex>
             {stock ? (
-              <Box fontSize={"12px"} bg={"red"} color={"white"} id="detail">
+              <Box fontSize={"12px"} color={"red"}>
                 Only {stock} left in stock
               </Box>
             ) : null}
@@ -164,11 +169,10 @@ export default function ProductDetailPage() {
           {/* button add cart */}
           <Flex flexDir={"column"} gap={1}>
             {userSelector.name ? (
+
               <Button
                 type="button"
-                variant={"outline"}
-                border={"2px"}
-                borderRadius={0}
+                id="button"
                 isDisabled={size ? false : true}
                 onClick={() => handleToCart(name, size)}
               >
@@ -177,11 +181,10 @@ export default function ProductDetailPage() {
             ) : (
               <Button
                 type="button"
-                variant={"outline"}
-                border={"2px"}
-                borderRadius={0}
+                id="button"
                 isDisabled
               >
+
                 Add to Cart
               </Button>
             )}
@@ -193,7 +196,7 @@ export default function ProductDetailPage() {
           </Flex>
         </Flex>
       </Box>
-      <Recommend />
+      <Recommend category={category} id={shoeId} />
       <Footer />
     </Center>
   );

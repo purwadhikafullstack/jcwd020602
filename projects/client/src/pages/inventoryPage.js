@@ -15,6 +15,7 @@ import Pagination from "../components/dashboard/pagination";
 import DeleteStock from "../components/dashboard/deleteStock";
 import EditStock from "../components/dashboard/editStock";
 import { api } from "../api/api";
+import { useFetchBrand } from "../hooks/useFetchBrand";
 
 export default function InventoryPage() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -22,6 +23,7 @@ export default function InventoryPage() {
   const editS = useDisclosure();
   const userSelector = useSelector((state) => state.auth);
   const inputFileRef = useRef(null);
+  const { brands } = useFetchBrand();
   const { provinces } = useFetchWareProv();
   const [province, setprovince] = useState(0);
   const { cities } = useFetchWareCity(province);
@@ -32,7 +34,8 @@ export default function InventoryPage() {
     sort: "",
     order: "ASC",
     search: "",
-    city_id: "",
+    warehouse_id: "",
+    brand_id: "",
   });
   //pagination ------------------------------------------------------
   const [pages, setPages] = useState([]);
@@ -40,7 +43,7 @@ export default function InventoryPage() {
   const { stocks, fetch } = useFetchStock(filter);
   function pageHandler() {
     const output = [];
-    for (let i = 1; i <= stocks.totalPages; i++) {
+    for (let i = 1; i <= stocks?.totalPages; i++) {
       output.push(i);
     }
     setPages(output);
@@ -49,21 +52,27 @@ export default function InventoryPage() {
     pageHandler();
   }, [stocks]);
   useEffect(() => {
-    if (shown.page > 0 && shown.page <= stocks.totalPages) {
+    if (shown.page > 0 && shown.page <= stocks?.totalPages) {
       setFilter({ ...filter, page: shown.page });
     }
   }, [shown]);
   //-------------------------------------------------------------
-
   useEffect(() => {
-    warehouseAdmin();
+    const token = JSON.parse(localStorage.getItem("user"));
+    if (token) {
+      warehouseAdmin(token);
+    }
   }, []);
-  async function warehouseAdmin() {
-    const warehouse = await api.get("/auth/warehousebytoken");
+  async function warehouseAdmin(token) {
+    const warehouse = await api.get("/warehouses/fetchDefault", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     setWareAdmin(warehouse?.data?.warehouse);
     setFilter({
       ...filter,
-      city_id: warehouse?.data?.city_id || warehouse.data,
+      warehouse_id: warehouse?.data[0]?.id,
     });
   }
   return (
@@ -87,7 +96,6 @@ export default function InventoryPage() {
               onClose={onClose}
               fetch={fetch}
               ware={wareAdmin}
-              setShown={setShown}
             />
           </Flex>
 
@@ -120,7 +128,7 @@ export default function InventoryPage() {
                         choose province..
                       </option>
                       {provinces &&
-                        provinces.map((val, idx) => (
+                        provinces?.map((val, idx) => (
                           <option
                             key={val?.city?.province}
                             value={val?.city?.province}
@@ -134,27 +142,45 @@ export default function InventoryPage() {
                     <Select
                       onChange={(e) => {
                         setShown({ page: 1 });
-                        setFilter({ ...filter, city_id: e.target.value });
+                        setFilter({ ...filter, warehouse_id: e.target.value });
                       }}
-                      id="city"
+                      id="warehouse_id"
                       size={"sm"}
-                      value={filter.city_id}
+                      value={filter.warehouse_id}
                     >
                       <option key={""} value={""}>
                         choose city..
                       </option>
                       {cities &&
                         cities.map((val, idx) => (
-                          <option
-                            key={val.city.city_name}
-                            value={val.city.city_id}
-                          >
-                            {`${val.city.type} ${val.city.city_name}`}
+                          <option key={val.id} value={val.id}>
+                            {`Warehouse ${val.name} (${val.city.type} ${val.city.city_name})`}
                           </option>
                         ))}
                     </Select>
                   </>
                 )}
+
+                <Box whiteSpace={"nowrap"}>Brand:</Box>
+                <Select
+                  onChange={(e) => {
+                    setShown({ page: 1 });
+                    setFilter({ ...filter, brand_id: e.target.value });
+                  }}
+                  id="brand_id"
+                  size={"sm"}
+                  value={filter?.brand_id}
+                >
+                  <option key={""} value={""}>
+                    choose brand..
+                  </option>
+                  {brands &&
+                    brands?.map((val, idx) => (
+                      <option key={val?.id} value={val?.id}>
+                        {val?.name}
+                      </option>
+                    ))}
+                </Select>
 
                 <Box whiteSpace={"nowrap"}> Sort By:</Box>
                 <Select
@@ -182,7 +208,7 @@ export default function InventoryPage() {
                     setShown({ page: 1 });
                     setFilter({ ...filter, order: e.target.value });
                   }}
-                  value={filter.order}
+                  value={filter?.order}
                   size={"sm"}
                   placeholder="select.."
                 >
@@ -196,7 +222,7 @@ export default function InventoryPage() {
           <Box id="card-content" display={"none"}>
             <Flex flexDir={"column"} py={1}>
               {stocks &&
-                stocks.rows.map((stock, idx) => (
+                stocks?.rows?.map((stock, idx) => (
                   <Flex
                     p={1}
                     m={1}
@@ -240,15 +266,15 @@ export default function InventoryPage() {
                         </Flex>
                       ) : null}
                     </Flex>
-                    <Box>Stock: {stock.stock}</Box>
+                    <Box>Stock: {stock?.stock}</Box>
                     <Divider />
-                    <Box>Size: {stock.shoeSize.size}</Box>
+                    <Box>Size: {stock?.shoeSize?.size}</Box>
                     <Divider />
                     <Box>
-                      Shoe: {`${stock.Sho.name} (${stock.Sho.brand.name})`}
+                      Shoe: {`${stock?.Sho?.name} (${stock?.Sho?.brand?.name})`}
                     </Box>
                     <Divider />
-                    <Box>Warehouse: {stock.warehouse.name}</Box>
+                    <Box>Warehouse: {stock?.warehouse?.name}</Box>
                     <Divider />
                   </Flex>
                 ))}
@@ -269,13 +295,13 @@ export default function InventoryPage() {
               </Thead>
               <Tbody>
                 {stocks &&
-                  stocks.rows.map((stock, idx) => (
+                  stocks?.rows?.map((stock, idx) => (
                     <Tr>
                       <Td w={"5%"}>{idx + 1}</Td>
-                      <Td>{stock.stock}</Td>
-                      <Td>{stock.shoeSize.size}</Td>
-                      <Td>{`${stock.Sho.name} (${stock.Sho.brand.name})`}</Td>
-                      <Td w={"10%"}>{stock.warehouse.name}</Td>
+                      <Td>{stock?.stock}</Td>
+                      <Td>{stock?.shoeSize?.size}</Td>
+                      <Td>{`${stock?.Sho?.name} (${stock?.Sho?.brand?.name})`}</Td>
+                      <Td w={"10%"}>{stock?.warehouse?.name}</Td>
                       <Td w={"5%"}>
                         {userSelector.role == "SUPERADMIN" ||
                         userSelector.role == "ADMIN" ? (
@@ -323,7 +349,6 @@ export default function InventoryPage() {
                               setShown={setShown}
                               isOpen={deleteS.isOpen}
                               onClose={deleteS.onClose}
-                              fetch={fetch}
                               setId={setStockId}
                             />
                           </Flex>
@@ -334,21 +359,11 @@ export default function InventoryPage() {
               </Tbody>
             </Table>
           </TableContainer>
-          <Flex
-            justifyContent={"center"}
-            alignItems={"center"}
-            gap={"16px"}
-            h={"16px"}
-            fontFamily={"Roboto"}
-            fontStyle={"normal"}
-            fontWeight={"400"}
-            fontSize={"12px"}
-            lineHeight={"14px"}
-          >
+          <Flex p={2} m={2} justify={"center"} border={"2px"}>
             <Pagination
               shown={shown}
               setShown={setShown}
-              datas={stocks.totalPages}
+              datas={stocks?.totalPages}
               pages={pages}
             />
           </Flex>
