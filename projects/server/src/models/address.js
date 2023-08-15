@@ -10,14 +10,14 @@ module.exports = (sequelize, Sequelize) => {
       city_id: {
         type: Sequelize.INTEGER,
       },
-      province_id: {
-        type: Sequelize.INTEGER,
-      },
+      // province_id: {
+      //   type: Sequelize.INTEGER,
+      // },
       postcode: Sequelize.INTEGER,
       latitude: Sequelize.STRING,
       longitude: Sequelize.STRING,
-      recipient: Sequelize.STRING,
-      phone_number: Sequelize.STRING,
+      name: Sequelize.STRING,
+      phone: Sequelize.STRING,
       is_primary: Sequelize.BOOLEAN,
       user_id: {
         type: Sequelize.INTEGER,

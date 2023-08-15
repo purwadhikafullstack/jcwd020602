@@ -75,37 +75,24 @@ module.exports = {
       return err;
     }
   },
-  addAddress: async (
-    t,
-    { title, address_details, recipient, phone_number, is_primary, user_id },
-    response
-  ) => {
+  addAddress: async (body, user_id, response) => {
     try {
       return await db.addresses.create(
         {
-          title,
-          address_details,
-          address: response.data.results[0].formatted,
-          road: response.data.results[0].components.road,
-          province:
-            response.data.results[0].components.state ||
-            response.data.results[0].components.region,
-          city:
-            response.data.results[0].components.city ||
-            response.data.results[0].components.city_district,
-          district:
-            response.data.results[0].components.district ||
-            response.data.results[0].components.suburb ||
-            response.data.results[0].components.subdistrict,
-          postcode: response.data.results[0].components.postcode,
+          title: body.title,
+          address_details: body.address_details,
+          address: body.addAddress,
+
+          city_id: body.city_id,
+
           latitude: response.data.results[0].geometry.lat,
           longitude: response.data.results[0].geometry.lng,
-          recipient,
-          phone_number,
-          is_primary,
-          user_id,
+          recipient: body.recipient,
+          phone_number: body.phone_number,
+          is_primary: body.is_primary,
+          user_id: user_id,
         },
-        { transaction: t }
+        { transaction: body.t }
       );
     } catch (err) {
       return err;

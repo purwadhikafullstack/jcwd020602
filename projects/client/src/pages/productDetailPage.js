@@ -1,22 +1,34 @@
 import { useLocation } from "react-router-dom";
 import { api } from "../api/api";
 import { useEffect, useState } from "react";
-import { Box, Center, Flex, Image, Text, Button } from "@chakra-ui/react";
+import {
+  Box,
+  Center,
+  Flex,
+  Image,
+  Text,
+  Button,
+  useToast,
+} from "@chakra-ui/react";
 import Footer from "../components/website/footer";
 import { Recommend } from "../components/website/carousel";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { addProduct } from "../redux/cart";
 
 export default function ProductDetailPage() {
   const loc = useLocation();
   const userSelector = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
   let name = loc.pathname.split("/")[1];
   name = name.replace(/-/g, " ");
   const [shoe, setShoe] = useState();
   const [size, setSIze] = useState();
   const [stock, setStock] = useState();
+  const toast = useToast();
   const [selectedImage, setSelectedImage] = useState(0);
-  console.log(shoe);
-  // console.log(size);
+  // console.log(shoe);
+  console.log(size);
+  // console.log(name);
 
   useEffect(() => {
     getShoe();
@@ -25,6 +37,23 @@ export default function ProductDetailPage() {
   const getShoe = async () => {
     const res = await api.get("/shoes/" + name);
     setShoe(res.data);
+  };
+
+  const handleToCart = async (name, size) => {
+    dispatch(
+      addProduct({
+        name,
+        size,
+      })
+    ).catch((error) => {
+      toast({
+        title: "'Shoe was already in Cart, go to cart to change your shoe'",
+        status: "error",
+        position: "top",
+        duration: 5000,
+        isClosable: true,
+      });
+    });
   };
 
   return (
@@ -97,7 +126,7 @@ export default function ProductDetailPage() {
             <Box id="detail"> select size:</Box>
             <Flex gap={2} flexWrap={"wrap"}>
               {shoe?.stocks?.map((val) =>
-                val.stock < 10 ? (
+                val.stock < shoe?.stocks ? (
                   <Button
                     isDisabled
                     variant={"outline"}
@@ -136,15 +165,18 @@ export default function ProductDetailPage() {
           <Flex flexDir={"column"} gap={1}>
             {userSelector.name ? (
               <Button
+                type="button"
                 variant={"outline"}
                 border={"2px"}
                 borderRadius={0}
                 isDisabled={size ? false : true}
+                onClick={() => handleToCart(name, size)}
               >
                 Add to Cart
               </Button>
             ) : (
               <Button
+                type="button"
                 variant={"outline"}
                 border={"2px"}
                 borderRadius={0}

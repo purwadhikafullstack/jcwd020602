@@ -11,6 +11,8 @@ const stockRoutes = require("./stock");
 const stockHistoryRoutes = require("./stockHistory");
 const stockMutationRoutes = require("./stockMutation");
 const cartRoutes = require("./cart");
+const checkOutRoutes = require("./checkOut");
+const orderRoutes = require("./order");
 
 module.exports = {
   provinceCityRoutes,
@@ -26,4 +28,6 @@ module.exports = {
   shoeSizeRoutes,
   stockMutationRoutes,
   cartRoutes,
+  checkOutRoutes,
+  orderRoutes,
 };

@@ -142,10 +142,10 @@ db.Stock.belongsTo(db.Warehouse, {
 //db.Address foreignKey
 db.User.hasMany(db.Address, { foreignKey: "user_id", targetKey: "id" });
 db.Address.belongsTo(db.City, { foreignKey: "city_id", targetKey: "city_id" });
-db.Address.belongsTo(db.Province, {
-  foreignKey: "province_id",
-  targetKey: "province_id",
-});
+// db.Address.belongsTo(db.Province, {
+//   foreignKey: "province_id",
+//   targetKey: "province_id",
+// });
 
 //db.OrderDetail foreignKey
 db.Order.hasMany(db.OrderDetail, {
@@ -181,6 +181,14 @@ db.Cart.belongsTo(db.Shoe, {
   as: "Shoes",
 });
 db.Cart.belongsTo(db.User, { foreignKey: "user_id", targetKey: "id" });
+db.Cart.belongsTo(db.ShoeSize, {
+  foreignKey: "shoe_size_id",
+  targetKey: "id",
+  as: "ShoeSize",
+});
+// db.Order.hasMany(db.Cart, { foreignKey: "order_id" });
+// db.Cart.belongsTo(db.Order, { foreignKey: "order_id" });
+// db.User.hasMany(db.Cart, { foreignKey: "user_id" });
 
 // db.User foreignKey
 db.Warehouse.hasMany(db.User, {
