@@ -45,12 +45,20 @@ app.use("/api/shoeSizes", verify, routes.shoeSizeRoutes);
 app.use("/api/categories", verify, routes.categoryRoutes);
 app.use("/api/subcategories", verify, routes.subcategoryRoutes);
 app.use("/api/brands", verify, routes.brandRoutes);
-app.use("/api/address", verify, routes.addressRoutes);
+app.use("/api/address", verify, routes.addressFRoutes);
 app.use("/api/auth", verify, routes.userRoutes);
 app.use("/api/stocks", verify, routes.stockRoutes);
 app.use("/api/stockHistories", verify, routes.stockHistoryRoutes);
 app.use("/api/stockMutations", verify, routes.stockMutationRoutes);
-app.use("/api/carts", routes.cartRoutes);
+
+// -------------------------------------------------
+app.use("/api/carts", verify, routes.cartRoutes);
+app.use("/api/checkOuts", verify, routes.checkOutRoutes);
+app.use("/api/orders", verify, routes.orderRoutes);
+app.use(
+  "/api/paymentProof",
+  express.static(`${__dirname}/public/paymentProof`)
+);
 
 // ===========================
 app.use("/api/category", express.static(`${__dirname}/public/category`));

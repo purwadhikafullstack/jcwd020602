@@ -1,5 +1,5 @@
-import { Box, Button, Center, Flex } from "@chakra-ui/react";
-import { FormControl, FormErrorMessage, FormLabel } from "@chakra-ui/react";
+import { Box, Button, Flex } from "@chakra-ui/react";
+import { FormControl, FormErrorMessage } from "@chakra-ui/react";
 import { Heading, Icon, Input, InputGroup } from "@chakra-ui/react";
 import { InputRightElement, Stack, Text, useToast } from "@chakra-ui/react";
 import { TbAlertCircleFilled } from "react-icons/tb";
@@ -10,12 +10,16 @@ import React, { useState } from "react";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { api } from "../../api/api";
+import YupPassword from "yup-password";
+import { fetch } from "../../hoc/authProvider";
 import { auth } from "../../lib/firebase";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
+
 export default function Login() {
+  YupPassword(Yup);
   const dispatch = useDispatch();
-  const toast = useToast();
+  const toast = useToast({ duration: 3000, isClosable: true, position: "top" });
   const nav = useNavigate();
   const [show, setShow] = React.useState(false);
   const handleClick = () => setShow(!show);
@@ -37,7 +41,8 @@ export default function Login() {
     validationSchema: Yup.object({
       email: Yup.string().email("Invalid email address").required("Required"),
       password: Yup.string()
-        .min(8, "Must be at least 8 characters")
+        .min(8, "at least 8 characters")
+        .minUppercase(1, "at least 1 capital letter")
         .required("Required"),
     }),
     onSubmit: async () => {
@@ -55,20 +60,16 @@ export default function Login() {
           type: "login",
           payload: restoken.data,
         });
+        // fetch(dispatch);
         toast({
           title: res.data.message,
           status: "success",
-          position: "top",
-          duration: 1000,
         });
         return nav("/");
       } catch (err) {
         toast({
           title: err.response?.data,
           status: "error",
-          position: "top",
-          duration: 1000,
-          isClosable: true,
         });
       }
     },
@@ -86,7 +87,7 @@ export default function Login() {
         Sign in
       </Heading>
 
-      <Stack>
+      <Stack spacing={"20px"}>
         <FormControl isInvalid={formField === "email" && formik.errors.email}>
           <Box
             className={`inputbox ${
@@ -105,14 +106,10 @@ export default function Login() {
                 <Icon as={EmailIcon} />
               </InputRightElement>
             </InputGroup>
-            <Box h={8}>
-              <FormErrorMessage>
-                <Center>
-                  <Icon as={TbAlertCircleFilled} w="16px" h="16px" />
-                </Center>
-                <Text fontSize={10}>{formik.errors.email}</Text>
-              </FormErrorMessage>
-            </Box>
+            <FormErrorMessage>
+              <Icon as={TbAlertCircleFilled} w="16px" h="16px" />
+              <Text fontSize={10}>{formik.errors.email}</Text>
+            </FormErrorMessage>
           </Box>
         </FormControl>
 
@@ -139,20 +136,14 @@ export default function Login() {
                 </Button>
               </InputRightElement>
             </InputGroup>
-            <Box h={8}>
-              <FormErrorMessage>
-                <Center>
-                  <Icon as={TbAlertCircleFilled} w="16px" h="16px" />
-                </Center>
-                <Text fontSize={10}>{formik.errors.password}</Text>
-              </FormErrorMessage>
-            </Box>
+            <FormErrorMessage>
+              <Icon as={TbAlertCircleFilled} w="16px" h="16px" />
+              <Text fontSize={10}>{formik.errors.password}</Text>
+            </FormErrorMessage>
           </Box>
         </FormControl>
         <Button
-          variant={"outline"}
-          border={"2px"}
-          _hover={{ bg: "black", color: "white" }}
+          id="button"
           isDisabled={
             formik.values.email && formik.values.password ? false : true
           }

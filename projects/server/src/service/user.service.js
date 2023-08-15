@@ -102,7 +102,12 @@ module.exports = {
         whereClause.id = id;
       }
       return await db.User.update(
-        { name: body.name, password: hashPassword, status: "verified" },
+        {
+          name: body?.name,
+          password: hashPassword,
+          phone: body?.phone,
+          status: "verified",
+        },
         {
           where: whereClause,
           transaction: t,

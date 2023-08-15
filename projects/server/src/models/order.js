@@ -22,6 +22,7 @@ module.exports = (sequelize, Sequelize) => {
       address_id: {
         type: Sequelize.INTEGER,
       },
+      last_payment_date: Sequelize.DATE,
     },
     {
       paranoid: true,

@@ -38,7 +38,10 @@ export default function EditAdmin(props) {
     formData.append("phone", admin.phone);
     formData.append("email", admin.email);
     formData.append("password", admin.password);
-    formData.append("avatar", !selectedFile ? admin.avatar_url : selectedFile);
+    if (selectedFile) {
+      formData.append("avatar", selectedFile);
+    }
+    // formData.append("avatar", !selectedFile ? admin.avatar_url : selectedFile);
 
     try {
       const response = await api.patch("/auth/admin/" + props.id, formData);
