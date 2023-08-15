@@ -108,7 +108,6 @@ export default function Navbar() {
                             {val.name}
                           </Box>
                         </Link>
-
                       ))}
                   </Box>
                 </Box>
@@ -198,31 +197,33 @@ export default function Navbar() {
               </Box>
 
               {userSelector?.name ? (
-                <Box
-                  className="cart"
-                  display={"flex"}
-                  alignItems={"center"}
-                  gap={2}
-                >
-                  <Box h={"auto"} pos={"relative"}>
-                    <Image as={AiOutlineShoppingCart} w={"30px"} h={"auto"} />
-                    <Flex
-                      fontSize={"8px"}
-                      color={"white"}
-                      w={"15px"}
-                      h={"15px"}
-                      pos={"absolute"}
-                      top={0}
-                      right={0}
-                      borderRadius={"full"}
-                      bg={"red"}
-                      align={"center"}
-                      justify={"center"}
-                    >
-                      99
-                    </Flex>
+                <Link to={"/cart"}>
+                  <Box
+                    className="cart"
+                    display={"flex"}
+                    alignItems={"center"}
+                    gap={2}
+                  >
+                    <Box h={"auto"} pos={"relative"}>
+                      <Image as={AiOutlineShoppingCart} w={"30px"} h={"auto"} />
+                      <Flex
+                        fontSize={"8px"}
+                        color={"white"}
+                        w={"15px"}
+                        h={"15px"}
+                        pos={"absolute"}
+                        top={0}
+                        right={0}
+                        borderRadius={"full"}
+                        bg={"red"}
+                        align={"center"}
+                        justify={"center"}
+                      >
+                        99
+                      </Flex>
+                    </Box>
                   </Box>
-                </Box>
+                </Link>
               ) : null}
             </Flex>
           </Flex>

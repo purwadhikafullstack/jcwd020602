@@ -9,302 +9,212 @@ const cartController = {
   getCartData: async (req, res) => {
     try {
       const user_id = req.user.id;
-      console.log(`id = ${user_id}`);
+      const page = req.query.page || 1;
+      const pageSize = req.query.pageSize || 10; // Set a default page size
 
-      //Get all carts data owned by specific user and merged with products data
-      const cartsData = await db.Cart.findAll({
+      const cartsData = await db.Cart.findAndCountAll({
         where: { user_id },
         include: [
           {
             model: db.Shoe,
             as: "Shoes",
+            attributes: {
+              include: [
+                [
+                  sequelize.literal(`(
+                  select stock from stocks WHERE stocks.shoe_size_id = carts.shoe_size_id AND stocks.shoe_id = carts.shoe_id
+                )`),
+                  "availableStock",
+                ],
+              ],
+            },
+            include: [
+              {
+                model: db.Category,
+              },
+              {
+                model: db.ShoeImage,
+              },
+            ],
+          },
+          {
+            model: db.ShoeSize,
+            as: "ShoeSize",
           },
         ],
+        offset: (page - 1) * pageSize,
+        limit: pageSize,
       });
 
-      res.status(200).send({
+      const totalPages = Math.ceil(cartsData.count / pageSize);
+
+      return res.status(200).send({
         message: "Get carts data success",
-        data: cartsData,
+        data: cartsData.rows,
+        pagination: {
+          currentPage: page,
+          totalPages: totalPages,
+          pageSize: pageSize,
+          totalItems: cartsData.count,
+        },
       });
     } catch (error) {
-      res.status(500).send({
+      return res.status(500).send({
         message: error.message,
       });
     }
   },
   addShoe: async (req, res) => {
     try {
-      const user_id = req.user.id;
-      const { shoe_id, qty, price } = req.body;
+      const user_id = req?.user?.id;
+      const { size, name } = req.body;
 
-      await db.Cart.create({
-        shoe_id,
-        qty,
-        user_id,
-        price,
+      const shoe = await db.Shoe.findOne({
+        where: { name },
       });
-      res.status(200).send({ message: "succes adding shoe to cart" });
+      if (!shoe) {
+        throw new Error("Shoe not found");
+      }
+      const shoeSize = await db.ShoeSize.findOne({
+        where: { size },
+      });
+
+      const cartItem = await db.Cart.findOne({
+        where: { shoe_id: shoe.id, shoe_size_id: shoeSize.id },
+      });
+      if (cartItem) {
+        throw new Error(
+          "Shoe was already in Cart, go to cart to change your shoe"
+        );
+      } else {
+        await db.Cart.create({
+          qty: 1,
+          shoe_id: shoe.id,
+          user_id,
+          shoe_size_id: shoeSize.id,
+        });
+      }
+
+      return res
+        .status(200)
+        .send({ message: "Product added to cart successfully" });
     } catch (err) {
-      console.log(err.message);
-      return res.status(500).send(err.message);
+      console.error(err);
+      return res.status(500).send({ message: err.message });
+    }
+  },
+  updateCart: async (req, res) => {
+    const t = await db.sequelize.transaction();
+    try {
+      const user_id = req.user.id;
+      const { id, qty } = req.body;
+
+      const cartData = await db.Cart.findOne({ where: { id } });
+
+      const availableStock = await db.Stock.findOne({
+        where: {
+          shoe_size_id: cartData.dataValues.shoe_size_id,
+        },
+      });
+
+      console.log(availableStock);
+
+      if (qty > availableStock.dataValues.stock) {
+        return res.status(500).send({
+          message: "Product in your cart exceeds available stocks",
+          data: null,
+        });
+      } else {
+        await db.Cart.update({ qty }, { where: { user_id, id } });
+      }
+      const updatedCartData = await db.Cart.findAll({
+        where: { user_id },
+        include: [
+          {
+            model: db.Shoe,
+            as: "Shoes",
+            attributes: {
+              include: [
+                [
+                  sequelize.literal(`(
+                  select stock from stocks WHERE stocks.shoe_size_id = carts.shoe_size_id AND stocks.shoe_id = carts.shoe_id
+                )`),
+                  "availableStock",
+                ],
+              ],
+            },
+            include: [
+              {
+                model: db.Category,
+              },
+              {
+                model: db.ShoeImage,
+              },
+            ],
+          },
+          {
+            model: db.ShoeSize,
+            as: "ShoeSize",
+          },
+        ],
+      });
+
+      // const updatedCartData = await cartController.getCartData(req, res);
+      t.commit();
+      return res
+        .status(200)
+        .send({ message: "Updating quantity success", data: updatedCartData });
+    } catch (err) {
+      t.rollback();
+      console.error("Error updating cart item quantity:", err);
+      return res.status(500).send({ message: err.message });
     }
   },
 
-  // addProduct: async (req, res) => {
-  //   try {
-  //     const users_id = req.user.id;
-  //     const { products_id, quantity } = req.body;
+  deleteCartData: async (req, res) => {
+    try {
+      const user_id = req.user.id;
+      const { id } = req.params;
 
-  //     const findProduct = await carts.findOne({
-  //       where: { users_id, products_id },
-  //     });
+      await db.Cart.destroy({ where: { user_id, id } });
 
-  //     const findAvailableStock = await stocks.findOne({
-  //       attributes: [
-  //         [
-  //           sequelize.literal("(SUM(stocks.stock) - product.booked_stock)"),
-  //           "availableStock",
-  //         ],
-  //       ],
-  //       include: [
-  //         {
-  //           model: products,
-  //           as: "product",
-  //           attributes: [],
-  //           where: {
-  //             id: products_id,
-  //             is_deleted: 0,
-  //           },
-  //         },
-  //       ],
-  //     });
+      const updatedCartData = await db.Cart.findAll({
+        where: { user_id },
+        include: [
+          {
+            model: db.Shoe,
+            as: "Shoes",
+            attributes: {
+              include: [
+                [
+                  sequelize.literal(`(
+                  select stock from stocks WHERE stocks.shoe_size_id = carts.shoe_size_id AND stocks.shoe_id = carts.shoe_id
+                )`),
+                  "availableStock",
+                ],
+              ],
+            },
+          },
+          {
+            model: db.ShoeSize,
+            as: "ShoeSize",
+          },
+        ],
+      });
 
-  //     if (findProduct) {
-  //       if (
-  //         findProduct.dataValues.quantity + quantity >
-  //         findAvailableStock.dataValues.availableStock
-  //       ) {
-  //         throw new Error("Product in your cart exceeds available stocks");
-  //       } else {
-  //         await carts.update(
-  //           {
-  //             quantity: sequelize.literal(`quantity + ${quantity}`),
-  //           },
-  //           { where: { id: findProduct.dataValues.id } }
-  //         );
-  //       }
-  //     } else {
-  //       await carts.create({ quantity, users_id, products_id });
-  //     }
-
-  //     const cartsData = await carts.findAll({
-  //       where: { users_id },
-  //       include: [
-  //         {
-  //           model: products,
-  //           as: "product",
-  //           where: { is_deleted: 0 },
-  //           include: [
-  //             {
-  //               model: stocks,
-  //               attributes: [],
-  //               required: true,
-  //             },
-  //           ],
-  //           attributes: {
-  //             include: [
-  //               [
-  //                 sequelize.literal(`(
-  //                 SELECT SUM(stock)
-  //                 FROM stocks
-  //                 WHERE
-  //                   stocks.products_id = carts.products_id
-  //                   AND stocks.is_deleted = 0
-  //               ) - product.booked_stock`),
-  //                 "availableStock",
-  //               ],
-  //             ],
-  //           },
-  //         },
-  //       ],
-  //     });
-
-  //     res.status(201).send({
-  //       isError: false,
-  //       message: "Add product success",
-  //       data: cartsData,
-  //     });
-  //   } catch (error) {
-  //     res.status(404).send({
-  //       isError: true,
-  //       message: error.message,
-  //       data: null,
-  //     });
-  //   }
-  // },
-  // updateCartData: async (req, res) => {
-  //   try {
-  //     const users_id = req.user.id;
-  //     const { id, quantity } = req.body;
-
-  //     //Get cart data
-  //     const cartData = await carts.findByPk(id);
-
-  //     //Get available stock for product in cart
-  //     const findAvailableStock = await stocks.findOne({
-  //       attributes: [
-  //         [
-  //           sequelize.literal("(SUM(stocks.stock) - product.booked_stock)"),
-  //           "availableStock",
-  //         ],
-  //       ],
-  //       include: [
-  //         {
-  //           model: products,
-  //           as: "product",
-  //           attributes: [],
-  //           where: {
-  //             id: cartData.dataValues.products_id,
-  //             is_deleted: 0,
-  //           },
-  //         },
-  //       ],
-  //     });
-
-  //     if (quantity > findAvailableStock.dataValues.availableStock) {
-  //       res.status(404).send({
-  //         isError: true,
-  //         message: "Product in your cart exceeds available stocks",
-  //         data: null,
-  //       });
-  //     } else {
-  //       await carts.update({ quantity }, { where: { users_id, id } });
-
-  //       const cartsData = await carts.findAll({
-  //         where: { users_id },
-  //         include: [
-  //           {
-  //             model: products,
-  //             as: "product",
-  //             where: { is_deleted: 0 },
-  //             include: [
-  //               {
-  //                 model: stocks,
-  //                 attributes: [],
-  //                 required: true,
-  //               },
-  //             ],
-  //             attributes: {
-  //               include: [
-  //                 [
-  //                   sequelize.literal(`(
-  //                   SELECT SUM(stock)
-  //                   FROM stocks
-  //                   WHERE
-  //                     stocks.products_id = carts.products_id
-  //                     AND stocks.is_deleted = 0
-  //                 ) - product.booked_stock`),
-  //                   "availableStock",
-  //                 ],
-  //               ],
-  //             },
-  //           },
-  //         ],
-  //       });
-
-  //       res.status(200).send({
-  //         isError: false,
-  //         message: "Update cart data success",
-  //         data: cartsData,
-  //       });
-  //     }
-  //   } catch (error) {
-  //     res.status(404).send({
-  //       isError: true,
-  //       message: error.message,
-  //       data: null,
-  //     });
-  //   }
-  // },
-  // deleteCartData: async (req, res) => {
-  //   try {
-  //     const users_id = req.user.id;
-  //     const { id } = req.params;
-
-  //     await carts.destroy({ where: { users_id, id } });
-
-  //     const cartsData = await carts.findAll({
-  //       where: { users_id },
-  //       include: [
-  //         {
-  //           model: products,
-  //         },
-  //       ],
-  //     });
-
-  //     res.status(200).send({
-  //       isError: false,
-  //       message: "Product deleted",
-  //       data: cartsData,
-  //     });
-  //   } catch (error) {
-  //     res.status(404).send({
-  //       isError: true,
-  //       message: error.message,
-  //       data: null,
-  //     });
-  //   }
-  // },
-  // deliverOrder: async (req, res) => {
-  //   const t = await sequelize.transaction();
-  //   try {
-  //     const { id } = req.params;
-
-  //     //Get order data
-  //     const findOrder = await orders.findByPk(id);
-
-  //     await orders.update(
-  //       { status: "Shipped" },
-  //       { where: { id } },
-  //       { transaction: t }
-  //     );
-  //     t.commit();
-  //     res.status(200).send({
-  //       isError: false,
-  //       message: "Orders has been shipped",
-  //       data: findOrder,
-  //     });
-  //   } catch (error) {
-  //     t.rollback();
-  //     res.status(404).send({
-  //       isError: true,
-  //       message: error.message,
-  //       data: null,
-  //     });
-  //   }
-  // },
-  // getProductQuantityInCart: async (req, res) => {
-  //   try {
-  //     const users_id = req.user.id;
-  //     const { products_id } = req.params;
-
-  //     const productData = await carts.findOne({
-  //       where: { users_id, products_id },
-  //     });
-
-  //     res.status(200).send({
-  //       isError: false,
-  //       message: "Get product quantity success",
-  //       data: productData?.dataValues?.quantity || 0,
-  //     });
-  //   } catch (error) {
-  //     res.status(404).send({
-  //       isError: true,
-  //       message: error.message,
-  //       data: null,
-  //     });
-  //   }
-  // },
+      return res.status(200).send({
+        isError: false,
+        message: "Product deleted",
+        data: updatedCartData,
+      });
+    } catch (error) {
+      return res.status(404).send({
+        isError: true,
+        message: error.message,
+        data: null,
+      });
+    }
+  },
 };
 
 module.exports = cartController;

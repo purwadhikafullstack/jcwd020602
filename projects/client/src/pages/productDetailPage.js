@@ -1,23 +1,35 @@
 import { useLocation } from "react-router-dom";
 import { api } from "../api/api";
 import { useEffect, useState } from "react";
-import { Box, Center, Flex, Image, Text, Button } from "@chakra-ui/react";
+import {
+  Box,
+  Center,
+  Flex,
+  Image,
+  Text,
+  Button,
+  useToast,
+} from "@chakra-ui/react";
 import Footer from "../components/website/footer";
 import { Recommend } from "../components/website/carousel";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { addProduct } from "../redux/cart";
 
 export default function ProductDetailPage() {
   const loc = useLocation();
   const userSelector = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
   let name = loc.pathname.split("/")[1];
   name = name.replace(/-/g, " ");
   const [shoe, setShoe] = useState();
   const [size, setSIze] = useState();
   const [stock, setStock] = useState();
+  const toast = useToast();
   const [selectedImage, setSelectedImage] = useState(0);
   const [category, setCategory] = useState();
   const [shoeId, setShoeId] = useState();
   // console.log(shoe);
+
   useEffect(() => {
     getShoe();
   }, [name]);
@@ -30,6 +42,23 @@ export default function ProductDetailPage() {
   const getShoe = async () => {
     const res = await api.get("/shoes/" + name);
     setShoe(res.data);
+  };
+
+  const handleToCart = async (name, size) => {
+    dispatch(
+      addProduct({
+        name,
+        size,
+      })
+    ).catch((error) => {
+      toast({
+        title: "'Shoe was already in Cart, go to cart to change your shoe'",
+        status: "error",
+        position: "top",
+        duration: 5000,
+        isClosable: true,
+      });
+    });
   };
 
   return (
@@ -140,11 +169,22 @@ export default function ProductDetailPage() {
           {/* button add cart */}
           <Flex flexDir={"column"} gap={1}>
             {userSelector.name ? (
-              <Button id="button" isDisabled={size ? false : true}>
+
+              <Button
+                type="button"
+                id="button"
+                isDisabled={size ? false : true}
+                onClick={() => handleToCart(name, size)}
+              >
                 Add to Cart
               </Button>
             ) : (
-              <Button id="button" isDisabled>
+              <Button
+                type="button"
+                id="button"
+                isDisabled
+              >
+
                 Add to Cart
               </Button>
             )}

@@ -11,6 +11,7 @@ export default function AuthProvider({ children }) {
     fetch(dispatch);
   }, []);
 
+
   return children;
 }
 
@@ -23,6 +24,7 @@ export async function fetch(dispatch) {
           Authorization: `Bearer ${token}`,
         },
       });
+
 
       if (user) {
         dispatch({

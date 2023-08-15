@@ -12,6 +12,7 @@ module.exports = (sequelize, Sequelize) => {
       warehouse_id: {
         type: Sequelize.INTEGER,
       },
+      booked_stock: Sequelize.INTEGER,
     },
     {
       paranoid: true,

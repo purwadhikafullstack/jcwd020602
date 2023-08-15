@@ -15,10 +15,16 @@ import {
   Button,
   Select,
 } from "@chakra-ui/react";
-export default function CheckoutBox() {
+import { useNavigate } from "react-router-dom";
+export default function CheckoutBox(props) {
+  const navigate = useNavigate();
   return (
-    <VStack h={"100vh"} w={"32vw"} mt={"100px"}>
-      <Flex w={"100%"} h={"350px"} bg={"#EEEEEE"}>
+    <VStack
+      h={{ base: "auto", md: "100vh" }}
+      w={{ base: "100%", md: "32vw" }}
+      mt={{ base: "0", md: "100px" }}
+    >
+      <Flex w={"100%"} h={{ base: "auto", md: "350px" }} bg={"#EEEEEE"}>
         <Flex p={"10px"} w={"100%"} flexDir={"column"}>
           <Button
             // w={"100%"} bg={"black"} textColor={"white"}
@@ -28,6 +34,7 @@ export default function CheckoutBox() {
             _hover={{
               boxShadow: "0px 6px 0px 0px rgba(0, 0, 0, 0.2)", // Adjust the hover shadow if needed
             }}
+            onClick={() => navigate("/checkOut")}
           >
             {" "}
             CHECKOUT
@@ -43,7 +50,7 @@ export default function CheckoutBox() {
                 borderBottom={"1px"}
                 borderBottomColor={"gray.300"}
               >
-                Product
+                {props.sumItem} Item
               </Box>
               <Flex
                 w={"100%"}
@@ -54,7 +61,7 @@ export default function CheckoutBox() {
                 borderBottomColor={"gray.300"}
               >
                 <Text>Product Total</Text>
-                <Text>Price</Text>
+                <Text>Rp. {props.totalPriceSum.toLocaleString("id-ID")}</Text>
               </Flex>
               <Flex
                 w={"100%"}
@@ -64,8 +71,8 @@ export default function CheckoutBox() {
                 borderBottom={"1px"}
                 borderBottomColor={"gray.300"}
               >
-                <Text>Delivery</Text>
-                <Text>Free</Text>
+                <Text>Total Weight</Text>
+                <Text>{props.weightTotal} gram</Text>
               </Flex>
               <Flex
                 w={"100%"}
@@ -74,10 +81,9 @@ export default function CheckoutBox() {
                 h={"70px"}
               >
                 <Flex flexDir={"column"}>
-                  <Text fontWeight={"bold"}>Total</Text>
-                  <Text fontWeight={"bold"}>(Inclusive of Tax)</Text>
+                  <Text fontWeight={"bold"}>Sub Total</Text>
                 </Flex>
-                <Text>Price</Text>
+                <Text>Rp. {props.totalPriceSum.toLocaleString("id-ID")}</Text>
               </Flex>
             </Flex>
           </Flex>

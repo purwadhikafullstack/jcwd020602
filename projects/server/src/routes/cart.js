@@ -1,10 +1,18 @@
 const express = require("express");
 const router = express.Router();
 const cartController = require("../controllers").cartController;
-const tokenDecoder = require("../middlewares/tokenDecoder");
+const userTokenDecoder = require("../middlewares/roleDecoder");
 
 // MENAMBAHKAN PRODUCT TO CART
-router.post("/addCart", tokenDecoder, cartController.addShoe);
-router.get("/getCart", tokenDecoder, cartController.getCartData);
+
+router.post("/", userTokenDecoder.checkUser, cartController.addShoe);
+router.get("/getCart", userTokenDecoder.checkUser, cartController.getCartData);
+router.patch("/", userTokenDecoder.checkUser, cartController.updateCart);
+router.delete(
+  "/:id",
+  userTokenDecoder.checkUser,
+  cartController.deleteCartData
+);
+
 
 module.exports = router;

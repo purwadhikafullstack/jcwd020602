@@ -3,13 +3,9 @@ module.exports = (sequelize, Sequelize) => {
     "carts",
     {
       qty: Sequelize.INTEGER,
-      price: Sequelize.INTEGER,
-      shoe_id: {
-        type: Sequelize.INTEGER,
-      },
-      user_id: {
-        type: Sequelize.INTEGER,
-      },
+      // shoe_id:
+      // user_id
+      // shoe_size_id
     },
     {
       paranoid: true,

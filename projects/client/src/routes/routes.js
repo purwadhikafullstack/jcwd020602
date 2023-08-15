@@ -20,11 +20,15 @@ import ChangePassword from "../components/auth/changePassword";
 import ProductList from "../pages/productList";
 import ProductDetailPage from "../pages/productDetailPage";
 import Cart from "../pages/cartPages";
+import StockMutationPage from "../pages/stockMutationPage";
+import CheckOutPage from "../pages/checkOutPage";
+import PaymentVerifPage from "../pages/paymentPage";
 import Cartx from "../pages/cartPagesx";
 import StockMutationPage from "../pages/stockMutationPage";
 import MyAccountPage from "../pages/MyAccountPage";
 import ProfilePage from "../pages/profilePage";
 import AddressBookPage from "../pages/addressBookPage";
+
 
 const routes = [
   <Route
@@ -156,18 +160,28 @@ const routes = [
   <Route
     path="/cart"
     element={
-      <>
+      <ProtectedPage guestOnly={true}>
         <Navbar />
         <Cart />
+      </ProtectedPage>
+    }
+  />,
+
+  <Route
+    path="/checkOut"
+    element={
+      <>
+        <Navbar />
+        <CheckOutPage />
       </>
     }
   />,
   <Route
-    path="/cartx"
+    path="/payment"
     element={
       <>
         <Navbar />
-        <Cartx />
+        <PaymentVerifPage />
       </>
     }
   />,
