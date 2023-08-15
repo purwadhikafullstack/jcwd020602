@@ -23,7 +23,6 @@ router.get(
   userController.getUserByToken
 );
 
-
 //token forgot password
 // router.get("/generate-token/email", userController.generateTokenByEmail);
 
@@ -33,7 +32,6 @@ router.get(
 //   userController.tokenDecoder,
 //   userController.forgotPassword
 // );
-
 
 // ------------- admin
 router.post(
@@ -53,11 +51,6 @@ router.patch(
     fileType: "image",
   }).single("avatar"),
   userController.editAdminById
-);
-router.get(
-  "/warehousebytoken",
-  roleDecoder.checkAdmin,
-  userController.getWarehouseCity
 );
 router.get("/", roleDecoder.checkSuper, userController.getAllUser);
 router.get("/:id", roleDecoder.checkSuper, userController.getAdminById);

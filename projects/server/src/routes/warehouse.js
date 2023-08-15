@@ -24,6 +24,11 @@ router.delete(
 router.get("/", roleDecoder.checkAdmin, warehouseController.getAll);
 router.get("/prov", roleDecoder.checkAdmin, warehouseController.getProv);
 router.get("/city", roleDecoder.checkAdmin, warehouseController.getCity);
+router.get(
+  "/fetchDefault",
+  roleDecoder.checkAdmin,
+  warehouseController.getWarehouseCity
+);
 router.get("/:id", roleDecoder.checkAdmin, warehouseController.getById);
 router.patch("/:id", roleDecoder.checkSuper, warehouseController.editWarehouse);
 router.delete(

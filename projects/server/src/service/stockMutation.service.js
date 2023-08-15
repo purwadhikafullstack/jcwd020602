@@ -52,8 +52,8 @@ module.exports = {
         [Op.and]: [
           {
             [Op.or]: [
-              { "$fromWarehouse.city_id$": body?.city_id },
-              { "$toWarehouse.city_id$": body?.city_id },
+              { "$fromWarehouse.id$": body?.warehouse_id },
+              { "$toWarehouse.id$": body?.warehouse_id },
             ],
           },
           {

@@ -11,6 +11,7 @@ const {
   findStockBy,
 } = require("../service/stock.service");
 const { errorResponse } = require("../utils/function");
+const { getWarehouse } = require("../service/warehouse.service");
 const stockController = {
   getStock: async (req, res) => {
     try {
@@ -21,14 +22,9 @@ const stockController = {
       const order = req?.query?.order || "ASC";
       const brand_id = req?.query?.brand_id;
       const search = req?.query?.search || "";
-      let city_id = req?.query?.city_id || 153;
-      const city = await db.User.findOne({
-        where: { ...req.user },
-        include: [{ model: db.Warehouse, attribute: ["city_id"] }],
+      const warehouse = await getWarehouse({
+        id: req.query?.warehouse_id || req?.user?.warehouse_id,
       });
-      if (city.warehouse_id != null) {
-        city_id = city?.dataValues?.warehouse?.city_id;
-      }
       switch (sort) {
         case "brand":
           sort = [
@@ -49,7 +45,7 @@ const stockController = {
       }
       const whereClause = {
         [Op.and]: [
-          { "$warehouse.city.city_id$": city_id },
+          { "$warehouse.id$": warehouse[0]?.dataValues?.id },
           {
             [Op.or]: [
               { "$Sho.name$": { [Op.like]: `%${search}%` } },

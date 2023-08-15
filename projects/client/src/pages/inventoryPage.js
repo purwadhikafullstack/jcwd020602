@@ -34,7 +34,7 @@ export default function InventoryPage() {
     sort: "",
     order: "ASC",
     search: "",
-    city_id: "",
+    warehouse_id: "",
     brand_id: "",
   });
   //pagination ------------------------------------------------------
@@ -58,15 +58,21 @@ export default function InventoryPage() {
   }, [shown]);
   //-------------------------------------------------------------
   useEffect(() => {
-    warehouseAdmin();
+    const token = JSON.parse(localStorage.getItem("user"));
+    if (token) {
+      warehouseAdmin(token);
+    }
   }, []);
-
-  async function warehouseAdmin() {
-    const warehouse = await api.get("/auth/warehousebytoken");
+  async function warehouseAdmin(token) {
+    const warehouse = await api.get("/warehouses/fetchDefault", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     setWareAdmin(warehouse?.data?.warehouse);
     setFilter({
       ...filter,
-      city_id: warehouse?.data?.city_id || warehouse?.data,
+      warehouse_id: warehouse?.data[0]?.id,
     });
   }
   return (
@@ -136,22 +142,19 @@ export default function InventoryPage() {
                     <Select
                       onChange={(e) => {
                         setShown({ page: 1 });
-                        setFilter({ ...filter, city_id: e.target.value });
+                        setFilter({ ...filter, warehouse_id: e.target.value });
                       }}
-                      id="city"
+                      id="warehouse_id"
                       size={"sm"}
-                      value={filter?.city_id}
+                      value={filter.warehouse_id}
                     >
                       <option key={""} value={""}>
                         choose city..
                       </option>
                       {cities &&
-                        cities?.map((val, idx) => (
-                          <option
-                            key={val?.city?.city_name}
-                            value={val?.city?.city_id}
-                          >
-                            {`${val?.city?.type} ${val?.city?.city_name}`}
+                        cities.map((val, idx) => (
+                          <option key={val.id} value={val.id}>
+                            {`Warehouse ${val.name} (${val.city.type} ${val.city.city_name})`}
                           </option>
                         ))}
                     </Select>

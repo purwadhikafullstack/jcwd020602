@@ -18,7 +18,7 @@ const {
   updateMutation,
   deleteMutation,
 } = require("../service/stockMutation.service");
-const { getCty } = require("../service/warehouse.service");
+const { getWarehouse } = require("../service/warehouse.service");
 const stockMutationController = {
   addStockMutation: async (req, res) => {
     const t = await db.sequelize.transaction();
@@ -107,9 +107,11 @@ const stockMutationController = {
   },
   getStockMutation: async (req, res) => {
     try {
-      const warehouse = await getCty({ id: req?.user?.warehouse_id });
+      const warehouse = await getWarehouse({
+        id: req.query?.warehouse_id || req?.user?.warehouse_id,
+      });
       const result = await findAndCountAllMutation({
-        city_id: warehouse?.dataValues?.city_id || req.query?.city_id || 153,
+        warehouse_id: warehouse[0]?.dataValues?.id,
         sort: req.query?.sort || "createdAt",
         order: req.query?.order || "DESC",
         search: req.query?.search || "",

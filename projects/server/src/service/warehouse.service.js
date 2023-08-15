@@ -100,11 +100,16 @@ module.exports = {
       return err;
     }
   },
-  getCty: async (body) => {
+  getWarehouse: async (body) => {
     try {
-      return await db.Warehouse.findOne({
-        where: { id: body?.id },
-        attribute: ["city_id"],
+      const whereClause = {};
+      if (body?.id) {
+        whereClause.id = body?.id;
+      }
+      return await db.Warehouse.findAll({
+        where: whereClause,
+        attribute: ["id"],
+        limit: 1,
       });
     } catch (error) {
       return error;

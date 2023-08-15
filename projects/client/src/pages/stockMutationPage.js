@@ -58,7 +58,7 @@ export default function StockMutationPage() {
     sort: "",
     order: "DESC",
     search: "",
-    city_id: "",
+    warehouse_id: "",
     time: "",
     brand_id: "",
   });
@@ -83,14 +83,21 @@ export default function StockMutationPage() {
   }, [shown]);
   //----------------------------------------------------------------
   useEffect(() => {
-    warehouseAdmin();
+    const token = JSON.parse(localStorage.getItem("user"));
+    if (token) {
+      warehouseAdmin(token);
+    }
   }, []);
-  async function warehouseAdmin() {
-    const warehouse = await api.get("/auth/warehousebytoken");
-    setWareAdmin(warehouse?.data);
+  async function warehouseAdmin(token) {
+    const warehouse = await api.get("/warehouses/fetchDefault", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    setWareAdmin(warehouse?.data?.warehouse);
     setFilter({
       ...filter,
-      city_id: warehouse?.data?.city_id || warehouse.data,
+      warehouse_id: warehouse?.data[0]?.id,
     });
   }
   return (
@@ -147,10 +154,7 @@ export default function StockMutationPage() {
                       </option>
                       {provinces &&
                         provinces.map((val, idx) => (
-                          <option
-                            key={val?.city?.province}
-                            value={val?.city?.province}
-                          >
+                          <option value={val?.city?.province}>
                             {val?.city?.province}
                           </option>
                         ))}
@@ -160,22 +164,19 @@ export default function StockMutationPage() {
                     <Select
                       onChange={(e) => {
                         setShown({ page: 1 });
-                        setFilter({ ...filter, city_id: e.target.value });
+                        setFilter({ ...filter, warehouse_id: e.target.value });
                       }}
-                      id="city"
+                      id="warehouse_id"
                       size={"sm"}
-                      value={filter.city_id}
+                      value={filter.warehouse_id}
                     >
                       <option key={""} value={""}>
                         choose city..
                       </option>
                       {cities &&
                         cities.map((val, idx) => (
-                          <option
-                            key={val.city.city_name}
-                            value={val.city.city_id}
-                          >
-                            {`${val.city.type} ${val.city.city_name}`}
+                          <option key={val.id} value={val.id}>
+                            {`Warehouse ${val.name} (${val.city.type} ${val.city.city_name})`}
                           </option>
                         ))}
                     </Select>
@@ -278,8 +279,8 @@ export default function StockMutationPage() {
                                 <MenuButton isActive={isOpen} as={Button} p={0}>
                                   <Icon as={isOpen ? GrClose : GrMenu} />
                                 </MenuButton>
-                                {filter.city_id ==
-                                stockMutation?.fromWarehouse?.city_id ? (
+                                {filter.warehouse_id ==
+                                stockMutation?.fromWarehouse?.id ? (
                                   <MenuList>
                                     <MenuItem
                                       onClick={() => {
@@ -327,8 +328,8 @@ export default function StockMutationPage() {
                       ) : null}
                     </Flex>
                     <Box>
-                      Mutation Code: MUT/
-                      {JSON.parse(stockMutation?.mutation_code).MUT}
+                      Mutation Code:
+                      {stockMutation?.mutation_code}
                     </Box>
                     <Divider />
                     <Box>
@@ -347,7 +348,7 @@ export default function StockMutationPage() {
                     <Divider />
                     <Box>
                       FROM - TO Warehouses:{" "}
-                      {filter.city_id == stockMutation?.fromWarehouse?.city_id
+                      {filter.warehouse_id == stockMutation?.fromWarehouse?.id
                         ? `${stockMutation?.fromWarehouse?.name} >>> ${stockMutation?.toWarehouse?.name}`
                         : `${stockMutation?.toWarehouse?.name} >>> ${stockMutation?.fromWarehouse?.name}`}
                     </Box>
@@ -360,7 +361,7 @@ export default function StockMutationPage() {
                     <Divider />
                     <Box>
                       Stock:{" "}
-                      {filter.city_id == stockMutation?.fromWarehouse?.city_id
+                      {filter.warehouse_id == stockMutation?.fromWarehouse?.id
                         ? "-"
                         : "+"}{" "}
                       {stockMutation?.qty}
@@ -403,9 +404,7 @@ export default function StockMutationPage() {
                   stockMutations?.rows.map((stockMutation, idx) => (
                     <Tr>
                       <Td w={"5%"}>{idx + 1}</Td>
-                      <Td>
-                        MUT/{JSON.parse(stockMutation?.mutation_code).MUT}
-                      </Td>
+                      <Td>{stockMutation?.mutation_code}</Td>
                       <Td w={"10%"}>{`${
                         stockMutation?.requestedBy?.name || "AUTO"
                       }`}</Td>
@@ -415,13 +414,13 @@ export default function StockMutationPage() {
                           : "AUTO"
                       }`}</Td>
                       <Td w={"10%"}>
-                        {filter.city_id == stockMutation?.fromWarehouse?.city_id
+                        {filter.warehouse_id == stockMutation?.fromWarehouse?.id
                           ? `${stockMutation?.fromWarehouse?.name} >>> ${stockMutation?.toWarehouse?.name}`
                           : `${stockMutation?.toWarehouse?.name} <<< ${stockMutation?.fromWarehouse?.name}`}
                       </Td>
                       <Td>{`${stockMutation?.stock?.Sho?.name}-${stockMutation?.stock?.shoeSize?.size}-${stockMutation?.stock?.Sho?.brand?.name}`}</Td>
                       <Td>
-                        {filter.city_id == stockMutation?.fromWarehouse?.city_id
+                        {filter.warehouse_id == stockMutation?.fromWarehouse?.id
                           ? "-"
                           : "+"}{" "}
                         {stockMutation?.qty}
@@ -445,8 +444,8 @@ export default function StockMutationPage() {
                                   >
                                     <Icon as={isOpen ? GrClose : GrMenu} />
                                   </MenuButton>
-                                  {filter.city_id ==
-                                  stockMutation?.fromWarehouse?.city_id ? (
+                                  {filter.warehouse_id ==
+                                  stockMutation?.fromWarehouse?.id ? (
                                     <MenuList>
                                       <MenuItem
                                         onClick={() => {

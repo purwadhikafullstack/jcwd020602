@@ -2,6 +2,7 @@ const db = require("../models");
 const { Op } = require("sequelize");
 const moment = require("moment");
 const { findStockHistory } = require("../service/stockHistory.service");
+const { getWarehouse } = require("../service/warehouse.service");
 const stockHistoryController = {
   getStockHistory: async (req, res) => {
     try {
@@ -12,15 +13,10 @@ const stockHistoryController = {
       const order = req?.query?.order || "DESC";
       const search = req?.query?.search || "";
       const brand_id = req?.query?.brand_id;
-      let city_id = req?.query?.city_id || 153;
       const time = req?.query?.time || moment().format();
-      const city = await db.User.findOne({
-        where: { ...req.user },
-        include: [{ model: db.Warehouse, attribute: ["city_id"] }],
+      const warehouse = await getWarehouse({
+        id: req.query?.warehouse_id || req?.user?.warehouse_id,
       });
-      if (city.warehouse_id != null) {
-        city_id = city?.dataValues?.warehouse?.city_id;
-      }
       switch (sort) {
         case "brand":
           sort = [
@@ -53,7 +49,7 @@ const stockHistoryController = {
       }
       const whereClause = {
         [Op.and]: [
-          { "$stock.warehouse.city.city_id$": city_id },
+          { "$stock.warehouse_id$": warehouse[0]?.dataValues?.id },
           {
             [Op.or]: [
               { reference: { [Op.like]: `%${search}%` } },
