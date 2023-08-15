@@ -15,6 +15,7 @@ import Pagination from "../components/dashboard/pagination";
 import DeleteStock from "../components/dashboard/deleteStock";
 import EditStock from "../components/dashboard/editStock";
 import { api } from "../api/api";
+import { useFetchBrand } from "../hooks/useFetchBrand";
 
 export default function InventoryPage() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -22,6 +23,7 @@ export default function InventoryPage() {
   const editS = useDisclosure();
   const userSelector = useSelector((state) => state.auth);
   const inputFileRef = useRef(null);
+  const { brands } = useFetchBrand();
   const { provinces } = useFetchWareProv();
   const [province, setprovince] = useState(0);
   const { cities } = useFetchWareCity(province);
@@ -32,7 +34,8 @@ export default function InventoryPage() {
     sort: "",
     order: "ASC",
     search: "",
-    city_id: "",
+    warehouse_id: "",
+    brand_id: "",
   });
   //pagination ------------------------------------------------------
   const [pages, setPages] = useState([]);
@@ -55,18 +58,23 @@ export default function InventoryPage() {
   }, [shown]);
   //-------------------------------------------------------------
   useEffect(() => {
-    warehouseAdmin();
+    const token = JSON.parse(localStorage.getItem("user"));
+    if (token) {
+      warehouseAdmin(token);
+    }
   }, []);
-
-  async function warehouseAdmin() {
-    const warehouse = await api.get("/auth/warehousebytoken");
+  async function warehouseAdmin(token) {
+    const warehouse = await api.get("/warehouses/fetchDefault", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     setWareAdmin(warehouse?.data?.warehouse);
     setFilter({
       ...filter,
-      city_id: warehouse?.data?.city_id || warehouse?.data,
+      warehouse_id: warehouse?.data[0]?.id,
     });
   }
-  console.log(stocks);
   return (
     <>
       <Box id="content" pt={"52px"}>
@@ -88,7 +96,6 @@ export default function InventoryPage() {
               onClose={onClose}
               fetch={fetch}
               ware={wareAdmin}
-              setShown={setShown}
             />
           </Flex>
 
@@ -135,27 +142,45 @@ export default function InventoryPage() {
                     <Select
                       onChange={(e) => {
                         setShown({ page: 1 });
-                        setFilter({ ...filter, city_id: e.target.value });
+                        setFilter({ ...filter, warehouse_id: e.target.value });
                       }}
-                      id="city"
+                      id="warehouse_id"
                       size={"sm"}
-                      value={filter?.city_id}
+                      value={filter.warehouse_id}
                     >
                       <option key={""} value={""}>
                         choose city..
                       </option>
                       {cities &&
-                        cities?.map((val, idx) => (
-                          <option
-                            key={val?.city?.city_name}
-                            value={val?.city?.city_id}
-                          >
-                            {`${val?.city?.type} ${val?.city?.city_name}`}
+                        cities.map((val, idx) => (
+                          <option key={val.id} value={val.id}>
+                            {`Warehouse ${val.name} (${val.city.type} ${val.city.city_name})`}
                           </option>
                         ))}
                     </Select>
                   </>
                 )}
+
+                <Box whiteSpace={"nowrap"}>Brand:</Box>
+                <Select
+                  onChange={(e) => {
+                    setShown({ page: 1 });
+                    setFilter({ ...filter, brand_id: e.target.value });
+                  }}
+                  id="brand_id"
+                  size={"sm"}
+                  value={filter?.brand_id}
+                >
+                  <option key={""} value={""}>
+                    choose brand..
+                  </option>
+                  {brands &&
+                    brands?.map((val, idx) => (
+                      <option key={val?.id} value={val?.id}>
+                        {val?.name}
+                      </option>
+                    ))}
+                </Select>
 
                 <Box whiteSpace={"nowrap"}> Sort By:</Box>
                 <Select
@@ -324,7 +349,6 @@ export default function InventoryPage() {
                               setShown={setShown}
                               isOpen={deleteS.isOpen}
                               onClose={deleteS.onClose}
-                              fetch={fetch}
                               setId={setStockId}
                             />
                           </Flex>
@@ -335,17 +359,7 @@ export default function InventoryPage() {
               </Tbody>
             </Table>
           </TableContainer>
-          <Flex
-            justifyContent={"center"}
-            alignItems={"center"}
-            gap={"16px"}
-            h={"16px"}
-            fontFamily={"Roboto"}
-            fontStyle={"normal"}
-            fontWeight={"400"}
-            fontSize={"12px"}
-            lineHeight={"14px"}
-          >
+          <Flex p={2} m={2} justify={"center"} border={"2px"}>
             <Pagination
               shown={shown}
               setShown={setShown}

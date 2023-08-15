@@ -30,7 +30,7 @@ export default function DeleteStockMutation(props) {
 
   async function fetch() {
     const response = await api.get(`/stockMutations/${props.id}`);
-    setStockMutation(response.data);
+    setStockMutation(response?.data?.stockMutation);
   }
 
   const deleteStockMutation = async () => {
@@ -42,7 +42,6 @@ export default function DeleteStockMutation(props) {
         position: "top",
       });
       props.setShown({ page: 1 });
-      props.fetch();
       clearData();
     } catch (err) {
       toast({
