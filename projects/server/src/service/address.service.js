@@ -3,7 +3,7 @@ const { Op } = require("sequelize");
 module.exports = {
   addressChecker: async (user_id) => {
     try {
-      return await db.addresses.findAll({
+      return await db.Address.findAll({
         where: {
           user_id,
         },
@@ -13,21 +13,55 @@ module.exports = {
       return err;
     }
   },
-  titleChecker: async (title, user_id) => {
+  titleChecker: async (title, user_id, id) => {
     try {
-      return await db.addresses.findOne({
-        where: {
-          title,
-          user_id,
-        },
-      });
+      let address;
+      console.log(id);
+      id
+        ? (address = await db.Address.findOne({
+            where: {
+              title,
+              user_id,
+              id: { [Op.not]: id },
+            },
+          }))
+        : (address = await db.Address.findOne({
+            where: {
+              title,
+              user_id,
+            },
+          }));
+      return address;
+    } catch (err) {
+      return err;
+    }
+  },
+  nameChecker: async (name, user_id, id) => {
+    try {
+      let address;
+      console.log(id);
+      id
+        ? (address = await db.Address.findOne({
+            where: {
+              name,
+              user_id,
+              id: { [Op.not]: id },
+            },
+          }))
+        : (address = await db.Address.findOne({
+            where: {
+              name,
+              user_id,
+            },
+          }));
+      return address;
     } catch (err) {
       return err;
     }
   },
   primaryChecker: async (user_id) => {
     try {
-      return await db.addresses.findOne({
+      return await db.Address.findOne({
         where: {
           is_primary: true,
           user_id,
@@ -40,7 +74,7 @@ module.exports = {
   },
   updatePrimary: async (t, user_id) => {
     try {
-      return await db.addresses.update(
+      return await db.Address.update(
         {
           is_primary: false,
         },
@@ -58,7 +92,7 @@ module.exports = {
   },
   updateEditPrimary: async (t, user_id, id) => {
     try {
-      return await db.addresses.update(
+      return await db.Address.update(
         {
           is_primary: false,
         },
@@ -75,37 +109,46 @@ module.exports = {
       return err;
     }
   },
-  addAddress: async (
-    t,
-    { title, address_details, recipient, phone_number, is_primary, user_id },
-    response
-  ) => {
+  addAddress: async (t, body, response) => {
     try {
-      return await db.addresses.create(
+      return await db.Address.create(
         {
-          title,
-          address_details,
-          address: response.data.results[0].formatted,
-          road: response.data.results[0].components.road,
-          province:
-            response.data.results[0].components.state ||
-            response.data.results[0].components.region,
-          city:
-            response.data.results[0].components.city ||
-            response.data.results[0].components.city_district,
-          district:
-            response.data.results[0].components.district ||
-            response.data.results[0].components.suburb ||
-            response.data.results[0].components.subdistrict,
-          postcode: response.data.results[0].components.postcode,
+          title: body.title,
+          name: body.name,
+          address: body.address,
+          address_details: body.address_details,
+          city_id: body.city_id,
+          postcode: body.postcode,
+          phone: body.phone,
+          is_primary: body.is_primary == false ? 0 : 1,
+          user_id: body.user_id,
           latitude: response.data.results[0].geometry.lat,
           longitude: response.data.results[0].geometry.lng,
-          recipient,
-          phone_number,
-          is_primary,
-          user_id,
         },
         { transaction: t }
+      );
+    } catch (err) {
+      return err;
+    }
+  },
+  editAddress: async (t, body, response) => {
+    try {
+      console.log(body);
+      return await db.Address.update(
+        {
+          title: body.title,
+          name: body.name,
+          address: body.address,
+          address_details: body.address_details,
+          city_id: body.city_id,
+          postcode: body.postcode,
+          phone: body.phone,
+          is_primary: body.is_primary == false ? 0 : 1,
+          user_id: body.user_id,
+          latitude: response.data.results[0].geometry.lat,
+          longitude: response.data.results[0].geometry.lng,
+        },
+        { where: { id: body.id }, transaction: t }
       );
     } catch (err) {
       return err;
@@ -152,7 +195,7 @@ module.exports = {
           { user_id },
         ],
       };
-      return await db.addresses.findAll({
+      return await db.Address.findAll({
         where: where,
         order: [["is_primary", "DESC"]],
       });
@@ -162,7 +205,7 @@ module.exports = {
   },
   getEditAddress: async ({ id, user_id }) => {
     try {
-      return await db.addresses.findOne({
+      return await db.Address.findOne({
         where: {
           id,
           user_id,

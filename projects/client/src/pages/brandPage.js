@@ -24,7 +24,6 @@ export default function BrandPage() {
   const [search, setSearch] = useState();
   const { brands, fetch } = useFetchBrand();
   const [brandId, setBrandId] = useState();
-  console.log(brands);
   return (
     <>
       <Box id="content" pt={"52px"}>

@@ -19,8 +19,7 @@ import { EmailIcon } from "@chakra-ui/icons";
 import { TbAlertCircleFilled } from "react-icons/tb";
 
 export default function ForgotPassword() {
-  // const [email, setEmail] = useState("");
-  const toast = useToast();
+  const toast = useToast({ duration: 3000, isClosable: true, position: "top" });
   const [isLoading, setIsLoading] = useState(false);
   const [formField, setFormField] = useState("");
 
@@ -44,15 +43,11 @@ export default function ForgotPassword() {
         toast({
           title: res.data.message,
           status: "success",
-          position: "top",
-          duration: 1000,
         });
       } catch (err) {
         toast({
           title: err?.response?.data,
           status: "error",
-          position: "top",
-          duration: 1000,
         });
       }
     },
@@ -70,10 +65,10 @@ export default function ForgotPassword() {
         <Flex
           flexDir={"column"}
           gap={4}
-          p={5}
+          p={2}
           textAlign={"center"}
           border={"2px"}
-          m={1}
+          m={2}
         >
           <Box fontSize={"25px"}>Forgot Pasword</Box>
           <Box color={"gray"} fontSize={"10px"}>
@@ -98,22 +93,16 @@ export default function ForgotPassword() {
                 />
                 <label for="">Email</label>
               </InputGroup>
-              <Box h={8}>
-                <FormErrorMessage>
-                  <Center>
-                    <Icon as={TbAlertCircleFilled} w="16px" h="16px" />
-                  </Center>
-                  <Text fontSize={10}>{formik.errors.email}</Text>
-                </FormErrorMessage>
-              </Box>
+              <FormErrorMessage>
+                <Icon as={TbAlertCircleFilled} w="16px" h="16px" />
+                <Text fontSize={10}>{formik.errors.email}</Text>
+              </FormErrorMessage>
             </Box>
           </FormControl>
 
           <Button
-            type="submit"
-            variant={"outline"}
-            border={"2px"}
-            _hover={{ bg: "black", color: "white" }}
+            id="button"
+            isDisabled={!formik.values.email}
             isLoading={isLoading}
             onClick={() => {
               setIsLoading(true);

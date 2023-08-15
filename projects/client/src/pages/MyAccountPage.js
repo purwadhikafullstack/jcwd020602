@@ -1,19 +1,10 @@
-import {
-  Avatar,
-  Box,
-  Center,
-  Flex,
-  Grid,
-  Icon,
-  Image,
-  TableContainer,
-} from "@chakra-ui/react";
-import { Table, Thead, Tbody, Tr, Th, Td } from "@chakra-ui/react";
+import { Avatar, Box, Center, Flex, Image } from "@chakra-ui/react";
 import { useSelector } from "react-redux";
 import { FaCircleUser, FaAddressBook } from "react-icons/fa6";
 import { AiOutlineShoppingCart, AiFillHeart } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import Footer from "../components/website/footer";
+
 export default function MyAccountPage() {
   const userSelector = useSelector((state) => state.auth);
   const menu = [
@@ -64,41 +55,8 @@ export default function MyAccountPage() {
             </Link>
           ))}
         </Box>
-        {/* <Flex       
-            <TableContainer>
-              <Table size="sm">
-                <Thead>
-                  <Tr>
-                    <Th>Order #</Th>
-                    <Th>Date</Th>
-                    <Th>Ship to</Th>
-                    <Th>Order Total</Th>
-                    <Th>Ship Status</Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  <Tr>
-                    <Td>FTH11242</Td>
-                    <Td>05/08/2023</Td>
-                    <Td>Jakarta</Td>
-                    <Td>Rp. 5.300.000</Td>
-                    <Td>Pending</Td>
-                    <Td>View Order</Td>
-                  </Tr>
-                </Tbody>
-              </Table>
-            </TableContainer>        
-          </Flex> */}
       </Flex>
       <Footer />
-    </Center>
-  );
-}
-
-export function ProfilePage() {
-  return (
-    <Center>
-      <Flex></Flex>
     </Center>
   );
 }

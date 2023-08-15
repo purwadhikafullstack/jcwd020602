@@ -46,7 +46,10 @@ export default function SideMenu(props) {
                   >
                     <AccordionButton>
                       <Flex fontWeight={"bold"} alignItems={"center"} gap={2}>
-                        <Avatar size={"sm"} />
+                        <Avatar
+                          size={"sm"}
+                          src={`${process.env.REACT_APP_API_BASE_URL}/${userSelector.avatar_url}`}
+                        />
                         <Box>Hi, {userSelector.name}</Box>
                       </Flex>
                     </AccordionButton>
@@ -122,20 +125,22 @@ export default function SideMenu(props) {
                   </AccordionItem>
                 ))}
 
-              <AccordionItem
-                className="accordion-item"
-                onClick={() => {
-                  localStorage.removeItem("user");
-                  dispatch({
-                    type: "logout",
-                  });
-                  props.onClose();
-                }}
-              >
-                <AccordionButton fontWeight={"bold"}>
-                  <Box> Logout</Box>
-                </AccordionButton>
-              </AccordionItem>
+              {userSelector.email ? (
+                <AccordionItem
+                  className="accordion-item"
+                  onClick={() => {
+                    localStorage.removeItem("user");
+                    dispatch({
+                      type: "logout",
+                    });
+                    props.onClose();
+                  }}
+                >
+                  <AccordionButton fontWeight={"bold"}>
+                    <Box> Logout</Box>
+                  </AccordionButton>
+                </AccordionItem>
+              ) : null}
             </Accordion>
           </DrawerBody>
         </DrawerContent>

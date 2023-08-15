@@ -45,7 +45,7 @@ app.use("/api/shoeSizes", verify, routes.shoeSizeRoutes);
 app.use("/api/categories", verify, routes.categoryRoutes);
 app.use("/api/subcategories", verify, routes.subcategoryRoutes);
 app.use("/api/brands", verify, routes.brandRoutes);
-app.use("/api/address", verify, routes.addressRoutes);
+app.use("/api/address", verify, routes.addressFRoutes);
 app.use("/api/auth", verify, routes.userRoutes);
 app.use("/api/stocks", verify, routes.stockRoutes);
 app.use("/api/stockHistories", verify, routes.stockHistoryRoutes);

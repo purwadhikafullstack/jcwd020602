@@ -1,33 +1,30 @@
-import {
-  FormControl,
-  FormErrorMessage,
-  InputLeftElement,
-  InputRightElement,
-} from "@chakra-ui/react";
-import { Heading, Icon, Input, InputGroup, Button } from "@chakra-ui/react";
-import { VStack, Text, useToast, Center, Box } from "@chakra-ui/react";
-import { FaUser, FaLock } from "react-icons/fa";
-import { AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai";
+import { Flex, FormErrorMessage, InputRightElement } from "@chakra-ui/react";
+import { Icon, Input, InputGroup, Button } from "@chakra-ui/react";
+import { FormControl, Text, useToast, Center, Box } from "@chakra-ui/react";
+import { TbAlertCircleFilled } from "react-icons/tb";
+import { ViewOffIcon, ViewIcon } from "@chakra-ui/icons";
 import * as Yup from "yup";
+import YupPassword from "yup-password";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import React, { useEffect, useState } from "react";
 import { api } from "../../api/api";
+import Footer from "../website/footer";
 
 export default function Verify() {
+  YupPassword(Yup);
   const loc = useLocation();
   const [user, setUser] = useState({ email: "" });
-  const [token, setToken] = useState();
   const queryParams = new URLSearchParams(window.location.search);
   const email = queryParams.get("email");
-  const toast = useToast({ position: "top" });
+  const toast = useToast({ duration: 3000, isClosable: true, position: "top" });
   const nav = useNavigate();
   const [show, setShow] = React.useState(false);
   const handleClick = () => setShow(!show);
   const [show1, setShow1] = React.useState(false);
   const handleClick1 = () => setShow1(!show1);
-  console.log(user);
-  console.log(token);
+  const [isLoading, setIsLoading] = useState(false);
+  const [formField, setFormField] = useState("");
 
   const formik = useFormik({
     initialValues: {
@@ -37,19 +34,16 @@ export default function Verify() {
       email,
     },
     validationSchema: Yup.object().shape({
-      name: Yup.string()
-        .min(6, "Full name min 6 character")
-        .required("Email is required"),
+      name: Yup.string().required("required"),
+      phone: Yup.string()
+        .min(12, "min 12 digits")
+        .min(12, "min 12 digits")
+        .required("required"),
       password: Yup.string()
         .matches(/^(?=.*[A-Z])/, "Must contain at least one uppercase")
         .matches(/^(?=.*[a-z])/, "Must contain at least one lowercase")
-        .matches(/^(?=.*[0-9])/, "Must contain at least one number")
-        .matches(
-          /^(?=.*[!@#$%^&*])/,
-          "Must contain at least one special character"
-        )
         .min(8, "Password minimum 8 character")
-        .required("Password is required!"),
+        .required("required"),
       confirmPassword: Yup.string().oneOf(
         [Yup.ref("password"), null],
         "Passwords must match"
@@ -61,16 +55,12 @@ export default function Verify() {
         toast({
           title: res?.data?.message,
           status: "success",
-          duration: 3000,
-          isClosable: true,
         });
         return nav("/auth");
       } catch (err) {
         toast({
           title: err?.response?.data,
           status: "error",
-          duration: 3000,
-          isClosable: true,
         });
       }
     },
@@ -85,7 +75,6 @@ export default function Verify() {
         setUser(res?.data);
       }
     } catch (err) {
-      console.log(err);
       toast({
         title: err?.response?.data,
         status: "error",
@@ -96,8 +85,13 @@ export default function Verify() {
   useEffect(() => {
     const pathToken = loc.pathname.split("/")[2];
     fetchUser(pathToken);
-    setToken(pathToken);
   }, []);
+
+  function inputHandler(e) {
+    const { value, id } = e.target;
+    formik.setFieldValue(id, value);
+    setFormField(id);
+  }
 
   return (
     <>
@@ -106,143 +100,150 @@ export default function Verify() {
           <Box fontSize={"50px"}>link has expired</Box>
         </Center>
       ) : (
-        <Box
-          w={["full", "md"]}
-          p={[8, 10]}
-          mt={[20, "10vh"]}
-          mx={"auto"}
-          border={["none", "1px"]}
-          borderColor={["", "gray.300"]}
-          borderRadius={10}
-        >
-          <VStack spacing={4} align={"center"} w={"full"}>
-            <Heading> Verification </Heading>
-            {/* <form onSubmit={formik.handleSubmit} style={{ width: "100%" }}> */}
-            <FormControl
-              mt={"10px"}
-              isRequired
-              isInvalid={formik.touched.name && formik.errors.name}
-            >
-              <InputGroup>
-                <InputLeftElement children={<Icon as={FaUser} />} />
-                <Input
-                  type="text"
-                  placeholder="Full Name"
-                  id="name"
-                  onChange={formik.handleChange}
-                  value={formik.values.name}
-                />
-              </InputGroup>
-              <Box h={"20px"}>
-                <FormErrorMessage fontSize={"2xs"}>
-                  {formik.errors.name}
-                </FormErrorMessage>
-              </Box>
-            </FormControl>
-
-            <FormControl
-              id="password"
-              mt={"10px"}
-              isRequired
-              isInvalid={formik.touched.password && formik.errors.password}
-            >
-              <InputGroup>
-                <InputLeftElement children={<Icon as={FaLock} />} />
-                <Input
-                  type={show ? "text" : "password"}
-                  placeholder="Password"
-                  id="password"
-                  onChange={formik.handleChange}
-                  value={formik.values.password}
-                />
-                <InputRightElement width="4.5rem">
-                  <Button
-                    h="1.75rem"
-                    size="sm"
-                    onClick={handleClick}
-                    bgColor={"white"}
-                    _hover={"white"}
-                  >
-                    {show ? (
-                      <Icon as={AiOutlineEye} w={"100%"} h={"100%"}></Icon>
-                    ) : (
-                      <Icon
-                        as={AiOutlineEyeInvisible}
-                        w={"100%"}
-                        h={"100%"}
-                      ></Icon>
-                    )}
-                  </Button>
-                </InputRightElement>
-              </InputGroup>
-              <Box h={"20px"}>
-                <FormErrorMessage fontSize={"2xs"}>
-                  {formik.errors.password}
-                </FormErrorMessage>
-              </Box>
-            </FormControl>
-
-            <FormControl
-              id="confirmPassword"
-              mt={"10px"}
-              isRequired
-              isInvalid={
-                formik.touched.confirmPassword && formik.errors.confirmPassword
-              }
-            >
-              <InputGroup>
-                <InputLeftElement children={<Icon as={FaLock} />} />
-                <Input
-                  type={show1 ? "text" : "password"}
-                  placeholder="Confirm Password"
-                  id="confirmPassword"
-                  onChange={formik.handleChange}
-                  value={formik.values.confirmPassword}
-                />{" "}
-                <InputRightElement width="4.5rem">
-                  <Button
-                    h="1.75rem"
-                    size="sm"
-                    onClick={handleClick1}
-                    bgColor={"white"}
-                    _hover={"white"}
-                  >
-                    {show1 ? (
-                      <Icon as={AiOutlineEye} w={"100%"} h={"100%"}></Icon>
-                    ) : (
-                      <Icon
-                        as={AiOutlineEyeInvisible}
-                        w={"100%"}
-                        h={"100%"}
-                      ></Icon>
-                    )}
-                  </Button>
-                </InputRightElement>
-              </InputGroup>
-              <Box h={"20px"}>
-                <FormErrorMessage fontSize={"2xs"}>
-                  {formik.errors.confirmPassword}
-                </FormErrorMessage>
-              </Box>
-            </FormControl>
-
-            <Center>
-              <Text mt={"5px"}> Click button below to verification</Text>
-            </Center>
-            <Button
-              mt={"10px"}
+        <Center flexDir={"column"}>
+          <Center h={"100vh"} maxH={"800px"} maxW={"1531px"} w={"100%"}>
+            <Flex
+              flexDir={"column"}
+              gap={5}
+              p={2}
+              m={2}
+              border={"2px"}
               w={"100%"}
-              colorScheme="blue.100"
-              bgColor={"black"}
-              size="lg"
-              type="submit"
-              onClick={formik.handleSubmit}
+              maxW={"500px"}
             >
-              Verify
-            </Button>
-            {/* </form> */}
-          </VStack>
-        </Box>
+              <Center fontSize={"25px"}>VERIFICATION</Center>
+              {/* name */}
+              <FormControl
+                isInvalid={formField === "name" && formik.errors.name}
+              >
+                <Box
+                  className={`inputbox ${
+                    formik.values.name ? "input-has-value" : ""
+                  }`}
+                >
+                  <InputGroup>
+                    <Input
+                      id="name"
+                      value={formik.values.name}
+                      onChange={inputHandler}
+                    />
+                    <label>Name</label>
+                  </InputGroup>
+                  <FormErrorMessage>
+                    <Icon as={TbAlertCircleFilled} w="16px" h="16px" />
+                    <Text fontSize={10}>{formik.errors.name}</Text>
+                  </FormErrorMessage>
+                </Box>
+              </FormControl>
+              {/* phone */}
+              <FormControl
+                isInvalid={formField === "phone" && formik.errors.phone}
+              >
+                <Box
+                  className={`inputbox ${
+                    formik.values.phone ? "input-has-value" : ""
+                  }`}
+                >
+                  <InputGroup>
+                    <Input
+                      id="phone"
+                      value={formik.values.phone}
+                      onChange={inputHandler}
+                    />
+                    <label>Phone</label>
+                  </InputGroup>
+                  <FormErrorMessage>
+                    <Icon as={TbAlertCircleFilled} w="16px" h="16px" />
+                    <Text fontSize={10}>{formik.errors.phone}</Text>
+                  </FormErrorMessage>
+                </Box>
+              </FormControl>
+              {/* password */}
+              <FormControl
+                isInvalid={formField === "password" && formik.errors.password}
+              >
+                <Box
+                  className={`inputbox ${
+                    formik.values.password ? "input-has-value" : ""
+                  }`}
+                >
+                  <InputGroup>
+                    <Input
+                      id="password"
+                      value={formik.values.password}
+                      onChange={inputHandler}
+                      type={show ? "text" : "password"}
+                    />
+                    <label>Password</label>
+                    <InputRightElement width="4rem">
+                      <Button h="1.75rem" size="sm" onClick={handleClick}>
+                        {show ? <ViewOffIcon /> : <ViewIcon />}
+                      </Button>
+                    </InputRightElement>
+                  </InputGroup>
+                  <FormErrorMessage>
+                    <Icon as={TbAlertCircleFilled} w="16px" h="16px" />
+                    <Text fontSize={10}>{formik.errors.password}</Text>
+                  </FormErrorMessage>
+                </Box>
+              </FormControl>
+              {/* confirm password */}
+              <FormControl
+                isInvalid={
+                  formField === "confirmPassword" &&
+                  formik.errors.confirmPassword
+                }
+              >
+                <Box
+                  className={`inputbox ${
+                    formik.values.confirmPassword ? "input-has-value" : ""
+                  }`}
+                >
+                  <InputGroup>
+                    <Input
+                      id="confirmPassword"
+                      value={formik.values.confirmPassword}
+                      onChange={inputHandler}
+                      type={show1 ? "text" : "password"}
+                    />
+                    <label>Confirm Password</label>
+                    <InputRightElement width="4rem">
+                      <Button h="1.75rem" size="sm" onClick={handleClick1}>
+                        {show1 ? <ViewOffIcon /> : <ViewIcon />}
+                      </Button>
+                    </InputRightElement>
+                  </InputGroup>
+                  <FormErrorMessage>
+                    <Icon as={TbAlertCircleFilled} w="16px" h="16px" />
+                    <Text fontSize={10}>{formik.errors.confirmPassword}</Text>
+                  </FormErrorMessage>
+                </Box>
+              </FormControl>
+
+              <Button
+                id="button"
+                isDisabled={
+                  formik.values.name &&
+                  formik.values.password &&
+                  formik.values.confirmPassword
+                    ? false
+                    : true
+                }
+                isLoading={isLoading}
+                onClick={() => {
+                  setIsLoading(true);
+                  setTimeout(() => {
+                    formik.handleSubmit();
+                    setIsLoading(false);
+                  }, 2000);
+                }}
+              >
+                Confirm
+              </Button>
+            </Flex>
+          </Center>
+          <Footer />
+        </Center>
       )}
     </>
   );

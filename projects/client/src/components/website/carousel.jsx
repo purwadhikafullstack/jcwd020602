@@ -8,9 +8,16 @@ import "swiper/css/navigation";
 import { EffectCoverflow, Pagination, Navigation } from "swiper";
 import "../../css/bestSeller.css";
 import { useFetchShoe } from "../../hooks/useFetchShoe";
+import { useEffect, useState } from "react";
 
-export function Recommend() {
-  const { shoes } = useFetchShoe();
+export function Recommend(props) {
+  const [filter, setFilter] = useState({ limit: 50 });
+  const { shoes, fetch } = useFetchShoe(props?.category, "", filter);
+
+  useEffect(() => {
+    fetch();
+  }, [props.category]);
+
   return (
     <>
       <Box className="container" w={"100%"} maxW={"1531px"} zIndex={1}>
@@ -38,35 +45,37 @@ export function Recommend() {
             modules={[Navigation]}
           >
             {shoes &&
-              shoes?.rows.map((shoe, idx) => (
-                <SwiperSlide key={idx} className="recommend">
-                  <Link to={`/${shoe.name}`}>
-                    <Box border={"1px"} h={"100%"} cursor={"pointer"}>
-                      <Image
-                        src={`${process.env.REACT_APP_API_BASE_URL}/${shoe.ShoeImages[0]?.shoe_img}`}
-                        h={"100%"}
-                        objectFit={"cover"}
-                      />
-                    </Box>
-                    <Flex
-                      flexDir={"column"}
-                      align={"center"}
-                      justify={"center"}
-                    >
-                      <Text
-                        bg={"white"}
-                        p={2}
-                        fontSize={"15px"}
-                        pos={"absolute"}
-                        top={10}
-                        fontWeight={"bold"}
+              shoes?.rows
+                .filter((val) => val.id != props.id)
+                .map((shoe, idx) => (
+                  <SwiperSlide key={idx} className="recommend">
+                    <Link to={`/${shoe.name}`}>
+                      <Box border={"1px"} h={"100%"} cursor={"pointer"}>
+                        <Image
+                          src={`${process.env.REACT_APP_API_BASE_URL}/${shoe.ShoeImages[0]?.shoe_img}`}
+                          h={"100%"}
+                          objectFit={"cover"}
+                        />
+                      </Box>
+                      <Flex
+                        flexDir={"column"}
+                        align={"center"}
+                        justify={"center"}
                       >
-                        {shoe?.name}
-                      </Text>
-                    </Flex>
-                  </Link>
-                </SwiperSlide>
-              ))}
+                        <Text
+                          bg={"white"}
+                          p={2}
+                          fontSize={"15px"}
+                          pos={"absolute"}
+                          top={10}
+                          fontWeight={"bold"}
+                        >
+                          {shoe?.name}
+                        </Text>
+                      </Flex>
+                    </Link>
+                  </SwiperSlide>
+                ))}
             <Box className="swiper-button-prev slider-arrow"></Box>
             <Box className="swiper-button-next slider-arrow"></Box>
           </Swiper>
@@ -77,7 +86,8 @@ export function Recommend() {
 }
 
 export function BestSeller() {
-  const { shoes } = useFetchShoe();
+  const [filter, setFilter] = useState({ limit: 50 });
+  const { shoes } = useFetchShoe("", "", filter);
   return (
     <>
       <Box className="container" w={"100%"} maxW={"1531px"} zIndex={1}>

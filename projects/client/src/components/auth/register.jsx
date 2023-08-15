@@ -11,7 +11,7 @@ import { TbAlertCircleFilled } from "react-icons/tb";
 import { EmailIcon } from "@chakra-ui/icons";
 
 export default function Register() {
-  const toast = useToast({ position: "top" });
+  const toast = useToast({ duration: 3000, isClosable: true, position: "top" });
   const nav = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [formField, setFormField] = useState("");
@@ -20,11 +20,7 @@ export default function Register() {
       email: "",
     },
     validationSchema: Yup.object().shape({
-      email: Yup.string()
-        .email(
-          "* email is invalid. Make sure it's written like example@email.com"
-        )
-        .required("* Email is required"),
+      email: Yup.string().email("Invalid email address").required("required"),
     }),
     onSubmit: async () => {
       try {
@@ -32,16 +28,12 @@ export default function Register() {
         toast({
           title: res.data.message,
           status: "success",
-          duration: 3000,
-          isClosable: true,
         });
         nav("/auth");
       } catch (err) {
         toast({
           title: err?.response?.data,
           status: "error",
-          duration: 3000,
-          isClosable: true,
         });
       }
     },
@@ -59,7 +51,7 @@ export default function Register() {
         Sign up
       </Heading>
 
-      <Stack>
+      <Stack spacing={"20px"}>
         <FormControl isInvalid={formField === "email" && formik.errors.email}>
           <Box
             className={`inputbox ${
@@ -77,21 +69,14 @@ export default function Register() {
                 <Icon as={EmailIcon} />
               </InputRightElement>
             </InputGroup>
-            <Box h={8}>
-              <FormErrorMessage>
-                <Center>
-                  <Icon as={TbAlertCircleFilled} w="16px" h="16px" />
-                </Center>
-                <Text fontSize={10}>{formik.errors.email}</Text>
-              </FormErrorMessage>
-            </Box>
+            <FormErrorMessage>
+              <Icon as={TbAlertCircleFilled} w="16px" h="16px" />
+              <Text fontSize={10}>{formik.errors.email}</Text>
+            </FormErrorMessage>
           </Box>
         </FormControl>
         <Button
-          type="submit"
-          variant={"outline"}
-          border={"2px"}
-          _hover={{ bg: "black", color: "white" }}
+          id="button"
           isDisabled={formik.values.email ? false : true}
           isLoading={isLoading}
           onClick={() => {

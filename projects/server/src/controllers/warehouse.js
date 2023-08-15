@@ -1,15 +1,6 @@
 const db = require("../models");
 const axios = require("axios");
-const opencage = async (address, city, province) => {
-  return await axios.get("https://api.opencagedata.com/geocode/v1/json", {
-    params: {
-      q: `${address}, ${city},${province}`,
-      countrycode: "id",
-      limit: 1,
-      key: process.env.OpenCage_API_KEY,
-    },
-  });
-};
+const { openCage } = require("../service/opencage.service");
 
 const warehouseControllers = {
   addWarehouse: async (req, res) => {
@@ -19,7 +10,7 @@ const warehouseControllers = {
       const city = await db.City.findOne({
         where: { city_id },
       });
-      const response = await opencage(
+      const response = await openCage(
         address,
         city.dataValues.city_name,
         city.dataValues.province
