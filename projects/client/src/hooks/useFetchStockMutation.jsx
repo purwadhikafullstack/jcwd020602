@@ -7,6 +7,7 @@ export const useFetchStockMutation = (filter) => {
   const [stockMutations, setStockMutations] = useState({ rows: [] });
   const fetch = async () => {
     try {
+      console.log(filter);
       await api.get("/stockMutations", { params: filter }).then((res) => {
         setStockMutations(res.data);
       });

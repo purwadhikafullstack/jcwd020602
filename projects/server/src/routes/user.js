@@ -42,6 +42,7 @@ router.patch(
   userController.editProfile
 );
 
+
 router.patch("/password", userController.editPassword);
 
 // ------------- admin
@@ -62,11 +63,6 @@ router.patch(
     fileType: "image",
   }).single("avatar"),
   userController.editAdminById
-);
-router.get(
-  "/warehousebytoken",
-  roleDecoder.checkAdmin,
-  userController.getWarehouseCity
 );
 router.get("/", roleDecoder.checkSuper, userController.getAllUser);
 router.get("/:id", roleDecoder.checkSuper, userController.getAdminById);

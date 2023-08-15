@@ -1,8 +1,12 @@
 import { ModalFooter, ModalBody, ModalCloseButton } from "@chakra-ui/react";
 import { Button, Input, Select, Box, useToast, Modal } from "@chakra-ui/react";
 import { ModalOverlay, ModalContent, ModalHeader } from "@chakra-ui/react";
+import { FormControl, FormLabel, NumberInput } from "@chakra-ui/react";
+import { NumberInputField, FormErrorMessage } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { api } from "../../api/api";
+import * as Yup from "yup";
+import { useFormik } from "formik";
 import { useFetchWarehouse } from "../../hooks/useFetchWarehouse";
 import { useFetchShoe } from "../../hooks/useFetchShoe";
 import { useFetchShoeSize } from "../../hooks/useFetchShoeSize";
@@ -15,111 +19,160 @@ export default function AddStock(props) {
   const { warehouses } = useFetchWarehouse();
   const [isLoading, setIsLoading] = useState(false);
   const userSelector = useSelector((state) => state.auth);
-  const [stock, setStock] = useState({
-    stock: "",
-    shoe_id: "",
-    shoe_size_id: "",
-    warehouse_id: "",
+  const formik = useFormik({
+    initialValues: {
+      stock: 1,
+      shoe_id: "",
+      shoe_size_id: "",
+      warehouse_id: "",
+    },
+    validationSchema: Yup.object().shape({
+      stock: Yup.number()
+        .min(1, "Quantity must be greater than 0")
+        .required("stock is required"),
+      shoe_id: Yup.number()
+        .min(1, "Please select a shoe name")
+        .required("Shoe name is required"),
+      shoe_size_id: Yup.number()
+        .min(1, "Please select a shoe size")
+        .required("Shoe size is required"),
+      warehouse_id: Yup.number()
+        .min(1, "please select warehouse")
+        .required("Warehouse Name is required"),
+    }),
+    onSubmit: async () => {
+      try {
+        const res = await api.post("/stocks", formik.values);
+        toast({
+          title: res.data.message,
+          status: "success",
+          position: "top",
+        });
+        props.fetch();
+        clearData();
+      } catch (err) {
+        toast({
+          title: `${err.response.data.message}`,
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
+      }
+    },
   });
   function inputHandler(e) {
-    const { id, value } = e.target;
-    const temp = { ...stock };
-    temp[id] = value;
-    setStock(temp);
+    const { value, id } = e.target;
+    formik.setFieldValue(id, value);
   }
-  const uploadStock = async () => {
-    try {
-      const res = await api.post("/stocks", stock);
-      toast({
-        title: res.data.message,
-        status: "success",
-        position: "top",
-      });
-      props.setShown({ page: 1 });
-      props.fetch();
-      props.onClose();
-    } catch (err) {
-      console.log(err.response.data);
-    }
-  };
+  function clearData() {
+    formik.resetForm();
+    props.onClose();
+  }
   return (
     <>
-      <Modal
-        scrollBehavior="inside"
-        isOpen={props.isOpen}
-        onClose={props.onClose}
-      >
+      <Modal scrollBehavior="inside" isOpen={props.isOpen} onClose={clearData}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader p={2}>Add Inventory</ModalHeader>
           <ModalCloseButton />
           <ModalBody display={"flex"} flexDir={"column"} gap={2}>
-            <Box>
-              stock: <Input id="stock" type="number" onChange={inputHandler} />
-            </Box>
-            <Box>
-              shoe:
-              <Select
+            <form onSubmit={formik.handleSubmit}>
+              <FormControl
+                mb={2}
+                id="stock"
+                value={formik.values.stock}
+                onChange={inputHandler}
+                isInvalid={formik.touched.stock && formik.errors.stock}
+              >
+                <FormLabel>Stock:</FormLabel>
+                <NumberInput>
+                  <NumberInputField placeholder="Stock" />
+                </NumberInput>
+                <FormErrorMessage>{formik.errors.stock}</FormErrorMessage>
+              </FormControl>
+
+              <FormControl
+                mb={2}
                 id="shoe_id"
-                placeholder="choose shoe.."
-                onChange={(e) => {
-                  inputHandler(e);
-                }}
-              >
-                {shoes.rows &&
-                  shoes?.rows?.map((val, idx) => (
-                    <option key={val.id} value={val.id}>
-                      {val?.name}
-                    </option>
-                  ))}
-              </Select>
-            </Box>
-            <Box>
-              shoe size:
-              <Select
-                placeholder="choose size.."
+                value={formik.values.shoe_id}
                 onChange={inputHandler}
+                isInvalid={formik.touched.shoe_id && formik.errors.shoe_id}
+              >
+                <FormLabel>Shoe:</FormLabel>
+                <Select placeholder="Select a Shoe name">
+                  {shoes.rows &&
+                    shoes?.rows?.map((val, idx) => (
+                      <option key={val.id} value={val.id}>
+                        {val?.name}
+                      </option>
+                    ))}
+                </Select>
+                <FormErrorMessage>{formik.errors.shoe_id}</FormErrorMessage>
+              </FormControl>
+
+              <FormControl
+                mb={2}
                 id="shoe_size_id"
-              >
-                {sizes &&
-                  sizes?.map((val, idx) => (
-                    <option key={val.id} value={val.id}>
-                      {val?.size}
-                    </option>
-                  ))}
-              </Select>
-            </Box>
-            <Box>
-              warehouse:
-              <Select
-                placeholder="choose warehouse.."
+                value={formik.values.shoe_size_id}
                 onChange={inputHandler}
-                id="warehouse_id"
+                isInvalid={
+                  formik.touched.shoe_size_id && formik.errors.shoe_size_id
+                }
               >
-                {userSelector.role != "SUPERADMIN" ? (
-                  <option value={props.ware.id}>{props.ware.name}</option>
-                ) : (
-                  <>
-                    {warehouses &&
-                      warehouses?.map((val, idx) => (
-                        <option key={val.name} value={val.id}>
-                          {val?.name}
-                        </option>
-                      ))}
-                  </>
-                )}
-              </Select>
-            </Box>
+                <FormLabel>Shoe size:</FormLabel>
+                <Select placeholder="Select a shoe size">
+                  {sizes &&
+                    sizes?.map((val, idx) => (
+                      <option key={val.id} value={val.id}>
+                        {val?.size}
+                      </option>
+                    ))}
+                </Select>
+                <FormErrorMessage>
+                  {formik.errors.shoe_size_id}
+                </FormErrorMessage>
+              </FormControl>
+
+              <FormControl
+                mb={2}
+                id="warehouse_id"
+                value={formik.values.warehouse_id}
+                onChange={inputHandler}
+                isInvalid={
+                  formik.touched.warehouse_id && formik.errors.warehouse_id
+                }
+              >
+                <FormLabel>Warehouse:</FormLabel>
+                <Select placeholder="Select Warehouse name">
+                  {userSelector.role != "SUPERADMIN" ? (
+                    <option value={props.ware.id}>{props.ware.name}</option>
+                  ) : (
+                    <>
+                      {warehouses &&
+                        warehouses?.map((val, idx) => (
+                          <option key={val.name} value={val.id}>
+                            {val?.name}
+                          </option>
+                        ))}
+                    </>
+                  )}
+                </Select>
+                <FormErrorMessage>
+                  {formik.errors.warehouse_id}
+                </FormErrorMessage>
+              </FormControl>
+            </form>
           </ModalBody>
 
           <ModalFooter>
+            <Button onClick={clearData}>Cancel</Button>
             <Button
               isLoading={isLoading}
               onClick={() => {
                 setIsLoading(true);
                 setTimeout(() => {
                   setIsLoading(false);
-                  uploadStock();
+                  formik.handleSubmit();
                 }, 2000);
               }}
             >

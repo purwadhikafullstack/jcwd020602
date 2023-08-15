@@ -363,15 +363,5 @@ const userController = {
       return res.status(500).send(err.message);
     }
   },
-  getWarehouseCity: async (req, res, next) => {
-    try {
-      let result = await db.Warehouse.findOne({
-        where: { id: req.user.warehouse_id },
-      });
-      return res.status(200).send(result || `153`);
-    } catch (err) {
-      return res.status(500).send({ message: err.message });
-    }
-  },
 };
 module.exports = userController;

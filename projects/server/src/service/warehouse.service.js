@@ -100,4 +100,19 @@ module.exports = {
       return err;
     }
   },
+  getWarehouse: async (body) => {
+    try {
+      const whereClause = {};
+      if (body?.id) {
+        whereClause.id = body?.id;
+      }
+      return await db.Warehouse.findAll({
+        where: whereClause,
+        attribute: ["id"],
+        limit: 1,
+      });
+    } catch (error) {
+      return error;
+    }
+  },
 };

@@ -9,6 +9,7 @@ import Pagination from "../components/dashboard/pagination";
 import { api } from "../api/api";
 import { useFetchStockHistory } from "../hooks/useFetchStockHistory";
 import moment from "moment";
+import { useFetchBrand } from "../hooks/useFetchBrand";
 
 export default function StockHistoryPage() {
   const userSelector = useSelector((state) => state.auth);
@@ -16,12 +17,14 @@ export default function StockHistoryPage() {
   const { provinces } = useFetchWareProv();
   const [province, setprovince] = useState(0);
   const { cities } = useFetchWareCity(province);
+  const { brands } = useFetchBrand();
   const [filter, setFilter] = useState({
     page: 1,
     sort: "",
     order: "ASC",
     search: "",
-    city_id: "",
+    warehouse_id: "",
+    brand_id: "",
     time: "",
   });
   //pagination ------------------------------------------------------
@@ -51,31 +54,15 @@ export default function StockHistoryPage() {
     }
   }, []);
   async function warehouseAdmin(token) {
-    const warehouse = await api.get("/auth/warehousebytoken", {
+    const warehouse = await api.get("/warehouses/fetchDefault", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
     setFilter({
       ...filter,
-      city_id: warehouse?.data?.city_id || warehouse.data,
+      warehouse_id: warehouse?.data[0]?.id,
     });
-  }
-  function parsingValue(reference) {
-    try {
-      const parsedValue = JSON.parse(reference);
-      if (
-        typeof parsedValue === "object" &&
-        parsedValue !== null &&
-        ("MUT" in parsedValue || "TRA" in parsedValue)
-      ) {
-        return `MUT/${parsedValue.MUT || parsedValue.TRA}`;
-      } else {
-        return reference;
-      }
-    } catch (error) {
-      return reference;
-    }
   }
   return (
     <>
@@ -127,22 +114,19 @@ export default function StockHistoryPage() {
                     <Select
                       onChange={(e) => {
                         setShown({ page: 1 });
-                        setFilter({ ...filter, city_id: e.target.value });
+                        setFilter({ ...filter, warehouse_id: e.target.value });
                       }}
-                      id="city"
+                      id="warehouse_id"
                       size={"sm"}
-                      value={filter.city_id}
+                      value={filter.warehouse_id}
                     >
                       <option key={""} value={""}>
                         choose city..
                       </option>
                       {cities &&
                         cities.map((val, idx) => (
-                          <option
-                            key={val.city.city_name}
-                            value={val.city.city_id}
-                          >
-                            {`${val.city.type} ${val.city.city_name}`}
+                          <option key={val.id} value={val.id}>
+                            {`Warehouse ${val.name} (${val.city.type} ${val.city.city_name})`}
                           </option>
                         ))}
                     </Select>
@@ -159,6 +143,26 @@ export default function StockHistoryPage() {
                       setFilter({ ...filter, time: e.target.value });
                     }}
                   />
+                  <Box whiteSpace={"nowrap"}>Brand:</Box>
+                  <Select
+                    onChange={(e) => {
+                      setShown({ page: 1 });
+                      setFilter({ ...filter, brand_id: e.target.value });
+                    }}
+                    id="brand_id"
+                    size={"sm"}
+                    value={filter?.brand_id}
+                  >
+                    <option key={""} value={""}>
+                      choose brand..
+                    </option>
+                    {brands &&
+                      brands?.map((val, idx) => (
+                        <option key={val?.id} value={val?.id}>
+                          {val?.name}
+                        </option>
+                      ))}
+                  </Select>
                 </InputGroup>
                 <Box whiteSpace={"nowrap"}> Sort By:</Box>
                 <Select
@@ -213,7 +217,7 @@ export default function StockHistoryPage() {
                   >
                     <Box>#{idx + 1}</Box>
                     <Box>
-                      Reference:{parsingValue(stockHistory?.reference)}
+                      Reference:{stockHistory?.reference}
                       {}
                     </Box>
                     <Divider />
@@ -264,9 +268,7 @@ export default function StockHistoryPage() {
                       <Td textAlign={"center"} w={"5%"}>
                         {idx + 1}
                       </Td>
-                      <Td textAlign={"center"}>
-                        {parsingValue(stockHistory?.reference)}
-                      </Td>
+                      <Td textAlign={"center"}>{stockHistory?.reference}</Td>
                       <Td textAlign={"center"}>{stockHistory?.stock_before}</Td>
                       <Td textAlign={"center"}>{stockHistory?.stock_after}</Td>
                       <Td textAlign={"center"}>{`${stockHistory?.qty}`}</Td>
@@ -289,17 +291,7 @@ export default function StockHistoryPage() {
               </Tbody>
             </Table>
           </TableContainer>
-          <Flex
-            justifyContent={"center"}
-            alignItems={"center"}
-            gap={"16px"}
-            h={"16px"}
-            fontFamily={"Roboto"}
-            fontStyle={"normal"}
-            fontWeight={"400"}
-            fontSize={"12px"}
-            lineHeight={"14px"}
-          >
+          <Flex p={2} m={2} justify={"center"} border={"2px"}>
             <Pagination
               shown={shown}
               setShown={setShown}

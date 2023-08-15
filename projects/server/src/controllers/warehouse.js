@@ -1,6 +1,10 @@
 const db = require("../models");
 const axios = require("axios");
+
 const { openCage } = require("../service/opencage.service");
+
+const { getWarehouse } = require("../service/warehouse.service");
+
 
 const warehouseControllers = {
   addWarehouse: async (req, res) => {
@@ -220,16 +224,23 @@ const warehouseControllers = {
   getCity: async (req, res) => {
     try {
       db.Warehouse.findAll({
-        include: [
-          { model: db.City, attributes: ["city_id", "city_name", "type"] },
-        ],
+        include: [{ model: db.City, attributes: ["city_name", "type"] }],
         where: {
           "$city.province$": req.query.province,
         },
-        distinc: true,
       }).then((result) => res.status(200).send(result));
     } catch (err) {
       return res.status(500).send(err.message);
+    }
+  },
+  getWarehouseCity: async (req, res, next) => {
+    try {
+      const result = await getWarehouse({
+        id: req?.user?.warehouse_id,
+      });
+      return res.status(200).send(result);
+    } catch (err) {
+      return res.status(500).send({ message: err.message });
     }
   },
 };

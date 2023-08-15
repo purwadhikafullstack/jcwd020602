@@ -12,6 +12,9 @@ import { useFormik } from "formik";
 import { api } from "../../api/api";
 import YupPassword from "yup-password";
 import { fetch } from "../../hoc/authProvider";
+import { auth } from "../../lib/firebase";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+
 
 export default function Login() {
   YupPassword(Yup);
@@ -22,6 +25,13 @@ export default function Login() {
   const handleClick = () => setShow(!show);
   const [isLoading, setIsLoading] = useState(false);
   const [formField, setFormField] = useState("");
+
+  async function socialLogin() {
+    const provider = new GoogleAuthProvider();
+    signInWithPopup(auth, provider)
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
+  }
 
   const formik = useFormik({
     initialValues: {
@@ -153,6 +163,7 @@ export default function Login() {
           <Link to="/forgot-password">
             <Box _hover={{ color: "blue.500" }}> click here</Box>
           </Link>
+          <Button onClick={socialLogin}>login with google</Button>
         </Flex>
       </Stack>
     </Box>
