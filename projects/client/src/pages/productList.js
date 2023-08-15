@@ -1,6 +1,9 @@
 import { Icon, Image, Select, Text } from "@chakra-ui/react";
 import { Box, Center, Divider, Flex } from "@chakra-ui/react";
 import { useFetchShoe } from "../hooks/useFetchShoe";
+import { useFetchCategory } from "../hooks/useFetchCategory";
+import { useFetchBrand } from "../hooks/useFetchBrand";
+import { useFetchShoeSize } from "../hooks/useFetchShoeSize";
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Footer from "../components/website/footer";
@@ -9,7 +12,6 @@ import Pagination from "../components/dashboard/pagination";
 
 export default function ProductList() {
   const loc = useLocation();
-  const sizes = [40, 41, 42, 43, 44, 45];
   const b = loc.pathname.split("/")[1];
   const search = loc?.search?.split("=")[1]?.replace(/-/g, " ");
   const category = loc?.pathname?.split("/")[2]?.replace(/-/g, " ");
@@ -20,8 +22,13 @@ export default function ProductList() {
     order: "",
     brand: "",
     gender: "",
+    size: "",
   });
   const { shoes, fetch } = useFetchShoe(category, sub, { ...filter, search });
+  const { categories } = useFetchCategory();
+  const { brands } = useFetchBrand();
+  const { sizes } = useFetchShoeSize();
+
   // -------------------------- pagination
   const [pages, setPages] = useState([]);
   const [shown, setShown] = useState({ page: 1 });
@@ -50,7 +57,7 @@ export default function ProductList() {
   useEffect(() => {
     setFilter({ ...filter, brand: "", gender: "" });
     setShown({ page: 1 });
-  }, [category, sub]);
+  }, [category, sub, search]);
 
   return (
     <Center flexDir={"column"}>
@@ -68,29 +75,25 @@ export default function ProductList() {
               placeholder="FILTER BY GENDER:"
               value={filter?.gender}
               onChange={(e) => {
-                setFilter({ gender: e.target.value });
+                setFilter({ ...filter, gender: e.target.value });
               }}
             >
-              <option value={"Men"}>Men</option>
-              <option value={"Women"}>Women</option>
-              <option value={"Kid"}>Kid</option>
+              {categories?.map((val) => (
+                <option value={val.name}>{val.name}</option>
+              ))}
             </Select>
           ) : (
             <Select
               id="select"
               value={filter?.brand}
-              defaultValue={""}
+              placeholder="FILTER BY BRAND:"
               onChange={(e) => {
                 setFilter({ ...filter, brand: e.target.value });
               }}
             >
-              <option value={""}>FILTER BY BRAND:</option>
-              <option value={"Adidas"}>Adidas</option>
-              <option value={"Nike"}>Nike</option>
-              <option value={"Converse"}>Converse</option>
-              <option value={"Vans"}>Vans</option>
-              <option value={"Puma"}>Puma</option>
-              <option value={"New balance"}>New balance</option>
+              {brands?.map((val) => (
+                <option value={val.name}>{val.name}</option>
+              ))}
             </Select>
           )}
           <Select
@@ -102,7 +105,7 @@ export default function ProductList() {
             }}
           >
             {sizes.map((val) => (
-              <option value={val}>{val}</option>
+              <option value={val.size}>{val.size}</option>
             ))}
           </Select>
           <Select

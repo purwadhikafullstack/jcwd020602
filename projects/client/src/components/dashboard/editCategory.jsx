@@ -33,10 +33,9 @@ export function EditCategory(props) {
   const updateCategory = async () => {
     const formData = new FormData();
     formData.append("name", category.name);
-    formData.append(
-      "category",
-      !selectedFile ? category.category_img : selectedFile
-    );
+    if (selectedFile) {
+      formData.append("category", selectedFile);
+    }
     try {
       const res = await api.patch("/categories/" + props.id, formData);
       toast({

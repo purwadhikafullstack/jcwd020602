@@ -142,10 +142,6 @@ db.Stock.belongsTo(db.Warehouse, {
 //db.Address foreignKey
 db.User.hasMany(db.Address, { foreignKey: "user_id", targetKey: "id" });
 db.Address.belongsTo(db.City, { foreignKey: "city_id", targetKey: "city_id" });
-db.Address.belongsTo(db.Province, {
-  foreignKey: "province_id",
-  targetKey: "province_id",
-});
 
 //db.OrderDetail foreignKey
 db.Order.hasMany(db.OrderDetail, {

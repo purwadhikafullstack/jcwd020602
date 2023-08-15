@@ -181,6 +181,75 @@ const userController = {
       return res.status(500).send({ message: err.message });
     }
   },
+  editProfile: async (req, res) => {
+    const t = await db.sequelize.transaction();
+    const filename = req?.file?.filename;
+    try {
+      const { name, phone, email } = req.body;
+      const check = await findUser(email);
+
+      await db.User.update(
+        {
+          name,
+          phone,
+          avatar_url: filename
+            ? "avatar/" + filename
+            : check?.dataValues?.avatar_url || null,
+        },
+        { where: { email }, transaction: t }
+      );
+
+      if (filename) {
+        if (check?.dataValues?.avatar_url) {
+          try {
+            fs.unlinkSync(
+              `${__dirname}/../public/avatar/${
+                check.dataValues.avatar_url.split("/")[1]
+              }`
+            );
+          } catch (err) {
+            console.log(err);
+          }
+        }
+      }
+
+      await t.commit();
+      return res
+        .status(200)
+        .send({ message: "Your changes has successfully saved" });
+    } catch (err) {
+      if (filename) {
+        fs.unlinkSync(`${__dirname}/../public/avatar/${filename}`);
+      }
+      await t.rollback();
+      return res.status(500).send(err.message);
+    }
+  },
+  editPassword: async (req, res) => {
+    const t = await db.sequelize.transaction();
+    try {
+      const { oldPassword, newPassword, email } = req.body;
+      const check = await findUser(email);
+      const match = await bcrypt.compare(
+        oldPassword,
+        check.dataValues.password
+      );
+      if (!match) {
+        return res.status(400).send({ message: "Password not match" });
+      }
+      const hashPassword = await bcrypt.hash(newPassword, 10);
+      await db.User.update(
+        { password: hashPassword },
+        { where: { email }, transaction: t }
+      );
+      await t.commit();
+      return res.status(200).send({ message: "success change password" });
+    } catch (err) {
+      await t.rollback();
+      return res.status(500).send(err.message);
+    }
+  },
+  // -------------------------- SUPERADMIN
   addAdmin: async (req, res) => {
     const t = await db.sequelize.transaction();
     const { filename } = req?.file;
@@ -237,16 +306,16 @@ const userController = {
   },
   editAdminById: async (req, res) => {
     const t = await db.sequelize.transaction();
+    const filename = req?.file?.filename;
     try {
-      const { name, email, phone, password, avatar } = req.body;
-      const filename = req?.file?.filename || avatar;
+      const { name, email, phone, password } = req.body;
       const hashPassword = await bcrypt.hash(password, 10);
       const check = findUser(email);
 
       if (check?.dataValues?.avatar_url) {
         fs.unlinkSync(
           `${__dirname}/../public/avatar/${
-            check.dataValues.avatar_url.split("/")[5]
+            check.dataValues.avatar_url.split("/")[1]
           }`
         );
       }
@@ -257,10 +326,11 @@ const userController = {
           email,
           phone,
           password: hashPassword,
-          avatar_url: !req?.file?.filename ? avatar : AVATAR_URL + filename,
+          avatar_url: filename
+            ? "avatar/" + filename
+            : check?.dataValues?.avatar_url || null,
         },
-        { where: { id: req.params.id } },
-        { transaction: t }
+        { where: { id: req.params.id }, transaction: t }
       );
       await t.commit();
       return res.send({ message: "success update admin" });
@@ -280,7 +350,7 @@ const userController = {
       if (check?.dataValues?.avatar_url) {
         fs.unlinkSync(
           `${__dirname}/../public/avatar/${
-            check.dataValues.avatar_url.split("/")[5]
+            check.dataValues.avatar_url.split("/")[1]
           }`
         );
       }

@@ -24,6 +24,7 @@ import Cartx from "../pages/cartPagesx";
 import StockMutationPage from "../pages/stockMutationPage";
 import MyAccountPage from "../pages/MyAccountPage";
 import ProfilePage from "../pages/profilePage";
+import AddressBookPage from "../pages/addressBookPage";
 
 const routes = [
   <Route
@@ -68,6 +69,15 @@ const routes = [
       <ProtectedPage userOnly={true}>
         <Navbar />
         <ProfilePage />
+      </ProtectedPage>
+    }
+  />,
+  <Route
+    path="/my-account/address-book"
+    element={
+      <ProtectedPage userOnly={true}>
+        <Navbar />
+        <AddressBookPage />
       </ProtectedPage>
     }
   />,

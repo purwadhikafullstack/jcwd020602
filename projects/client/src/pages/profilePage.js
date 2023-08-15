@@ -1,63 +1,109 @@
-import { Avatar, FormErrorMessage, InputRightElement } from "@chakra-ui/react";
-import { Box, FormControl, Text, useToast } from "@chakra-ui/react";
+import { Button, FormErrorMessage, InputRightElement } from "@chakra-ui/react";
+import { ViewOffIcon, ViewIcon } from "@chakra-ui/icons";
+import { Box, FormControl, Text, useToast, Avatar } from "@chakra-ui/react";
 import { Icon, Input, InputGroup, Center, Flex } from "@chakra-ui/react";
 import { useFormik } from "formik";
-import { useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useRef, useState } from "react";
 import * as Yup from "yup";
+import YupPassword from "yup-password";
 import { TbAlertCircleFilled } from "react-icons/tb";
 import { EmailIcon, PhoneIcon } from "@chakra-ui/icons";
 import { api } from "../api/api";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Footer from "../components/website/footer";
+import { fetch } from "../hoc/authProvider";
 
 export default function ProfilePage() {
-  const toast = useToast();
-  const nav = useNavigate();
+  YupPassword(Yup);
+  const toast = useToast({ duration: 3000, isClosable: true, position: "top" });
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoading1, setIsLoading1] = useState(false);
   const [formField, setFormField] = useState("");
+  const [boxPass, setBoxPass] = useState(false);
+  const [show, setShow] = React.useState(false);
+  const [show1, setShow1] = React.useState(false);
+  const handleClick = () => setShow(!show);
+  const handleClick1 = () => setShow1(!show1);
   const [image, setImage] = useState();
   const fileRef = useRef(null);
   const [selectedFile, setSelectedfile] = useState();
   const userSelector = useSelector((state) => state.auth);
-  console.log(image);
+  const dispatch = useDispatch();
   const formik = useFormik({
     initialValues: {
       ...userSelector,
     },
     validationSchema: Yup.object().shape({
-      email: Yup.string()
-        .email(
-          "* email is invalid. Make sure it's written like example@email.com"
-        )
-        .required("* Email is required"),
       name: Yup.string().required("Name is required"),
-      phone: Yup.string().required("phone is required"),
+      phone: Yup.string()
+        .min(12, "min 12 digits")
+        .max(12, "max 12 digits")
+        .required("phone is required"),
     }),
     onSubmit: async () => {
+      const formData = new FormData();
+      formData.append("name", formik.values.name);
+      formData.append("phone", formik.values.phone);
+      formData.append("email", formik.values.email);
+      if (selectedFile) {
+        formData.append("avatar", selectedFile);
+      }
+
       try {
-        const res = await api.post("/auth/register", formik.values);
+        const res = await api.patch("/auth/profile", formData);
         toast({
           title: res.data.message,
           status: "success",
-          duration: 3000,
-          isClosable: true,
         });
-        nav("/auth");
+        fetch(dispatch);
       } catch (err) {
         toast({
           title: err?.response?.data,
           status: "error",
-          duration: 3000,
-          isClosable: true,
         });
       }
     },
   });
 
+  const formik2 = useFormik({
+    initialValues: {
+      oldPassword: "",
+      newPassword: "",
+      email: userSelector.email,
+    },
+    validationSchema: Yup.object().shape({
+      oldPassword: Yup.string()
+        .min(8, "at least 8 characters")
+        .minUppercase(1, "at least 1 capital letter")
+        .required("Required"),
+      newPassword: Yup.string()
+        .min(8, "at least 8 characters")
+        .minUppercase(1, "at least 1 capital letter")
+        .required("Required"),
+    }),
+    onSubmit: async () => {
+      try {
+        const res = await api.patch("/auth/password", formik2.values);
+        toast({
+          title: res.data.message,
+          status: "success",
+        });
+      } catch (err) {
+        toast({
+          title: err?.response?.data?.message,
+          status: "error",
+        });
+      }
+    },
+  });
   function inputHandler(e) {
     const { value, id } = e.target;
     formik.setFieldValue(id, value);
+    setFormField(id);
+  }
+  function inputHandler2(e) {
+    const { value, id } = e.target;
+    formik2.setFieldValue(id, value);
     setFormField(id);
   }
 
@@ -65,6 +111,7 @@ export default function ProfilePage() {
     setSelectedfile(event.target.files[0]);
     setImage(URL.createObjectURL(event.target.files[0]));
   };
+
   return (
     <Center flexDir={"column"}>
       <Flex w={"100%"} maxW={"1535px"} zIndex={1} p={"1rem 1rem"} mt={"100px"}>
@@ -110,9 +157,7 @@ export default function ProfilePage() {
                 </InputGroup>
                 <Box>
                   <FormErrorMessage>
-                    <Center>
-                      <Icon as={TbAlertCircleFilled} w="16px" h="16px" />
-                    </Center>
+                    <Icon as={TbAlertCircleFilled} w="16px" h="16px" />
                     <Text fontSize={10}>{formik.errors.name}</Text>
                   </FormErrorMessage>
                 </Box>
@@ -132,23 +177,15 @@ export default function ProfilePage() {
                     id="email"
                     value={formik.values.email}
                     onChange={inputHandler}
+                    isDisabled
                   />
                   <label>Email</label>
                   <InputRightElement width="4rem">
                     <Icon as={EmailIcon} />
                   </InputRightElement>
                 </InputGroup>
-                <Box>
-                  <FormErrorMessage>
-                    <Center>
-                      <Icon as={TbAlertCircleFilled} w="16px" h="16px" />
-                    </Center>
-                    <Text fontSize={10}>{formik.errors.email}</Text>
-                  </FormErrorMessage>
-                </Box>
               </Box>
             </FormControl>
-
             {/* phone */}
           </Box>
           <Box className="form-profile">
@@ -160,7 +197,7 @@ export default function ProfilePage() {
                   formik.values.phone ? "input-has-value" : ""
                 }`}
               >
-                <InputGroup size="md">
+                <InputGroup size="md" maxW={"730px"}>
                   <Input
                     id="phone"
                     type="number"
@@ -174,15 +211,125 @@ export default function ProfilePage() {
                 </InputGroup>
                 <Box>
                   <FormErrorMessage>
-                    <Center>
-                      <Icon as={TbAlertCircleFilled} w="16px" h="16px" />
-                    </Center>
+                    <Icon as={TbAlertCircleFilled} w="16px" h="16px" />
                     <Text fontSize={10}>{formik.errors.phone}</Text>
                   </FormErrorMessage>
                 </Box>
               </Box>
             </FormControl>
           </Box>
+          <Button
+            id="button"
+            isLoading={isLoading}
+            onClick={() => {
+              setIsLoading(true);
+              setTimeout(() => {
+                setIsLoading(false);
+                formik.handleSubmit();
+              }, 2000);
+            }}
+          >
+            SAVE CHANGES
+          </Button>
+
+          <Flex flexDir={"column"} gap={5}>
+            <Box
+              w={"180px"}
+              cursor={"pointer"}
+              fontWeight={"bold"}
+              textDecor={"underline"}
+              onClick={() => (boxPass ? setBoxPass(false) : setBoxPass(true))}
+            >
+              CHANGE PASSWORD
+            </Box>
+            <Box display={boxPass ? "flex" : "none"} flexDir={"column"} gap={5}>
+              <Box className="form-profile">
+                {/* old password */}
+                <FormControl
+                  isInvalid={
+                    formField === "oldPassword" && formik2.errors.oldPassword
+                  }
+                >
+                  <Box
+                    className={`inputbox ${
+                      formik2.values.oldPassword ? "input-has-value" : ""
+                    }`}
+                  >
+                    <InputGroup size="md">
+                      <Input
+                        id="oldPassword"
+                        value={formik2.values.oldPassword}
+                        onChange={inputHandler2}
+                        type={show ? "text" : "password"}
+                        border={"2px"}
+                        borderRadius={0}
+                      />
+                      <label>oldPassword</label>
+                      <InputRightElement width="4rem">
+                        <Button h="1.75rem" size="sm" onClick={handleClick}>
+                          {show ? <ViewOffIcon /> : <ViewIcon />}
+                        </Button>
+                      </InputRightElement>
+                    </InputGroup>
+                    <Box>
+                      <FormErrorMessage>
+                        <Icon as={TbAlertCircleFilled} w="16px" h="16px" />
+                        <Text fontSize={10}>{formik2.errors.oldPassword}</Text>
+                      </FormErrorMessage>
+                    </Box>
+                  </Box>
+                </FormControl>
+                {/* new password */}
+                <FormControl
+                  isInvalid={
+                    formField === "newPassword" && formik2.errors.newPassword
+                  }
+                >
+                  <Box
+                    className={`inputbox ${
+                      formik2.values.newPassword ? "input-has-value" : ""
+                    }`}
+                  >
+                    <InputGroup size="md">
+                      <Input
+                        id="newPassword"
+                        value={formik2.values.newPassword}
+                        onChange={inputHandler2}
+                        type={show1 ? "text" : "password"}
+                        border={"2px"}
+                        borderRadius={0}
+                      />
+                      <label>New Password</label>
+                      <InputRightElement width="4rem">
+                        <Button h="1.75rem" size="sm" onClick={handleClick1}>
+                          {show1 ? <ViewOffIcon /> : <ViewIcon />}
+                        </Button>
+                      </InputRightElement>
+                    </InputGroup>
+                    <Box>
+                      <FormErrorMessage>
+                        <Icon as={TbAlertCircleFilled} w="16px" h="16px" />
+                        <Text fontSize={10}>{formik2.errors.newPassword}</Text>
+                      </FormErrorMessage>
+                    </Box>
+                  </Box>
+                </FormControl>
+              </Box>
+              <Button
+                id="button"
+                isLoading={isLoading1}
+                onClick={() => {
+                  setIsLoading1(true);
+                  setTimeout(() => {
+                    setIsLoading1(false);
+                    formik2.handleSubmit();
+                  }, 2000);
+                }}
+              >
+                UPDATE PASSWORD
+              </Button>
+            </Box>
+          </Flex>
         </Flex>
       </Flex>
       <Footer />
