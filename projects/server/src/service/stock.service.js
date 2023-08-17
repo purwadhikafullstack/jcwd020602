@@ -120,7 +120,7 @@ module.exports = {
       return error;
     }
   },
-  findCreateStockForMutation: async (body) => {
+  findCreateStock: async (body) => {
     try {
       return await db.Stock.findOrCreate({
         where: {

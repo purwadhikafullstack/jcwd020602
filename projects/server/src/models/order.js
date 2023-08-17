@@ -2,15 +2,14 @@ module.exports = (sequelize, Sequelize) => {
   const orders = sequelize.define(
     "orders",
     {
-      transaction_code: Sequelize.STRING, // pakai nanoid atau tanggal
+      transaction_code: Sequelize.STRING,
       payment_proof: Sequelize.STRING,
       status: Sequelize.ENUM(
-        "CART",
         "PAYMENT",
         "CONFIRM_PAYMENT",
+        "CANCELED",
         "PROCESSING",
         "DELIVERY",
-        "CANCELLED",
         "DONE"
       ),
       courier: Sequelize.ENUM("jne", "pos", "tiki"),
@@ -20,6 +19,9 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.INTEGER,
       },
       address_id: {
+        type: Sequelize.INTEGER,
+      },
+      warehouse_id: {
         type: Sequelize.INTEGER,
       },
       last_payment_date: Sequelize.DATE,

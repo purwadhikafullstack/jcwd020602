@@ -58,7 +58,7 @@ const roleDecoder = {
       });
       if (user.role != "ADMIN" && user.role != "SUPERADMIN") {
         throw new UnauthorizedError(
-          "You are a staff and is not authorized to access this feature."
+          "You are not a staff and is not authorized to access this feature."
         );
       }
       delete user.dataValues.password;
@@ -86,7 +86,7 @@ const roleDecoder = {
       });
       if (user.role != "SUPERADMIN") {
         throw new UnauthorizedError(
-          "You are a staff and is not authorized to access this feature."
+          "You are not authorized to access this feature."
         );
       }
       delete user.dataValues.password;

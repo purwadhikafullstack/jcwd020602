@@ -23,12 +23,11 @@ import Cart from "../pages/cartPages";
 import StockMutationPage from "../pages/stockMutationPage";
 import CheckOutPage from "../pages/checkOutPage";
 import PaymentVerifPage from "../pages/paymentPage";
-import Cartx from "../pages/cartPagesx";
-import StockMutationPage from "../pages/stockMutationPage";
+// import Cartx from "../pages/cartPagesx";
 import MyAccountPage from "../pages/MyAccountPage";
 import ProfilePage from "../pages/profilePage";
 import AddressBookPage from "../pages/addressBookPage";
-
+import OrderListPage from "../pages/orderList";
 
 const routes = [
   <Route
@@ -278,12 +277,12 @@ const routes = [
     }
   />,
   <Route
-    path="/report"
+    path="/orderList"
     element={
       <ProtectedPage staffOnly={true} guestOnly={false}>
         <NavbarDashboard />
         <Sidebar />
-        {/*  */}
+        <OrderListPage />
       </ProtectedPage>
     }
   />,

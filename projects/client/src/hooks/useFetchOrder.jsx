@@ -25,3 +25,27 @@ export const useFetchOrder = () => {
 
   return { orders, fetchOrders };
 };
+
+export const useFetchOrderList = (filter) => {
+  const [orders, setOrders] = useState({ rows: [] });
+  const fetchOrdersList = async () => {
+    try {
+      const token = JSON.parse(localStorage.getItem("user"));
+      const res = await api.get(
+        `/orders/admin`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+        { params: filter }
+      );
+
+      setOrders(res.data);
+    } catch (err) {
+      console.log(err.response?.data);
+    }
+  };
+  useEffect(() => {
+    fetchOrdersList();
+  }, []);
+  return { orders, fetchOrdersList };
+};
