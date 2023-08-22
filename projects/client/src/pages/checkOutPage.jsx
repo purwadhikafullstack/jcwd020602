@@ -1,14 +1,6 @@
-import {
-  Flex,
-  Heading,
-  Text,
-  Center,
-  Image,
-  Button,
-  useToast,
-} from "@chakra-ui/react";
-import { HStack, Box, Icon, Checkbox, useDisclosure } from "@chakra-ui/react";
-import { Select, VStack } from "@chakra-ui/react";
+import { Flex, Text, Center, Button, useToast } from "@chakra-ui/react";
+import { HStack, Box, Icon, useDisclosure } from "@chakra-ui/react";
+import { Select } from "@chakra-ui/react";
 import OrderSummary from "../components/order/orderSummary";
 import {
   cartSelector,
@@ -46,11 +38,15 @@ export default function CheckOutPage() {
   const addModal = useDisclosure();
   const payModal = useDisclosure();
   const [cost, setCost] = useState(null);
-  const totalOrder = totalPriceSum + cost;
+  const [shippingMethod, setShippingMethod] = useState(null);
+  const [shippingService, setShippingService] = useState(null);
+  const [shippingDuration, setShippingDuration] = useState(null);
+  const totalOrder = totalPriceSum + JSON.parse(cost);
   const [currentPage, setCurrentPage] = useState(1);
   const perPage = 2;
   const { address, totalPages, fetch } = useFetchAddress(currentPage, perPage);
   const toast = useToast();
+  console.log(shipping);
 
   useEffect(() => {
     fetch();
@@ -63,6 +59,9 @@ export default function CheckOutPage() {
   useEffect(() => {
     fetchShipping(weightTotal, courier);
     setCost(null);
+    setShippingMethod(null);
+    setShippingService(null);
+    setShippingDuration(null);
   }, [courier]);
 
   async function chooseAddress(id) {
@@ -76,7 +75,7 @@ export default function CheckOutPage() {
 
   async function handleOrder() {
     try {
-      if (courier == null) {
+      if (courier == null || shippingService == null) {
         toast({
           title: "Please select the shipping method",
           status: "warning",
@@ -89,10 +88,14 @@ export default function CheckOutPage() {
           courier: courier,
           shipping_cost: cost,
           total_price: totalOrder,
+          shipping_method: shippingMethod,
+          shipping_service: shippingService,
+          shipping_duration: shippingDuration,
         });
         payModal.onOpen();
       }
     } catch (err) {
+      console.log(err.response?.data);
       toast({
         title: err.response?.data,
         status: "error",
@@ -108,8 +111,17 @@ export default function CheckOutPage() {
   };
 
   const handleSelect = (event) => {
-    const selectedValue = parseInt(event.target.value);
-    setCost(selectedValue);
+    const selectedValue = event.target.value;
+    const [
+      selectedService,
+      selectedDescription,
+      selectedCost,
+      selectedDuration,
+    ] = selectedValue.split(",");
+    setShippingService(selectedService);
+    setShippingDuration(selectedDuration);
+    setShippingMethod(selectedDescription);
+    setCost(selectedCost);
   };
 
   const handlePage = (newPage) => {
@@ -217,7 +229,10 @@ export default function CheckOutPage() {
           <Box p={4}>
             <Select placeholder="Select shipping" onChange={handleSelect}>
               {shipping?.map((val) => (
-                <option key={val.service} value={val.cost[0].value}>
+                <option
+                  key={val.service}
+                  value={`${val.service},${val.description},${val.cost[0].value},${val.cost[0].etd}`}
+                >
                   {`${val.service} - ${val.description} - (${val.cost[0].etd} days) (${val.cost[0].value} IDR) `}
                 </option>
               ))}
@@ -228,9 +243,9 @@ export default function CheckOutPage() {
             // w={"100%"} bg={"black"} textColor={"white"}
             backgroundColor="black"
             color="white"
-            boxShadow="0px 4px 0px 0px rgba(0, 0, 0, 0.2)" // Replace the values with your desired shadow color
+            boxShadow="0px 4px 0px 0px rgba(0, 0, 0, 0.2)"
             _hover={{
-              boxShadow: "0px 6px 0px 0px rgba(0, 0, 0, 0.2)", // Adjust the hover shadow if needed
+              boxShadow: "0px 6px 0px 0px rgba(0, 0, 0, 0.2)",
             }}
             onClick={() => handleOrder()}
           >

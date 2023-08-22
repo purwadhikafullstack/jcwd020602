@@ -1,4 +1,12 @@
-import { Flex, Heading, Text, Center, HStack, Button } from "@chakra-ui/react";
+import {
+  Flex,
+  Heading,
+  Text,
+  Center,
+  HStack,
+  Button,
+  Image,
+} from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { BsSearch } from "react-icons/bs";
 import DeleteProductAlert from "../components/order/DeleteProductAlert";
@@ -32,7 +40,6 @@ export default function Cart() {
     dispatch(getCarts());
   }, [dispatch]);
 
-  let item;
   const handleQuantityChange = (cartItemId, newQuantity) => {
     console.log(cartItemId, newQuantity);
     dispatch(updateCarts({ id: cartItemId, qty: newQuantity }));
@@ -103,7 +110,13 @@ export default function Cart() {
                           align={"center"}
                           justify={"center"}
                         >
-                          {val.Shoes?.ShoeImages?.shoe_img}
+                          <Image
+                            src={`${process.env.REACT_APP_API_BASE_URL}/${val?.Shoes?.ShoeImages[0]?.shoe_img}`}
+                            w={"100%"}
+                            objectFit={"cover"}
+                            maxW={"140px"}
+                            maxH={"140px"}
+                          />
                         </Flex>
                         <Flex
                           h={"100%"}

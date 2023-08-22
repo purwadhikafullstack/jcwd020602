@@ -120,7 +120,7 @@ module.exports = {
       return error;
     }
   },
-  findCreateStockForMutation: async (body) => {
+  findCreateStock: async (body) => {
     try {
       return await db.Stock.findOrCreate({
         where: {
@@ -128,7 +128,7 @@ module.exports = {
           shoe_id: body?.shoe_id,
           shoe_size_id: body?.shoe_size_id,
         },
-        defaults: { stock: 0 },
+        defaults: { stock: 0, booked_stock: 0 },
         transaction: body?.t,
       });
     } catch (error) {

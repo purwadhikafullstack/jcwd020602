@@ -115,4 +115,24 @@ module.exports = {
       return error;
     }
   },
+  checkWarehouseSupply: async (body) => {
+    try {
+      return await db.Warehouse.findAll({
+        include: [
+          {
+            model: db.Stock,
+            where: {
+              shoe_id: body?.shoe_id,
+              shoe_size_id: body?.shoe_size_id,
+              stock: {
+                [Op.gte]: body?.qty,
+              },
+            },
+          },
+        ],
+      });
+    } catch (error) {
+      return error;
+    }
+  },
 };

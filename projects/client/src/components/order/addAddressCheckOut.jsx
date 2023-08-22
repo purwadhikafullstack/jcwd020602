@@ -14,8 +14,8 @@ export default function AddAddressCheckOut(props) {
   const [isLoading, setIsLoading] = useState(false);
   const [address, setAddress] = useState({
     title: "",
-    recipient: "",
-    phone_number: "",
+    name: "",
+    phone: "",
     address: "",
     address_details: "",
     province_id: 0,
@@ -70,12 +70,12 @@ export default function AddAddressCheckOut(props) {
               />
             </Box>
             <Box>
-              name: <Input id="recipient" type="text" onChange={inputHandler} />
+              name: <Input id="name" type="text" onChange={inputHandler} />
             </Box>
             <Box>
               phone:
               <Input
-                id="phone_number"
+                id="phone"
                 type={"number"}
                 onChange={inputHandler}
                 placeholder="08288888888"

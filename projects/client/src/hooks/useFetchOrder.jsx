@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { api } from "../api/api";
 
-export const useFetchOrder = () => {
-  const [orders, setOrders] = useState([]);
+export const useFetchOrder = (filter) => {
+  const [orders, setOrders] = useState();
 
   const fetchOrders = async () => {
     const token = JSON.parse(localStorage.getItem("user"));
@@ -10,8 +10,9 @@ export const useFetchOrder = () => {
     try {
       const res = await api.get(`/orders`, {
         headers: { Authorization: `Bearer ${token}` },
+        params: filter,
       });
-      setOrders([res.data?.data]);
+      setOrders(res.data);
     } catch (err) {
       console.log(err.response?.data);
     }
@@ -21,7 +22,7 @@ export const useFetchOrder = () => {
 
   useEffect(() => {
     fetchOrders();
-  }, []);
+  }, [filter]);
 
   return { orders, fetchOrders };
 };

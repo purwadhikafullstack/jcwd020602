@@ -4,15 +4,17 @@ import {
   createSlice,
 } from "@reduxjs/toolkit";
 import { api } from "../api/api";
-import { useToast } from "@chakra-ui/react";
-import Swal from "sweetalert2/dist/sweetalert2.js";
 
 export const getCarts = createAsyncThunk("cart/getCarts", async () => {
-  const token = JSON.parse(localStorage.getItem("user"));
-  const response = await api.get("/carts/getCart", {
-    headers: { Authorization: token },
-  });
-  return response?.data?.data;
+  try {
+    const token = JSON.parse(localStorage.getItem("user"));
+    const response = await api.get("/carts/getCart", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response?.data?.data;
+  } catch (err) {
+    console.log(err.response?.data);
+  }
 });
 
 export const addProduct = createAsyncThunk(
@@ -20,11 +22,12 @@ export const addProduct = createAsyncThunk(
   async ({ name, size }) => {
     try {
       const token = JSON.parse(localStorage.getItem("user"));
+      console.log(token);
 
       const response = await api.post(
         "/carts",
         { name, size },
-        { headers: { Authorization: token } }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       return response?.data?.data;
     } catch (err) {
@@ -38,11 +41,10 @@ export const updateCarts = createAsyncThunk(
   async ({ id, qty }) => {
     try {
       const token = JSON.parse(localStorage.getItem("user"));
-
       const response = await api.patch(
         `/carts`,
         { id, qty },
-        { headers: { Authorization: token } }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       return response?.data?.data;
@@ -56,10 +58,11 @@ export const deleteProduct = createAsyncThunk(
   "carts/deleteProduct",
   async (id) => {
     try {
-      const token = localStorage.getItem("user");
+      const token = JSON.parse(localStorage.getItem("user"));
+      console.log(token);
 
       await api.delete(`/carts/${id}`, {
-        headers: { Authorization: token },
+        headers: { Authorization: `Bearer ${token}` },
       });
       return id;
     } catch (err) {
@@ -88,6 +91,14 @@ export const getTotalWeightInCart = (state) => {
     0
   );
 };
+
+// export const getNameSizeInCart = (state) => {
+//   const cartItems = cartSelector.selectAll(state);
+//   console.log(cartItems);
+//   const checkName = cartItems?.Shoes?.name;
+//   const checkSize = cartItems?.ShoeSize?.size;
+//   return { checkName, checkSize };
+// };
 
 const cartEntity = createEntityAdapter({ selectId: (cart) => cart.id });
 
