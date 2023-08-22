@@ -10,10 +10,16 @@ const {
 const {
   findAndCountAllOrder,
   updateOrder,
+  findOneOrder,
 } = require("../service/order.service");
 const { findAllOrderDetail } = require("../service/orderDetail.service");
 const { createMutation } = require("../service/stockMutation.service");
-const { findStockBy, findCreateStock } = require("../service/stock.service");
+const {
+  findStockBy,
+  findCreateStock,
+  updateStock,
+} = require("../service/stock.service");
+const { addStockHistory } = require("../service/stockHistory.service");
 const generateTransactionCode = () =>
   `ORD${moment().format("YYYYMMDDHHmmss")}${Math.floor(Math.random() * 10000)}`;
 const payment_url = process.env.PAYMENT_URL;
@@ -146,86 +152,61 @@ const orderController = {
           order_id: req.order?.id,
         });
         for (const val of orderDetail) {
-          if (val?.stock && val?.stock?.stock < val.qty) {
-            const warehouse = await checkWarehouseSupply({
-              shoe_id: val?.stock?.shoe_id,
-              shoe_size_id: val?.stock?.shoe_size_id,
-              qty: val.qty,
-            });
-            if (!warehouse?.length) {
-              return res.status(200).send({ message: "stock insuficient" });
-            }
-            let closestWarehouse = null;
-            let shortestDistance = Number.MAX_SAFE_INTEGER;
-            warehouse.forEach((warehouse) => {
-              const distance = haversine(
-                {
-                  latitude: val?.stock?.warehouse?.latitude,
-                  longitude: val?.stock?.warehouse?.longitude,
-                },
-                {
-                  latitude: warehouse.latitude,
-                  longitude: warehouse.longitude,
-                }
-              );
-              if (distance < shortestDistance) {
-                shortestDistance = distance;
-                closestWarehouse = warehouse;
-              }
-            });
-            //stockMutation Auto
-            await createMutation({
-              from_warehouse_id: closestWarehouse.id,
-              to_warehouse_id: val.stock.warehouse_id,
-              qty: val.qty - val?.stock?.stock,
-              status: "APPROVED",
-              stock_id: closestWarehouse.stock.id,
+          // Decrease booked_stock in the Product table
+          await updateStock({
+            id: val.stock_id,
+            booked_stock: val.stock.booked_stock - val?.qty,
+            t,
+          });
+          if (val.stock?.stock - val.qty != val.stock?.stock) {
+            await addStockHistory({
+              stock_before: val.stock?.stock + val?.stock?.booked_stock,
+              stock_after:
+                val.stock?.stock + val?.stock?.booked_stock - val.qty,
+              stock_id: val.stock?.id,
+              reference: req.order?.transaction_code,
               t,
             });
-            // stock transfer & history
-            const fromStock = await findStockBy({
-              id: closestWarehouse.stock.id,
-            });
-            fromStock.stock -= val.qty;
-            await fromStock.save({ transaction: t });
-            const [toStock, created] = await findCreateStock({
-              warehouse_id: val.stock.warehouse_id,
-              shoe_id: val.stock.shoe_id,
-              shoe_size_id: val.stock.shoe_size_id,
-              t,
-            });
-            toStock.stock += val.qty;
-            await toStock.save({ transaction: t });
-            if (fromStock.stock + val.qty != fromStock.stock) {
-              await addStockHistory({
-                stock_before: fromStock.stock + stockMutation.qty,
-                stock_after: fromStock.stock,
-                stock_id: fromStock.id,
-                reference: req?.order?.transaction_code,
-                t,
-              });
-            }
-            if (toStock.stock - val.qty != toStock.stock) {
-              await addStockHistory({
-                stock_before: toStock.stock - stockMutation.qty,
-                stock_after: toStock.stock,
-                stock_id: toStock.id,
-                reference: req?.order?.transaction_code,
-                t,
-              });
-            }
-            // Decrease booked_stock in the Product table
-            toStock.booked_stock = toStock.booked_stock - val.qty;
-            await toStock.save({ transaction: t });
           }
         }
         await updateOrder({ t, status: "DELIVERY", id: req.order?.id });
+      } else if (req.body?.status == "CANCELED") {
+        const orderDetail = await findAllOrderDetail({
+          order_id: req.order?.id,
+        });
+        for (const val of orderDetail) {
+          // Decrease booked_stock in the Product table
+          const stock = val.stock.stock + val.qty;
+          const booked_stock = val.stock.booked_stock - val.qty;
+          console.log(stock);
+          console.log(booked_stock);
+          await db.Stock.update(
+            { stock, booked_stock },
+            { where: { id: val.stock_id }, transaction: t }
+          );
+          // await updateStock({
+          //   stock,
+          //   booked_stock,
+          //   id: val.stock_id,
+          //   t,
+          // });
+        }
+      } else if (req?.body?.status == "PAYMENT") {
+        await updateOrder({
+          t,
+          last_payment_date: moment(req.order?.last_payment_date).add(1, "day"),
+          id: req.order?.id,
+        });
+        fs.unlinkSync(
+          `${__dirname}/../public/shoe/${req.order?.payment_proof}`
+        );
       }
       await t.commit();
       return res
         .status(200)
         .send({ message: `Order is in ${req.body?.status}` });
     } catch (err) {
+      await t.rollback();
       errorResponse(res, err, CustomError);
     }
   },
@@ -237,6 +218,13 @@ const orderController = {
       }
       req.order = order;
       next();
+    } catch (err) {
+      return errorResponse(res, err, CustomError);
+    }
+  },
+  getOrderId: async (req, res) => {
+    try {
+      return res.status(200).send({ message: "success", order: req.order });
     } catch (err) {
       return errorResponse(res, err, CustomError);
     }

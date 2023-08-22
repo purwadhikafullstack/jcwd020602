@@ -115,6 +115,16 @@ module.exports = {
       return error;
     }
   },
+  getWarehouseForSales: async (body) => {
+    try {
+      return await db.Warehouse.findAll({
+        where: { id: body?.id },
+        attribute: ["id"],
+      });
+    } catch (error) {
+      return error;
+    }
+  },
   checkWarehouseSupply: async (body) => {
     try {
       return await db.Warehouse.findAll({

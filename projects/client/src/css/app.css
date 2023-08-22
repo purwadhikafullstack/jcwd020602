@@ -277,7 +277,21 @@
   border: 2px solid;
   border-radius: 0;
 }
-
+/*---------------------- Order list ----------------------*/
+.orderlist-filter {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  gap: 10px;
+}
+.orderlist-card {
+  display: grid;
+  grid-template-columns: 2fr 2fr 1fr;
+  gap: 5px;
+}
+.orderlist-card #a {
+  /* border-right: 1px solid; */
+  border: 1px solid;
+}
 /*---------------------- @media ----------------------*/
 @media (max-width: 960px) {
   #brands-section {
@@ -299,6 +313,17 @@
   #detail-product {
     width: 100%;
   }
+
+  .orderlist-filter {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .orderlist-card {
+    grid-template-columns: 1fr;
+  }
+  /* .orderlist-card #a {
+    border-bottom: 1px solid;
+  } */
 }
 
 @media (max-width: 630px) {
@@ -332,6 +357,11 @@
   }
   .form-profile {
     flex-direction: column;
+  }
+}
+@media (max-width: 400px) {
+  .orderlist-filter {
+    grid-template-columns: 1fr;
   }
 }
 

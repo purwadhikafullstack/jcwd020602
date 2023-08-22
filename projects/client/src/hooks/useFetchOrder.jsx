@@ -31,14 +31,10 @@ export const useFetchOrderList = (filter) => {
   const fetchOrdersList = async () => {
     try {
       const token = JSON.parse(localStorage.getItem("user"));
-      const res = await api.get(
-        `/orders/admin`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-        { params: filter }
-      );
-
+      const res = await api.get(`/orders/admin`, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: filter,
+      });
       setOrders(res.data);
     } catch (err) {
       console.log(err.response?.data);
@@ -46,6 +42,27 @@ export const useFetchOrderList = (filter) => {
   };
   useEffect(() => {
     fetchOrdersList();
-  }, []);
+  }, [filter]);
   return { orders, fetchOrdersList };
+};
+
+export const useFetchSalesReport = (filter) => {
+  const [salesData, setSalesData] = useState({ data: [] });
+  const fetchSalesData = async () => {
+    try {
+      const token = JSON.parse(localStorage.getItem("user"));
+      const sales = await api.get("/orders/salesReport", {
+        headers: { Authorization: `Bearer${token}` },
+        params: filter,
+      });
+      console.log(sales.data);
+      setSalesData(sales.data);
+    } catch (err) {
+      console.log(err.response.data);
+    }
+  };
+  useEffect(() => {
+    fetchSalesData();
+  }, [filter]);
+  return { salesData, fetchSalesData };
 };
