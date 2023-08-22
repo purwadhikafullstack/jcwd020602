@@ -39,122 +39,69 @@ export default function ReportCard(props) {
     }
   }, [salesData]);
   return (
-    <Flex
-      padding={"20px"}
-      justifyContent={"flex-start"}
-      flexWrap={"wrap"}
-      gap={"16px"}
-    >
+    <Box className="report-card">
       <Flex
-        width={"274px"}
-        height={"103px"}
-        background={"#ffff"}
-        borderRadius={"8px"}
-        boxShadow={"0px 1px 3px rgba(0, 0, 0, 0.1)"}
+        bg={"white"}
+        borderRadius={10}
         flexDir={"column"}
-        padding={"8px 16px"}
+        p={2}
+        w={"100%"}
+        border={"2px"}
       >
-        <Flex
-          height={"40%"}
-          alignItems={"center"}
-          justifyContent={"space-between"}
-          fontWeight={"500"}
-          fontSize={"14px"}
-        >
+        <Box p={1} fontWeight={"bold"} borderBottom={"1px"}>
           Total Sales Income
-          {/*  <Icon as={MdKeyboardArrowRight} /> */}
-        </Flex>
-        <Box height={"30%"} fontWeight={"600"} fontSize={"16px"}>
+        </Box>
+        <Box p={1} borderBottom={"1px"}>
           {priceData ? `Rp  ${priceData?.toLocaleString("id-ID")}` : "-"}
         </Box>
-        <Flex
-          height={"30%"}
-          gap={"6px"}
-          fontSize={"10px"}
-          fontWeight={"500"}
-          alignItems={"center"}
-        >
+        <Flex gap={"6px"} fontSize={"10px"} p={1}>
           <Flex color={"#56D77A"} alignItems={"center"}>
-            {/* <Icon height={"18px"} as={GoArrowUp}></Icon>
-            {data?.percentSum ? `${data?.percentSum}%` : ""} */}
             140.53%
           </Flex>
           Compare to yesterday
         </Flex>
       </Flex>
+
       <Flex
-        width={"274px"}
-        height={"103px"}
-        background={"#ffff"}
-        borderRadius={"8px"}
-        boxShadow={"0px 1px 3px rgba(0, 0, 0, 0.1)"}
+        bg={"white"}
+        borderRadius={10}
         flexDir={"column"}
-        padding={"8px 16px"}
+        p={2}
+        w={"100%"}
+        border={"2px"}
       >
-        <Flex
-          height={"40%"}
-          alignItems={"center"}
-          justifyContent={"space-between"}
-          fontWeight={"500"}
-          fontSize={"14px"}
-        >
+        <Box p={1} fontWeight={"bold"} borderBottom={"1px"}>
           Total Transactions Made
-          {/* <Icon as={MdKeyboardArrowRight} /> */}
-        </Flex>
-        <Box height={"30%"} fontWeight={"600"} fontSize={"16px"}>
+        </Box>
+        <Box p={1} borderBottom={"1px"}>
           {traData ? `${traData}` : "-"}
         </Box>
-        <Flex
-          height={"30%"}
-          gap={"6px"}
-          fontSize={"10px"}
-          fontWeight={"500"}
-          alignItems={"center"}
-        >
+        <Flex gap={"6px"} fontSize={"10px"} p={1}>
           <Flex color={"#56D77A"} alignItems={"center"}>
-            {/* <Icon height={"18px"} as={GoArrowUp}></Icon> */}
-            {/* {data?.percentCount ? `${data?.percentCount}%` : ""} */}
             50.00%
           </Flex>
           Compare to yesterday
         </Flex>
       </Flex>
+      {/*  */}
       <Flex
-        width={"274px"}
-        height={"103px"}
-        background={"#ffff"}
-        borderRadius={"8px"}
-        boxShadow={"0px 1px 3px rgba(0, 0, 0, 0.1)"}
+        bg={"white"}
+        borderRadius={10}
         flexDir={"column"}
-        padding={"8px 16px"}
+        p={2}
+        w={"100%"}
+        border={"2px"}
       >
-        <Flex
-          height={"40%"}
-          alignItems={"center"}
-          justifyContent={"space-between"}
-          fontWeight={"500"}
-          fontSize={"14px"}
-        >
+        <Box p={1} fontWeight={"bold"} borderBottom={"1px"}>
           Total Product Sold
-          {/*  <Icon as={MdKeyboardArrowRight} /> */}
-        </Flex>
-        <Box height={"30%"} fontWeight={"600"} fontSize={"16px"}>
+        </Box>
+        <Box p={1} borderBottom={"1px"}>
           {shoeData ? `${shoeData}` : "-"}
         </Box>
-        <Flex
-          height={"30%"}
-          gap={"6px"}
-          fontSize={"10px"}
-          fontWeight={"500"}
-          alignItems={"center"}
-        >
-          <Flex color={"#56D77A"} alignItems={"center"}>
-            {/* <Icon height={"18px"} as={GoArrowUp}></Icon> */}
-            {/* {countDetails?.percentSum ? `${countDetails?.percentSum}%` : ""} */}
-          </Flex>
+        <Box gap={"6px"} fontSize={"10px"} p={1}>
           Compare to yesterday
-        </Flex>
+        </Box>
       </Flex>
-    </Flex>
+    </Box>
   );
 }

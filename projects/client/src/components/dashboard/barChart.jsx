@@ -1,5 +1,8 @@
 import {
   Box,
+  Center,
+  Flex,
+  Grid,
   Table,
   TableContainer,
   Tbody,
@@ -155,38 +158,48 @@ export default function BarChart(props) {
     setMapData([priceData, shoeData, traData]);
   }, [priceData, shoeData, traData]);
   return (
-    <>
+    <Box className="barChart">
       {mapData
-        ? mapData?.map((val) => {
-            return (
-              <Box w={"500px"} h={"250px"}>
-                <Line data={val} options={val?.options} />
-                <TableContainer mt={2}>
-                  <Table variant="simple">
-                    <Thead>
-                      <Tr>
-                        <Th>Date</Th>
-                        <Th>{val?.datasets[0].label}</Th>
-                      </Tr>
-                    </Thead>
-                    <Tbody>
-                      {val.labels
-                        ? val?.labels?.map((label, idx) => {
-                            return (
-                              <Tr>
-                                <Td>{label}</Td>
-                                <Td>{val.datasets[0].data[idx]}</Td>
-                              </Tr>
-                            );
-                          })
-                        : null}
-                    </Tbody>
-                  </Table>
-                </TableContainer>
-              </Box>
-            );
-          })
+        ? mapData?.map((val) => (
+            <Center>
+              <Flex
+                flexDir={"column"}
+                p={1}
+                border={"1px"}
+                maxW={"400px"}
+                w={"100%"}
+              >
+                <Box maxW={"500px"} w={"100%"}>
+                  <Line data={val} options={val?.options} />
+                </Box>
+                <Box maxW={"500px"} w={"100%"}>
+                  <TableContainer mt={2}>
+                    <Table variant="simple">
+                      <Thead>
+                        <Tr>
+                          <Th>Date</Th>
+                          <Th>{val?.datasets[0].label}</Th>
+                        </Tr>
+                      </Thead>
+                      <Tbody>
+                        {val.labels
+                          ? val?.labels?.map((label, idx) => {
+                              return (
+                                <Tr>
+                                  <Td>{label}</Td>
+                                  <Td>{val.datasets[0].data[idx]}</Td>
+                                </Tr>
+                              );
+                            })
+                          : null}
+                      </Tbody>
+                    </Table>
+                  </TableContainer>
+                </Box>
+              </Flex>
+            </Center>
+          ))
         : null}
-    </>
+    </Box>
   );
 }

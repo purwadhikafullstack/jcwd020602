@@ -1,5 +1,4 @@
 const db = require("../models");
-const axios = require("axios");
 const dotenv = require("dotenv");
 dotenv.config();
 const { Op } = require("sequelize");
@@ -34,22 +33,21 @@ const addressFControllers = {
           message: "title already used",
         });
       }
-      const city = await db.City.findOne({
-        where: { city_id },
-      });
-      const postcode = city.dataValues.postal_code;
+      const city = await db.City.findOne({ where: { city_id } });
+      const postcode = city?.dataValues?.postal_code;
       const response = await openCage(
         address,
         city.dataValues.city_name,
         city.dataValues.province
       );
-      //   console.log(response.data.results);
+
       const addressCheck = await addressChecker(user_id);
       is_primary = addressCheck.length ? is_primary : true;
-      console.log(is_primary);
+
       if (is_primary && addressCheck?.length) {
         await updatePrimary(t, user_id);
       }
+
       await addAddress(
         t,
         { ...req.body, user_id, postcode, is_primary },
@@ -60,7 +58,7 @@ const addressFControllers = {
       return res.status(200).send({ message: "New address data added" });
     } catch (err) {
       await t.rollback();
-      return res.status(500).send({ success: false, message: err.message });
+      return res.status(500).send({ message: err.message });
     }
   },
   getAddressUser: async (req, res) => {
@@ -84,14 +82,13 @@ const addressFControllers = {
       if (!addressToDelete) {
         return res.status(404).send({ message: "Address not found" });
       }
-      //   console.log(addressToDelete);
+
       let updatePrimary = false;
       if (addressToDelete.is_primary === true) {
-        console.log("nayri addres yg false untuk dijadiin true");
         const otherAddress = await db.Address.findOne({
           where: { user_id, id: { [Op.not]: addressToDelete.id } },
         });
-        // console.log(otherAddress);
+
         if (otherAddress) {
           await db.Address.update(
             { is_primary: true },
@@ -102,9 +99,7 @@ const addressFControllers = {
       }
 
       await db.Address.destroy({
-        where: {
-          id: addressToDelete.id,
-        },
+        where: { id: addressToDelete.id },
         transaction: t,
       });
 
@@ -118,7 +113,6 @@ const addressFControllers = {
   editAddress: async (req, res) => {
     const t = await db.sequelize.transaction();
     try {
-      console.log(req.body);
       let { id, title, name, address, is_primary, city_id, user_id } = req.body;
       const titleCheck = await titleChecker(title, user_id, id);
       const nameCheck = await nameChecker(name, user_id, id);
@@ -131,7 +125,7 @@ const addressFControllers = {
       }
 
       const checkPrimary = await primaryChecker(user_id); //findOne
-      // console.log(checkPrimary);
+
       const checkAddress = await db.Address.findOne({
         where: { id },
         raw: true,
@@ -142,9 +136,7 @@ const addressFControllers = {
       } else if (is_primary && checkPrimary.id != checkAddress.id) {
         await updateEditPrimary(t, user_id, checkPrimary.id); //upadate default address menjadi isprimary=false
       }
-      const city = await db.City.findOne({
-        where: { city_id },
-      });
+      const city = await db.City.findOne({ where: { city_id } });
       const postcode = city.dataValues.postal_code;
       const response = await openCage(
         address,
