@@ -25,7 +25,7 @@ export default function EditWarehouse(props) {
   }, [props.id]);
 
   const fetchWarehouseById = async () => {
-    const res = await api.get("/warehouses/" + props.id);
+    const res = await api().get("/warehouses/" + props.id);
     setWarehouse(res.data);
     setProvid(res.data.city.province);
   };
@@ -39,7 +39,7 @@ export default function EditWarehouse(props) {
 
   const updateWarehouse = async () => {
     try {
-      const res = await api.patch("/warehouses/" + warehouse.id, warehouse);
+      const res = await api().patch("/warehouses/" + warehouse.id, warehouse);
       toast({
         title: res.data.message,
         status: "success",

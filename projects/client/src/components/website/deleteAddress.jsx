@@ -24,7 +24,7 @@ export default function DeleteAddress(props) {
 
   const deleteAddress = async () => {
     try {
-      const res = await api.delete("/address", { params: { ...address } });
+      const res = await api().delete("/address", { params: { ...address } });
       toast({
         title: res.data.message,
         status: "success",

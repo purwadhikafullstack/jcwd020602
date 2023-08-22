@@ -23,7 +23,7 @@ export default function EditStock(props) {
     }),
     onSubmit: async () => {
       try {
-        const res = await api.patch("/stocks/" + formik.values?.id, {
+        const res = await api().patch("/stocks/" + formik.values?.id, {
           stock: formik.values.stock,
         });
         toast({

@@ -24,7 +24,7 @@ export default function Register() {
     }),
     onSubmit: async () => {
       try {
-        const res = await api.post("/auth/register", formik.values);
+        const res = await api().post("/auth/register", formik.values);
         toast({
           title: res.data.message,
           status: "success",

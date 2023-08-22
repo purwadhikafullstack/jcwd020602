@@ -10,7 +10,7 @@ export const useFetchAddress = (currentPage, perPage) => {
     const page = currentPage; // Get the current page
     const pageSize = perPage; // Get the addresses per page
     try {
-      const res = await api.get(`/checkOuts`, {
+      const res = await api().get(`/checkOuts`, {
         headers: { Authorization: `Bearer ${token}` },
         params: {
           page,

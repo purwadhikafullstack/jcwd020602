@@ -42,7 +42,7 @@ export default function AddStock(props) {
     }),
     onSubmit: async () => {
       try {
-        const res = await api.post("/stocks", formik.values);
+        const res = await api().post("/stocks", formik.values);
         toast({
           title: res.data.message,
           status: "success",

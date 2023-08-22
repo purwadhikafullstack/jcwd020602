@@ -28,7 +28,7 @@ export default function AddWarehouse(props) {
 
   const uploadWarehouse = async () => {
     try {
-      const res = await api.post("/warehouses", warehouse);
+      const res = await api().post("/warehouses", warehouse);
       toast({
         title: res.data.message,
         status: "success",

@@ -44,7 +44,7 @@ export default function ProductDetailPage() {
   }, [shoe]);
 
   const getShoe = async () => {
-    const res = await api.get("/shoes/" + name);
+    const res = await api().get("/shoes/" + name);
     setShoe(res.data);
   };
 

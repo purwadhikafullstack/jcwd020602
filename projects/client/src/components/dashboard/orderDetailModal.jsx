@@ -22,7 +22,7 @@ export default function OrderDetailModal(props) {
   const toast = useToast();
   async function getOrder() {
     try {
-      const res = await api.get(`/orders/admin/${props.order}`);
+      const res = await api().get(`/orders/admin/${props.order}`);
       console.log(res.data?.order);
       setOrder(res.data?.order);
     } catch (error) {

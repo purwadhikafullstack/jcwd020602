@@ -32,13 +32,13 @@ export default function ConfirmStockMutation(props) {
   }, [props.id]);
 
   async function fetch() {
-    const response = await api.get(`/stockMutations/${props.id}`);
+    const response = await api().get(`/stockMutations/${props.id}`);
     setStockMutation(response?.data?.stockMutation);
   }
 
   const confirmStockMutation = async () => {
     try {
-      const res = await api.patch("/stockMutations/confirm/" + props.id, {
+      const res = await api().patch("/stockMutations/confirm/" + props.id, {
         status: props.status,
       });
       toast({

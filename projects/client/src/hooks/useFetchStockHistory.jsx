@@ -7,7 +7,7 @@ export const useFetchStockHistory = (filter) => {
   const [stockHistories, setStockHistories] = useState({ rows: [] });
   const fetch = async () => {
     try {
-      const res = await api.get("/stockHistories", { params: filter });
+      const res = await api().get("/stockHistories", { params: filter });
       setStockHistories(res.data);
     } catch (err) {
       console.log(err.response.data);

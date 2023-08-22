@@ -7,7 +7,7 @@ export const useFetchWarehouse = () => {
 
   const fetch = async () => {
     try {
-      const res = await api.get(`/warehouses`);
+      const res = await api().get(`/warehouses`);
       setWarehouses(res.data);
     } catch (err) {
       console.log(err.response.data);
@@ -24,7 +24,7 @@ export const useFetchWareProv = () => {
 
   const fetch = async () => {
     try {
-      const res = await api.get(`/warehouses/prov`);
+      const res = await api().get(`/warehouses/prov`);
       setProvinces(res.data);
     } catch (err) {
       console.log(err.response.data);
@@ -41,7 +41,9 @@ export const useFetchWareCity = (province) => {
   const fetch = async () => {
     try {
       if (province) {
-        const res = await api.get("/warehouses/city", { params: { province } });
+        const res = await api().get("/warehouses/city", {
+          params: { province },
+        });
         setCities(res.data);
       }
     } catch (err) {

@@ -28,7 +28,7 @@ export default function EditProduct(props) {
   }, [props.id]);
 
   const fetchProductId = async () => {
-    const res = await api.get("/shoes/" + props.id);
+    const res = await api().get("/shoes/" + props.id);
     setShoe(res.data);
     const { ShoeImages } = res.data;
     const images = ShoeImages.map((val) => val.shoe_img);
@@ -57,7 +57,7 @@ export default function EditProduct(props) {
       }
     }
     try {
-      const res = await api.patch("/shoes/" + props.id, formData);
+      const res = await api().patch("/shoes/" + props.id, formData);
       toast({
         title: res.data.message,
         status: "success",

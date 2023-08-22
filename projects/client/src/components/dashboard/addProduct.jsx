@@ -52,7 +52,7 @@ export default function AddShoe(props) {
     }
     try {
       const token = JSON.parse(localStorage.getItem("user"));
-      const res = await api.post("/shoes", formData, {
+      const res = await api().post("/shoes", formData, {
         headers: { Authorization: `Bearer ${token}` },
       });
       toast({

@@ -19,7 +19,7 @@ export default function DeleteAdmin(props) {
 
   const deleteAdmin = async () => {
     try {
-      const res = await api.delete("/auth/" + props.id);
+      const res = await api().delete("/auth/" + props.id);
       toast({
         title: res.data.message,
         status: "success",

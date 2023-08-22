@@ -8,7 +8,7 @@ export const useFetchOrder = (filter) => {
     const token = JSON.parse(localStorage.getItem("user"));
 
     try {
-      const res = await api.get(`/orders`, {
+      const res = await api().get(`/orders`, {
         headers: { Authorization: `Bearer ${token}` },
         params: filter,
       });
@@ -32,7 +32,7 @@ export const useFetchOrderList = (filter) => {
   const fetchOrdersList = async () => {
     try {
       const token = JSON.parse(localStorage.getItem("user"));
-      const res = await api.get(`/orders/admin`, {
+      const res = await api().get(`/orders/admin`, {
         headers: { Authorization: `Bearer ${token}` },
         params: filter,
       });
@@ -52,7 +52,7 @@ export const useFetchSalesReport = (filter) => {
   const fetchSalesData = async () => {
     try {
       const token = JSON.parse(localStorage.getItem("user"));
-      const sales = await api.get("/orders/salesReport", {
+      const sales = await api().get("/orders/salesReport", {
         headers: { Authorization: `Bearer${token}` },
         params: filter,
       });

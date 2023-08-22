@@ -51,7 +51,7 @@ export default function Verify() {
     }),
     onSubmit: async () => {
       try {
-        const res = await api.patch("/auth/verify", formik.values);
+        const res = await api().patch("/auth/verify", formik.values);
         toast({
           title: res?.data?.message,
           status: "success",
@@ -68,7 +68,7 @@ export default function Verify() {
 
   const fetchUser = async (token) => {
     try {
-      const res = await api.get("/auth/userbytoken", {
+      const res = await api().get("/auth/userbytoken", {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.data) {

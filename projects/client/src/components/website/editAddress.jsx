@@ -33,7 +33,7 @@ export default function EditAddress({ data, fetch, isOpen, onClose }) {
     }),
     onSubmit: async () => {
       try {
-        const res = await api.patch("/address/edit", formik.values);
+        const res = await api().patch("/address/edit", formik.values);
         toast({
           title: res.data.message,
           status: "success",

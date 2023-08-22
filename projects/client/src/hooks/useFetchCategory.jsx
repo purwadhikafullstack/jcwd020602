@@ -6,7 +6,7 @@ export const useFetchCategory = () => {
 
   const fetch = async () => {
     try {
-      const res = await api.get(`/categories`);
+      const res = await api().get(`/categories`);
       setCategories(res.data);
     } catch (err) {
       console.log(err?.response?.data);
@@ -25,7 +25,7 @@ export const useFetchSubcategory = () => {
 
   const fetch = async () => {
     try {
-      const res = await api.get("/subcategories");
+      const res = await api().get("/subcategories");
       setSub(res.data);
     } catch (err) {
       console.log(err?.response?.data);

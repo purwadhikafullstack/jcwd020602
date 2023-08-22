@@ -20,7 +20,7 @@ export default function DeleteStock(props) {
   const toast = useToast();
   const deleteStock = async () => {
     try {
-      const res = await api.delete("/stocks/" + props.id);
+      const res = await api().delete("/stocks/" + props.id);
       toast({
         title: res.data.message,
         status: "success",

@@ -6,7 +6,7 @@ export const useFetchBrand = () => {
 
   const fetch = async () => {
     try {
-      const res = await api.get(`/brands`);
+      const res = await api().get(`/brands`);
       setBrands(res.data);
     } catch (err) {
       console.log(err?.response?.data);

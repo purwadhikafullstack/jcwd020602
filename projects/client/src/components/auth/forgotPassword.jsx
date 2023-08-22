@@ -37,7 +37,7 @@ export default function ForgotPassword() {
     onSubmit: async () => {
       try {
         const email = formik.values.email;
-        const res = await api.get("/auth/generate-token/email", {
+        const res = await api().get("/auth/generate-token/email", {
           params: { email },
         });
         toast({

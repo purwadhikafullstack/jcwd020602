@@ -56,7 +56,7 @@ export default function AddStockMutation(props) {
     onSubmit: async () => {
       try {
         delete formik.values.from_warehouse_id;
-        const resPostMutation = await api.post(
+        const resPostMutation = await api().post(
           "/stockMutations",
           formik.values
         );

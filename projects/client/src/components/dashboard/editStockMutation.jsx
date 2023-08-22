@@ -55,11 +55,14 @@ export default function EditStockMutation(props) {
     }),
     onSubmit: async () => {
       try {
-        const resPostMutation = await api.patch(`/stockMutations/${props.id}`, {
-          to_warehouse_id: formik.values.to_warehouse_id,
-          qty: formik.values.qty,
-          stock_id: formik.values.stock_id,
-        });
+        const resPostMutation = await api().patch(
+          `/stockMutations/${props.id}`,
+          {
+            to_warehouse_id: formik.values.to_warehouse_id,
+            qty: formik.values.qty,
+            stock_id: formik.values.stock_id,
+          }
+        );
         toast({
           title: resPostMutation.data.message,
           status: "success",
@@ -90,7 +93,7 @@ export default function EditStockMutation(props) {
   }, [props.id]);
 
   async function fetch() {
-    const response = await api.get(`/stockMutations/${props.id}`);
+    const response = await api().get(`/stockMutations/${props.id}`);
     formik.setValues(response?.data?.stockMutation);
   }
   const { stocks } = useFetchFromStock(formik.values.from_warehouse_id);

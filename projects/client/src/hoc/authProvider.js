@@ -11,7 +11,6 @@ export default function AuthProvider({ children }) {
     fetch(dispatch);
   }, []);
 
-
   return children;
 }
 
@@ -19,12 +18,11 @@ export async function fetch(dispatch) {
   try {
     const token = JSON.parse(localStorage.getItem("user"));
     if (token) {
-      const user = await api.get("/auth/userbytoken", {
+      const user = await api().get("/auth/userbytoken", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-
 
       if (user) {
         dispatch({

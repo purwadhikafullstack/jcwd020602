@@ -17,7 +17,7 @@ export default function PaymentImageModal(props) {
   const toast = useToast();
   async function confirmOrder(status) {
     try {
-      const res = await api.patch(`/orders/admin/${props?.order?.id}`, {
+      const res = await api().patch(`/orders/admin/${props?.order?.id}`, {
         status,
       });
       props.fetch();

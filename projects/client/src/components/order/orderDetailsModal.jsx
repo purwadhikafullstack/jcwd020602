@@ -43,7 +43,7 @@ export default function OrderDetailsModal(props) {
       const formData = new FormData();
       formData.append("payment_proof", SelectedFile);
       formData.append("id", props.val.id);
-      await api.patch("/orders/paymentProof", formData);
+      await api().patch("/orders/paymentProof", formData);
       props.fetchOrders();
 
       alert("successfully upload payment proof");

@@ -5,7 +5,7 @@ export const useFetchShoeSize = () => {
   const [sizes, setSizes] = useState([]);
   const fetch = async () => {
     try {
-      const res = await api.get(`/shoeSizes`);
+      const res = await api().get(`/shoeSizes`);
       setSizes(res.data);
     } catch (err) {
       console.log(err.response.data);

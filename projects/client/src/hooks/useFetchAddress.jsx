@@ -6,7 +6,7 @@ export const useFetchAddress = () => {
 
   const fetch = async () => {
     try {
-      const res = await api.get(`/address`);
+      const res = await api().get(`/address`);
       setAddress(res.data);
     } catch (err) {
       console.log(err?.response?.data);

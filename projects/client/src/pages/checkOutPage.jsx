@@ -66,7 +66,7 @@ export default function CheckOutPage() {
 
   async function chooseAddress(id) {
     try {
-      await api.patch(`/checkOuts`, { id });
+      await api().patch(`/checkOuts`, { id });
       fetch();
     } catch (error) {
       console.log(error.response?.data);
@@ -84,7 +84,7 @@ export default function CheckOutPage() {
           isClosable: true,
         });
       } else {
-        await api.post("/orders", {
+        await api().post("/orders", {
           courier: courier,
           shipping_cost: cost,
           total_price: totalOrder,

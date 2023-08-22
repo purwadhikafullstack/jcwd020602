@@ -32,7 +32,7 @@ export default function AddAddressCheckOut(props) {
   const addAddress = async () => {
     const token = JSON.parse(localStorage.getItem("user"));
     try {
-      const res = await api.post("/checkOuts", address, {
+      const res = await api().post("/checkOuts", address, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

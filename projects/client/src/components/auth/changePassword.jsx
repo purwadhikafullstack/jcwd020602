@@ -42,7 +42,7 @@ export default function ChangePassword() {
     onSubmit: async () => {
       const password = formik.values.password;
       try {
-        const res = await api.patch(
+        const res = await api().patch(
           "/auth/forgot-password",
           { password },
           { headers: { Authorization: `Bearer ${token}` } }
@@ -69,7 +69,7 @@ export default function ChangePassword() {
 
   const fetchUser = async (token) => {
     try {
-      const res = await api.get("/auth/userbytoken", {
+      const res = await api().get("/auth/userbytoken", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUser(res.data);

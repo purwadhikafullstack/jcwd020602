@@ -6,7 +6,7 @@ export const useFetchShoe = (category, sub, filter) => {
   // console.log(filter);
   const fetch = async () => {
     try {
-      const res = await api.get(`/shoes`, {
+      const res = await api().get(`/shoes`, {
         params: { category, sub, filter },
       });
       setShoes(res.data);

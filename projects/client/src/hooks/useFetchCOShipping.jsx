@@ -8,7 +8,7 @@ export const useFetchShipping = (weightTotal, courier) => {
     const token = JSON.parse(localStorage.getItem("user"));
 
     try {
-      const response = await api.post(
+      const response = await api().post(
         "/checkOuts/shipping",
         {
           weight: weightTotal,

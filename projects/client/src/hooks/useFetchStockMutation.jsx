@@ -8,9 +8,11 @@ export const useFetchStockMutation = (filter) => {
   const fetch = async () => {
     try {
       console.log(filter);
-      await api.get("/stockMutations", { params: filter }).then((res) => {
-        setStockMutations(res.data);
-      });
+      await api()
+        .get("/stockMutations", { params: filter })
+        .then((res) => {
+          setStockMutations(res.data);
+        });
     } catch (err) {
       return err;
     }

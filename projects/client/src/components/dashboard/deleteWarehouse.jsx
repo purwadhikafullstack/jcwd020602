@@ -19,7 +19,7 @@ export default function DeleteWarehouse(props) {
 
   const deleteWarehouse = async () => {
     try {
-      const res = await api.delete("/warehouses/" + props.id);
+      const res = await api().delete("/warehouses/" + props.id);
       toast({
         title: res.data.message,
         status: "success",

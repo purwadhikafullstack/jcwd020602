@@ -50,7 +50,7 @@ export default function ProfilePage() {
       }
 
       try {
-        const res = await api.patch("/auth/profile", formData);
+        const res = await api().patch("/auth/profile", formData);
         toast({
           title: res.data.message,
           status: "success",
@@ -83,7 +83,7 @@ export default function ProfilePage() {
     }),
     onSubmit: async () => {
       try {
-        const res = await api.patch("/auth/password", formik2.values);
+        const res = await api().patch("/auth/password", formik2.values);
         toast({
           title: res.data.message,
           status: "success",

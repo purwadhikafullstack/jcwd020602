@@ -40,7 +40,7 @@ export default function AddAddress(props) {
     }),
     onSubmit: async () => {
       try {
-        const res = await api.post("/address", formik.values);
+        const res = await api().post("/address", formik.values);
         toast({
           title: res.data.message,
           status: "success",

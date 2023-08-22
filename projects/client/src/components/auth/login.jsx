@@ -47,10 +47,10 @@ export default function Login() {
     onSubmit: async () => {
       let token;
       try {
-        const res = await api.post("/auth/login", formik.values);
+        const res = await api().post("/auth/login", formik.values);
         localStorage.setItem("user", JSON.stringify(res.data.token));
         token = res.data.token;
-        const restoken = await api.get("/auth/userbytoken", {
+        const restoken = await api().get("/auth/userbytoken", {
           headers: {
             Authorization: `Bearer ${token}`,
           },

@@ -19,7 +19,7 @@ export function DeleteCategory(props) {
 
   const deleteCategory = async () => {
     try {
-      const res = await api.delete("/categories/" + props.id);
+      const res = await api().delete("/categories/" + props.id);
       toast({
         title: res.data.message,
         status: "success",
@@ -79,7 +79,7 @@ export function DeleteSubcategory(props) {
 
   const deleteSub = async () => {
     try {
-      const res = await api.delete("/subcategories/" + props.id);
+      const res = await api().delete("/subcategories/" + props.id);
       toast({
         title: res.data.message,
         status: "success",
@@ -139,7 +139,7 @@ export function DeleteBrand(props) {
 
   const deleteSub = async () => {
     try {
-      const res = await api.delete("/brands/" + props.id);
+      const res = await api().delete("/brands/" + props.id);
       toast({
         title: res.data.message,
         status: "success",

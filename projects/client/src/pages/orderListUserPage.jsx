@@ -82,7 +82,7 @@ export default function OrderListUser() {
 
   const cancelOrder = async (id) => {
     try {
-      await api.patch(`/orders/cancelOrderUser/${id}`);
+      await api().patch(`/orders/cancelOrderUser/${id}`);
       fetchOrders();
 
       alert("Order successfully canceled");

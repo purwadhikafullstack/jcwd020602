@@ -8,7 +8,7 @@ import { api } from "../api/api";
 export const getCarts = createAsyncThunk("cart/getCarts", async () => {
   try {
     const token = JSON.parse(localStorage.getItem("user"));
-    const response = await api.get("/carts/getCart", {
+    const response = await api().get("/carts/getCart", {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response?.data?.data;
@@ -24,7 +24,7 @@ export const addProduct = createAsyncThunk(
       const token = JSON.parse(localStorage.getItem("user"));
       console.log(token);
 
-      const response = await api.post(
+      const response = await api().post(
         "/carts",
         { name, size },
         { headers: { Authorization: `Bearer ${token}` } }
@@ -41,7 +41,7 @@ export const updateCarts = createAsyncThunk(
   async ({ id, qty }) => {
     try {
       const token = JSON.parse(localStorage.getItem("user"));
-      const response = await api.patch(
+      const response = await api().patch(
         `/carts`,
         { id, qty },
         { headers: { Authorization: `Bearer ${token}` } }
@@ -61,7 +61,7 @@ export const deleteProduct = createAsyncThunk(
       const token = JSON.parse(localStorage.getItem("user"));
       console.log(token);
 
-      await api.delete(`/carts/${id}`, {
+      await api().delete(`/carts/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return id;

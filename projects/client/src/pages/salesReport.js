@@ -65,7 +65,7 @@ export default function SalesReportPage() {
     }
   }, []);
   async function warehouseAdmin(token) {
-    const warehouse = await api.get("/warehouses/fetchDefault", {
+    const warehouse = await api().get("/warehouses/fetchDefault", {
       headers: {
         Authorization: `Bearer ${token}`,
       },

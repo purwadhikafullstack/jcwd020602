@@ -25,7 +25,7 @@ export function EditCategory(props) {
   }, [props.id]);
 
   const fetchCatId = async () => {
-    const res = await api.get("/categories/" + props.id);
+    const res = await api().get("/categories/" + props.id);
     setCategory(res.data);
     setImage(res.data.category_img);
   };
@@ -37,7 +37,7 @@ export function EditCategory(props) {
       formData.append("category", selectedFile);
     }
     try {
-      const res = await api.patch("/categories/" + props.id, formData);
+      const res = await api().patch("/categories/" + props.id, formData);
       toast({
         title: res.data.message,
         status: "success",
@@ -128,13 +128,13 @@ export function EditSubcategory(props) {
   }, [props.id]);
 
   const fetchSubId = async () => {
-    const res = await api.get("/subcategories/" + props.id);
+    const res = await api().get("/subcategories/" + props.id);
     setName(res.data.name);
   };
 
   const updateSubcategory = async () => {
     try {
-      const res = await api.patch("/subcategories/" + props.id, { name });
+      const res = await api().patch("/subcategories/" + props.id, { name });
       toast({
         title: res.data.message,
         status: "success",

@@ -27,7 +27,7 @@ export default function EditAdmin(props) {
   };
 
   const fetchAdminbyId = async () => {
-    const res = await api.get("/auth/" + props.id);
+    const res = await api().get("/auth/" + props.id);
     setAdmin(res.data);
     setImage(res.data.avatar_url);
   };
@@ -44,7 +44,7 @@ export default function EditAdmin(props) {
     // formData.append("avatar", !selectedFile ? admin.avatar_url : selectedFile);
 
     try {
-      const response = await api.patch("/auth/admin/" + props.id, formData);
+      const response = await api().patch("/auth/admin/" + props.id, formData);
       toast({
         title: response.data.message,
         status: "success",

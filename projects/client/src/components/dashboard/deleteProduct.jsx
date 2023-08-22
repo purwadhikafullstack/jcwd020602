@@ -19,7 +19,7 @@ export function DeleteProduct(props) {
 
   const deleteShoe = async () => {
     try {
-      const res = await api.delete("/shoes/" + props.id);
+      const res = await api().delete("/shoes/" + props.id);
       toast({
         title: res.data.message,
         status: "success",

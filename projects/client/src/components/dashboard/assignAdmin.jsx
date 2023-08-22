@@ -14,7 +14,7 @@ export default function AssignAdmin(props) {
 
   const assignAdmin = async () => {
     try {
-      const res = await api.post("/warehouses/admin/" + user_id, {
+      const res = await api().post("/warehouses/admin/" + user_id, {
         warehouse_id,
       });
       toast({
@@ -85,7 +85,7 @@ export function ReassignAdmin(props) {
 
   const reassignAdmin = async () => {
     try {
-      const res = await api.patch("/warehouses/admin/" + user_id, {
+      const res = await api().patch("/warehouses/admin/" + user_id, {
         warehouse_id,
       });
       toast({
@@ -104,7 +104,7 @@ export function ReassignAdmin(props) {
 
   const unassignAdmin = async () => {
     try {
-      const res = await api.delete("/warehouses/admin/" + user_id);
+      const res = await api().delete("/warehouses/admin/" + user_id);
       toast({
         title: res.data.message,
         status: "success",
