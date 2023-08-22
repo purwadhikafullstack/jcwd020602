@@ -50,8 +50,6 @@ router.patch(
   orderController.getOrderById,
   orderController.confirmPayment
 );
-<<<<<<< HEAD
-=======
 router.get(
   "/admin/:id",
   userTokenDecoder.checkAdmin,
@@ -64,5 +62,4 @@ router.post(
   orderController.paymentProof
 );
 
->>>>>>> develop
 module.exports = router;

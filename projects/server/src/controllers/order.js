@@ -244,6 +244,7 @@ const orderController = {
       });
     }
   },
+
   cancelPaymentUser: async (req, res) => {
     const t = await db.sequelize.transaction();
     try {
@@ -293,6 +294,7 @@ const orderController = {
       errorResponse(res, err, CustomError);
     }
   },
+
   getOrderAdmin: async (req, res) => {
     try {
       const warehouse = await getWarehouse({
@@ -305,133 +307,10 @@ const orderController = {
         search: req.query?.search || "",
         page: req.query?.page || 1,
         status: req.query?.status,
-        time: req.query?.time,
-        limit: 2,
-      });
-      return res
-        .status(200)
-        .send({ ...result, totalPages: Math.ceil(result?.count / 2) });
-    } catch (err) {
-      errorResponse(res, err, CustomError);
-    }
-  },
-  confirmPayment: async (req, res) => {
-    const t = await db.sequelize.transaction();
-    try {
-      await updateOrder({ t, status: req.body?.status, id: req.order?.id });
-      if (req.body?.status == "PROCESSING") {
-        const orderDetail = await findAllOrderDetail({
-          order_id: req.order?.id,
-        });
-        for (const val of orderDetail) {
-          if (val?.stock && val?.stock?.stock < val.qty) {
-            const warehouse = await checkWarehouseSupply({
-              shoe_id: val?.stock?.shoe_id,
-              shoe_size_id: val?.stock?.shoe_size_id,
-              qty: val.qty,
-            });
-            if (!warehouse?.length) {
-              return res.status(200).send({ message: "stock insuficient" });
-            }
-            let closestWarehouse = null;
-            let shortestDistance = Number.MAX_SAFE_INTEGER;
-            warehouse.forEach((warehouse) => {
-              const distance = haversine(
-                {
-                  latitude: val?.stock?.warehouse?.latitude,
-                  longitude: val?.stock?.warehouse?.longitude,
-                },
-                {
-                  latitude: warehouse.latitude,
-                  longitude: warehouse.longitude,
-                }
-              );
-              if (distance < shortestDistance) {
-                shortestDistance = distance;
-                closestWarehouse = warehouse;
-              }
-            });
-            //stockMutation Auto
-            await createMutation({
-              from_warehouse_id: closestWarehouse.id,
-              to_warehouse_id: val.stock.warehouse_id,
-              qty: val.qty - val?.stock?.stock,
-              status: "APPROVED",
-              stock_id: closestWarehouse.stocks[0].id,
-              t,
-            });
-            // stock transfer & history
-            const fromStock = await findStockBy({
-              id: closestWarehouse.stocks[0].id,
-            });
-            fromStock.stock -= val.qty;
-            await fromStock.save({ transaction: t });
-            const [shoeStock, created] = await findCreateStock({
-              warehouse_id: val.stock.warehouse_id,
-              shoe_id: val.stock.shoe_id,
-              shoe_size_id: val.stock.shoe_size_id,
-              t,
-            });
-            shoeStock.stock += val.qty;
-            await shoeStock.save({ transaction: t });
-            if (fromStock.stock + val.qty != fromStock.stock) {
-              await addStockHistory({
-                stock_before: fromStock.stock + stockMutation.qty,
-                stock_after: fromStock.stock,
-                stock_id: fromStock.id,
-                reference: req?.order?.transaction_code,
-                t,
-              });
-            }
-            if (shoeStock.stock - val.qty != shoeStock.stock) {
-              await addStockHistory({
-                stock_before: shoeStock.stock - stockMutation.qty,
-                stock_after: shoeStock.stock,
-                stock_id: shoeStock.id,
-                reference: req?.order?.transaction_code,
-                t,
-              });
-            }
-            // Decrease booked_stock in the Product table
-            shoeStock.booked_stock = shoeStock.booked_stock - val.qty;
-            await shoeStock.save({ transaction: t });
-          }
-        }
-      }
-      await t.commit();
-      return res
-        .status(200)
-        .send({ message: `Order is in ${req.body?.status}` });
-    } catch (err) {
-      errorResponse(res, err, CustomError);
-    }
-  },
-  getOrderById: async (req, res, next) => {
-    try {
-      const order = await findOneOrder({ id: req.params.id });
-      if (!order) {
-        return res.status(200).send({ message: "Order not found", order: {} });
-      }
-      req.order = order;
-      next();
-    } catch (err) {
-      return errorResponse(res, err, CustomError);
-    }
-  },
-  getOrderAdmin: async (req, res) => {
-    try {
-      const warehouse = await getWarehouse({
-        id: req.query?.warehouse_id || req?.user?.warehouse_id,
-      });
-      const result = await findAndCountAllOrder({
-        warehouse_id: warehouse[0]?.dataValues?.id,
-        sort: req.query?.sort || "createdAt",
-        order: req.query?.order || "DESC",
-        search: req.query?.search || "",
-        page: req.query?.page || 1,
-        status: req.query?.status,
+
         timeFrom: req.query?.timeFrom,
         timeTo: req.query?.timeTo,
+
         limit: 2,
       });
       return res
@@ -483,7 +362,9 @@ const orderController = {
               to_warehouse_id: val.stock.warehouse_id,
               qty: val.qty - val?.stock?.stock,
               status: "APPROVED",
-              stock_id: closestWarehouse.stock.id,
+
+              stock_id: closestWarehouse.stocks[0].id,
+
               t,
             });
             // stock transfer & history
@@ -498,6 +379,7 @@ const orderController = {
               shoe_size_id: val.stock.shoe_size_id,
               t,
             });
+
             toStock.stock += val.qty;
             await toStock.save({ transaction: t });
             if (fromStock.stock + val.qty != fromStock.stock) {
@@ -509,16 +391,19 @@ const orderController = {
                 t,
               });
             }
+
             if (toStock.stock - val.qty != toStock.stock) {
               await addStockHistory({
                 stock_before: toStock.stock - stockMutation.qty,
                 stock_after: toStock.stock,
                 stock_id: toStock.id,
+
                 reference: req?.order?.transaction_code,
                 t,
               });
             }
             // Decrease booked_stock in the Product table
+
             toStock.booked_stock = toStock.booked_stock - val.qty;
             await toStock.save({ transaction: t });
           }
