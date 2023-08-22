@@ -15,6 +15,7 @@ import { api } from "../api/api";
 import { useFetchSalesReport } from "../hooks/useFetchOrder";
 import BarChart from "../components/dashboard/barChart";
 import { useFetchBrand } from "../hooks/useFetchBrand";
+import ReportCard from "../components/dashboard/reportCard";
 
 export default function SalesReportPage() {
   const userSelector = useSelector((state) => state.auth);
@@ -207,6 +208,7 @@ export default function SalesReportPage() {
             overflowY={"scroll"}
           >
             <BarChart salesData={salesData} />
+            <ReportCard salesData={salesData} />
           </Flex>
         </Box>
       </Box>

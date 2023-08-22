@@ -1,6 +1,43 @@
 import { Box, Flex } from "@chakra-ui/react";
-
+import { useState, useEffect } from "react";
 export default function ReportCard(props) {
+  const { salesData } = props;
+  const [priceData, setPriceData] = useState();
+  const [shoeData, setShoeData] = useState();
+  const [traData, setTraData] = useState();
+  async function dataTotPrc() {
+    const priceData = salesData?.data?.reduce((prev, curr) => {
+      prev += curr?.price;
+      return prev;
+    }, 0);
+    setPriceData(priceData);
+  }
+  async function dataTotSho() {
+    const shoeData = salesData?.data?.reduce((prev, curr) => {
+      prev += curr?.qty;
+      return prev;
+    }, 0);
+    setShoeData(shoeData);
+  }
+  async function dataTotTra() {
+    const processedOrders = [];
+    const traData = salesData?.data?.reduce((prev, curr) => {
+      const order = curr.order.transaction_code;
+      if (!processedOrders.includes(order)) {
+        prev += 1;
+        processedOrders.push(order);
+      }
+      return prev;
+    }, 0);
+    setTraData(traData);
+  }
+  useEffect(() => {
+    if (salesData) {
+      dataTotPrc();
+      dataTotSho();
+      dataTotTra();
+    }
+  }, [salesData]);
   return (
     <Flex
       padding={"20px"}
@@ -24,10 +61,11 @@ export default function ReportCard(props) {
           fontWeight={"500"}
           fontSize={"14px"}
         >
-          Total Sales <Icon as={MdKeyboardArrowRight} />
+          Total Sales Income
+          {/*  <Icon as={MdKeyboardArrowRight} /> */}
         </Flex>
         <Box height={"30%"} fontWeight={"600"} fontSize={"16px"}>
-          {sumOrder ? `Rp  ${(sumOrder * 1000)?.toLocaleString("id-ID")}` : "-"}
+          {priceData ? `Rp  ${priceData?.toLocaleString("id-ID")}` : "-"}
         </Box>
         <Flex
           height={"30%"}
@@ -37,9 +75,9 @@ export default function ReportCard(props) {
           alignItems={"center"}
         >
           <Flex color={"#56D77A"} alignItems={"center"}>
-            <Icon height={"18px"} as={GoArrowUp}></Icon>
-            {data?.percentSum ? `${data?.percentSum}%` : ""}
-            {/* 140.53% */}
+            {/* <Icon height={"18px"} as={GoArrowUp}></Icon>
+            {data?.percentSum ? `${data?.percentSum}%` : ""} */}
+            140.53%
           </Flex>
           Compare to yesterday
         </Flex>
@@ -60,10 +98,11 @@ export default function ReportCard(props) {
           fontWeight={"500"}
           fontSize={"14px"}
         >
-          Total Transaction <Icon as={MdKeyboardArrowRight} />
+          Total Transactions Made
+          {/* <Icon as={MdKeyboardArrowRight} /> */}
         </Flex>
         <Box height={"30%"} fontWeight={"600"} fontSize={"16px"}>
-          {countOrder ? `${countOrder}` : "-"}
+          {traData ? `${traData}` : "-"}
         </Box>
         <Flex
           height={"30%"}
@@ -73,9 +112,9 @@ export default function ReportCard(props) {
           alignItems={"center"}
         >
           <Flex color={"#56D77A"} alignItems={"center"}>
-            <Icon height={"18px"} as={GoArrowUp}></Icon>
-            {data?.percentCount ? `${data?.percentCount}%` : ""}
-            {/* 50.00% */}
+            {/* <Icon height={"18px"} as={GoArrowUp}></Icon> */}
+            {/* {data?.percentCount ? `${data?.percentCount}%` : ""} */}
+            50.00%
           </Flex>
           Compare to yesterday
         </Flex>
@@ -96,10 +135,11 @@ export default function ReportCard(props) {
           fontWeight={"500"}
           fontSize={"14px"}
         >
-          Total Product <Icon as={MdKeyboardArrowRight} />
+          Total Product Sold
+          {/*  <Icon as={MdKeyboardArrowRight} /> */}
         </Flex>
         <Box height={"30%"} fontWeight={"600"} fontSize={"16px"}>
-          {countDetails?.sum ? `${countDetails?.sum}` : "-"}
+          {shoeData ? `${shoeData}` : "-"}
         </Box>
         <Flex
           height={"30%"}
@@ -109,8 +149,8 @@ export default function ReportCard(props) {
           alignItems={"center"}
         >
           <Flex color={"#56D77A"} alignItems={"center"}>
-            <Icon height={"18px"} as={GoArrowUp}></Icon>
-            {countDetails?.percentSum ? `${countDetails?.percentSum}%` : ""}
+            {/* <Icon height={"18px"} as={GoArrowUp}></Icon> */}
+            {/* {countDetails?.percentSum ? `${countDetails?.percentSum}%` : ""} */}
           </Flex>
           Compare to yesterday
         </Flex>

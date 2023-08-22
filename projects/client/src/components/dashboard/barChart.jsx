@@ -11,7 +11,7 @@ import {
 import { Chart as ChartJS } from "chart.js/auto";
 import moment from "moment";
 import { useEffect, useState } from "react";
-import { Bar, Line, Pie } from "react-chartjs-2";
+import { Line } from "react-chartjs-2";
 
 export default function BarChart(props) {
   const { salesData } = props;
