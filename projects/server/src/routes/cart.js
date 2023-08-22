@@ -14,5 +14,4 @@ router.delete(
   cartController.deleteCartData
 );
 
-
 module.exports = router;

@@ -1,27 +1,11 @@
-import {
-  Flex,
-  Heading,
-  Text,
-  Input,
-  InputGroup,
-  InputRightElement,
-  Checkbox,
-  Center,
-  Box,
-  VStack,
-  Container,
-  useNumberInput,
-  HStack,
-  Button,
-  Select,
-} from "@chakra-ui/react";
+import { Flex, Text, Center, Box, VStack, Image } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 export default function OrderSummary(props) {
   const navigate = useNavigate();
   return (
     <VStack
       h={{ base: "auto", md: "100vh" }}
-      w={{ base: "100%", md: "23vw" }}
+      w={{ base: "100%", md: "30vw" }}
       mt={{ base: "0", md: "100px" }}
     >
       <Flex w={"100%"} h={{ base: "auto", md: "700px" }} bg={"#EEEEEE"}>
@@ -99,11 +83,8 @@ export default function OrderSummary(props) {
               </Flex>
               <Flex
                 w={"100%"}
-                py={"4"}
-                maxH={"300px"}
                 mt={"20px"}
-                align={"center"}
-                justify={"center"}
+                maxH={"300px"}
                 flexDir={"column"}
                 overflowY={"auto"}
               >
@@ -117,9 +98,14 @@ export default function OrderSummary(props) {
                       borderColor={"gray.200"}
                       h={"150px"}
                     >
-                      <Center w={"100px"}>
-                        {" "}
-                        {val.Shoes?.ShoeImages?.shoe_img}
+                      <Center w={"100px"} pr={"10px"}>
+                        <Image
+                          src={`${process.env.REACT_APP_API_BASE_URL}/${val?.Shoes?.ShoeImages[0]?.shoe_img}`}
+                          w={"100%"}
+                          objectFit={"cover"}
+                          maxW={"140px"}
+                          maxH={"140px"}
+                        />
                       </Center>
                       <Flex flexDir={"column"} w={"100%"}>
                         <Text fontWeight={"bold"} fontSize={"sm"}>
@@ -132,14 +118,16 @@ export default function OrderSummary(props) {
                         </Text>
                         <Flex justify={"right"} w={"100%"}>
                           <Flex flexDir={"column"} pr={"10px"}>
-                            <Text>{val.qty} x </Text>
-                            <Text>Total</Text>
+                            <Text fontSize={"sm"}>{val.qty} x </Text>
+                            <Text fontSize={"sm"}>Total</Text>
                           </Flex>
                           <Flex flexDir={"column"}>
-                            <Text>
+                            <Text fontSize={"sm"}>
                               {val.Shoes.price.toLocaleString("id-ID")}
                             </Text>
-                            <Text>{totalPrice.toLocaleString("id-ID")}</Text>
+                            <Text fontSize={"sm"}>
+                              {totalPrice.toLocaleString("id-ID")}
+                            </Text>
                           </Flex>
                         </Flex>
                       </Flex>

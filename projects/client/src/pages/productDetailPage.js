@@ -14,6 +14,7 @@ import Footer from "../components/website/footer";
 import { Recommend } from "../components/website/carousel";
 import { useDispatch, useSelector } from "react-redux";
 import { addProduct } from "../redux/cart";
+// import { cartSelector, getNameSizeInCart } from "../redux/cart";
 
 export default function ProductDetailPage() {
   const loc = useLocation();
@@ -28,7 +29,10 @@ export default function ProductDetailPage() {
   const [selectedImage, setSelectedImage] = useState(0);
   const [category, setCategory] = useState();
   const [shoeId, setShoeId] = useState();
-  // console.log(shoe);
+  // const carts = useSelector(cartSelector.selectAll);
+  // const { checkName, checkSize } = useSelector(getNameSizeInCart);
+  // console.log(carts);
+  // console.log(checkName, checkSize);
 
   useEffect(() => {
     getShoe();
@@ -45,20 +49,31 @@ export default function ProductDetailPage() {
   };
 
   const handleToCart = async (name, size) => {
+    console.log(name, size);
+
+    // if (name == itemsInfo[0].checkName && size == itemsInfo[0].checkSize) {
+    //   toast({
+    //     title: "Shoe already in the cart, go to cart change your Shoe",
+    //     status: "warning",
+    //     position: "top",
+    //     duration: 5000,
+    //     isClosable: true,
+    //   });
+    // } else {
     dispatch(
       addProduct({
         name,
         size,
-      })
-    ).catch((error) => {
+      }),
       toast({
-        title: "'Shoe was already in Cart, go to cart to change your shoe'",
-        status: "error",
+        title: "Successfully add shoe to cart",
+        status: "success",
         position: "top",
         duration: 5000,
         isClosable: true,
-      });
-    });
+      })
+    );
+    // }
   };
 
   return (
@@ -169,7 +184,6 @@ export default function ProductDetailPage() {
           {/* button add cart */}
           <Flex flexDir={"column"} gap={1}>
             {userSelector.name ? (
-
               <Button
                 type="button"
                 id="button"
@@ -179,12 +193,7 @@ export default function ProductDetailPage() {
                 Add to Cart
               </Button>
             ) : (
-              <Button
-                type="button"
-                id="button"
-                isDisabled
-              >
-
+              <Button type="button" id="button" isDisabled>
                 Add to Cart
               </Button>
             )}

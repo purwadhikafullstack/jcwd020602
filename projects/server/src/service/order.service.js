@@ -164,4 +164,90 @@ module.exports = {
       return error;
     }
   },
+  findAndCountAllOrderUser: async (body) => {
+    try {
+      console.log(body);
+      const fromDate = body?.fromDate || moment().startOf("month").format();
+      const toDate = body?.toDate || moment().format();
+      console.log(fromDate, toDate);
+      const whereClause = {
+        [Op.and]: [
+          // {
+          //   warehouse_id: body?.warehouse_id,
+          // },
+          {
+            user_id: body?.user_id,
+          },
+          {
+            [Op.or]: [
+              { "$user.name$": { [Op.like]: `%${body?.search}%` } },
+              { transaction_code: { [Op.like]: `%${body?.search}%` } },
+            ],
+          },
+          {
+            createdAt: {
+              [Op.gte]: moment(fromDate).startOf("date").format(),
+            },
+          },
+          {
+            createdAt: {
+              [Op.lte]: moment(toDate).endOf("date").format(),
+            },
+          },
+        ],
+      };
+      if (body?.status) {
+        whereClause[Op.and].push({ status: body?.status });
+      }
+      let sort = body?.sort;
+      switch (sort) {
+        case "name":
+          sort = [{ model: db.User }, "name"];
+          break;
+        default:
+          sort = [sort];
+          break;
+      }
+      const result = await db.Order.findAndCountAll({
+        include: [
+          {
+            model: db.OrderDetail,
+            include: [
+              {
+                model: db.Stock,
+                include: [
+                  {
+                    model: db.Shoe,
+                    attributes: ["id", "name"],
+                    // as: "Shoes",
+                    include: [
+                      {
+                        model: db.ShoeImage,
+                        attributes: ["id", "shoe_img"],
+                        limit: 1,
+                      },
+                    ],
+                  },
+                  { model: db.ShoeSize, attributes: ["id", "size"] },
+                ],
+              },
+            ],
+          },
+          { model: db.User, attributes: ["id", "name"] },
+          { model: db.Address },
+        ],
+        where: whereClause,
+        order: [[...sort, body?.order]],
+      });
+      return {
+        count: result.count,
+        rows: result.rows.slice(
+          (parseInt(body?.page) - 1) * body?.limit,
+          body?.limit * body?.page
+        ),
+      };
+    } catch (error) {
+      return error;
+    }
+  },
 };

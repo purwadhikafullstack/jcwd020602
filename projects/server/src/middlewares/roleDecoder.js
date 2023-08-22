@@ -20,6 +20,7 @@ const roleDecoder = {
       const token = req.headers.authorization.split(" ")[1];
       console.log(token);
       const find = await findToken({ token, valid: 1 });
+      // console.log(find);
       if (!find) {
         throw new UnauthorizedError(
           "Token has expired. Please log in again(user)."
@@ -30,6 +31,7 @@ const roleDecoder = {
           id: JSON.parse(find?.dataValues?.userId).id,
         },
       });
+      // console.log(user);
       if (user.role != "USER") {
         throw new UnauthorizedError(
           "You are not a User and is not authorized to access this feature."
@@ -37,6 +39,7 @@ const roleDecoder = {
       }
       delete user.dataValues.password;
       req.user = user.dataValues;
+      console.log(req.user);
       next();
     } catch (err) {
       return errorResponse(res, err, CustomError);

@@ -8,12 +8,12 @@ const fileUploader = ({
 }) => {
   const storageConfig = multer.diskStorage({
     destination: (req, file, cb) => {
-      console.log(file);
+      // console.log(file);
       cb(null, `${__dirname}/../public/${destinationFolder}`);
     },
 
     filename: (req, file, cb) => {
-      console.log(file);
+      // console.log(file);
       const fileExtension = file.mimetype.split("/")[1];
 
       const filename = `${prefix}_${nanoid()}.${fileExtension}`;

@@ -10,4 +10,19 @@ module.exports = {
       return error;
     }
   },
+  addOrderDetails: async (body) => {
+    try {
+      return await db.OrderDetail.create(
+        {
+          qty: body?.qty,
+          price: body?.price,
+          stock_id: body?.stock_id,
+          order_id: body?.order_id,
+        },
+        { transaction: body?.t }
+      );
+    } catch (err) {
+      return err;
+    }
+  },
 };

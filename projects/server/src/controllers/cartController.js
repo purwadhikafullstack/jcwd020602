@@ -10,24 +10,14 @@ const cartController = {
     try {
       const user_id = req.user.id;
       const page = req.query.page || 1;
-      const pageSize = req.query.pageSize || 10; // Set a default page size
-
+      const pageSize = req.query.pageSize || 10;
+      // console.log(req.user);
       const cartsData = await db.Cart.findAndCountAll({
         where: { user_id },
         include: [
           {
             model: db.Shoe,
             as: "Shoes",
-            attributes: {
-              include: [
-                [
-                  sequelize.literal(`(
-                  select stock from stocks WHERE stocks.shoe_size_id = carts.shoe_size_id AND stocks.shoe_id = carts.shoe_id
-                )`),
-                  "availableStock",
-                ],
-              ],
-            },
             include: [
               {
                 model: db.Category,
@@ -46,11 +36,22 @@ const cartController = {
         limit: pageSize,
       });
 
+      const cartRows = cartsData.rows;
+      for (const cartRow of cartRows) {
+        const stockSum = await db.Stock.sum("stock", {
+          where: {
+            shoe_size_id: cartRow.ShoeSize.id,
+            shoe_id: cartRow.Shoes.id,
+          },
+        });
+        cartRow.Shoes.dataValues.availableStock = stockSum || 0;
+      }
+      // console.log(cartRows[0].dataValues.Shoes.dataValues.availableStock);
       const totalPages = Math.ceil(cartsData.count / pageSize);
 
       return res.status(200).send({
         message: "Get carts data success",
-        data: cartsData.rows,
+        data: cartRows,
         pagination: {
           currentPage: page,
           totalPages: totalPages,
@@ -64,6 +65,7 @@ const cartController = {
       });
     }
   },
+
   addShoe: async (req, res) => {
     try {
       const user_id = req?.user?.id;
@@ -127,22 +129,12 @@ const cartController = {
       } else {
         await db.Cart.update({ qty }, { where: { user_id, id } });
       }
-      const updatedCartData = await db.Cart.findAll({
+      const cartsData = await db.Cart.findAndCountAll({
         where: { user_id },
         include: [
           {
             model: db.Shoe,
             as: "Shoes",
-            attributes: {
-              include: [
-                [
-                  sequelize.literal(`(
-                  select stock from stocks WHERE stocks.shoe_size_id = carts.shoe_size_id AND stocks.shoe_id = carts.shoe_id
-                )`),
-                  "availableStock",
-                ],
-              ],
-            },
             include: [
               {
                 model: db.Category,
@@ -159,11 +151,22 @@ const cartController = {
         ],
       });
 
+      const cartRows = cartsData.rows;
+      for (const cartRow of cartRows) {
+        const stockSum = await db.Stock.sum("stock", {
+          where: {
+            shoe_size_id: cartRow.ShoeSize.id,
+            shoe_id: cartRow.Shoes.id,
+          },
+        });
+        cartRow.Shoes.dataValues.availableStock = stockSum || 0;
+      }
+
       // const updatedCartData = await cartController.getCartData(req, res);
       t.commit();
       return res
         .status(200)
-        .send({ message: "Updating quantity success", data: updatedCartData });
+        .send({ message: "Updating quantity success", data: cartRows });
     } catch (err) {
       t.rollback();
       console.error("Error updating cart item quantity:", err);
@@ -178,22 +181,20 @@ const cartController = {
 
       await db.Cart.destroy({ where: { user_id, id } });
 
-      const updatedCartData = await db.Cart.findAll({
+      const cartsData = await db.Cart.findAndCountAll({
         where: { user_id },
         include: [
           {
             model: db.Shoe,
             as: "Shoes",
-            attributes: {
-              include: [
-                [
-                  sequelize.literal(`(
-                  select stock from stocks WHERE stocks.shoe_size_id = carts.shoe_size_id AND stocks.shoe_id = carts.shoe_id
-                )`),
-                  "availableStock",
-                ],
-              ],
-            },
+            include: [
+              {
+                model: db.Category,
+              },
+              {
+                model: db.ShoeImage,
+              },
+            ],
           },
           {
             model: db.ShoeSize,
@@ -202,10 +203,21 @@ const cartController = {
         ],
       });
 
+      const cartRows = cartsData.rows;
+      for (const cartRow of cartRows) {
+        const stockSum = await db.Stock.sum("stock", {
+          where: {
+            shoe_size_id: cartRow.ShoeSize.id,
+            shoe_id: cartRow.Shoes.id,
+          },
+        });
+        cartRow.Shoes.dataValues.availableStock = stockSum || 0;
+      }
+
       return res.status(200).send({
         isError: false,
         message: "Product deleted",
-        data: updatedCartData,
+        data: cartRows,
       });
     } catch (error) {
       return res.status(404).send({

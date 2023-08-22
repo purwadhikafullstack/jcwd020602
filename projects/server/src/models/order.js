@@ -13,7 +13,10 @@ module.exports = (sequelize, Sequelize) => {
         "DONE"
       ),
       courier: Sequelize.ENUM("jne", "pos", "tiki"),
+      shipping_service: Sequelize.STRING,
+      shipping_method: Sequelize.STRING,
       shipping_cost: Sequelize.INTEGER,
+      shipping_duration: Sequelize.STRING,
       total_price: Sequelize.INTEGER,
       user_id: {
         type: Sequelize.INTEGER,

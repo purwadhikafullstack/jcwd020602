@@ -22,11 +22,10 @@ import ProductDetailPage from "../pages/productDetailPage";
 import Cart from "../pages/cartPages";
 import StockMutationPage from "../pages/stockMutationPage";
 import CheckOutPage from "../pages/checkOutPage";
-import PaymentVerifPage from "../pages/paymentPage";
-// import Cartx from "../pages/cartPagesx";
 import MyAccountPage from "../pages/MyAccountPage";
 import ProfilePage from "../pages/profilePage";
 import AddressBookPage from "../pages/addressBookPage";
+import OrderListUser from "../pages/orderListUserPage";
 import OrderListPage from "../pages/orderList";
 import SalesReportPage from "../pages/salesReport";
 
@@ -177,11 +176,11 @@ const routes = [
     }
   />,
   <Route
-    path="/payment"
+    path="/orderListUser"
     element={
       <>
         <Navbar />
-        <PaymentVerifPage />
+        <OrderListUser />
       </>
     }
   />,
