@@ -145,12 +145,12 @@ export default function AddStock(props) {
                 <FormLabel>Warehouse:</FormLabel>
                 <Select placeholder="Select Warehouse name">
                   {userSelector.role != "SUPERADMIN" ? (
-                    <option value={props.ware.id}>{props.ware.name}</option>
+                    <option value={props?.ware?.id}>{props?.ware?.name}</option>
                   ) : (
                     <>
                       {warehouses &&
                         warehouses?.map((val, idx) => (
-                          <option key={val.name} value={val.id}>
+                          <option key={val?.name} value={val?.id}>
                             {val?.name}
                           </option>
                         ))}

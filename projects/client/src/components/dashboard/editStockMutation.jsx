@@ -231,7 +231,7 @@ export default function EditStockMutation(props) {
                   disabled
                 >
                   {userSelector.role != "SUPERADMIN" ? (
-                    <option value={props.ware.id}>{props.ware.name}</option>
+                    <option value={props?.ware?.id}>{props?.ware?.name}</option>
                   ) : (
                     <>
                       {warehouses &&

@@ -13,7 +13,7 @@ const cartController = require("./cartController");
 const checkOutController = require("./checkOut");
 const orderController = require("./order");
 const addressFController = require("./addressF");
-
+const salesReportController = require("./salesReport");
 
 module.exports = {
   userController,
@@ -31,5 +31,5 @@ module.exports = {
   checkOutController,
   orderController,
   addressFController,
-
+  salesReportController,
 };
