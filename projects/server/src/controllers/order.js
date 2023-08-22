@@ -430,5 +430,12 @@ const orderController = {
       return errorResponse(res, err, CustomError);
     }
   },
+  getOrderId: async (req, res) => {
+    try {
+      return res.status(200).send({ message: "success", order: req.order });
+    } catch (err) {
+      return errorResponse(res, err, CustomError);
+    }
+  },
 };
 module.exports = orderController;

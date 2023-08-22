@@ -204,7 +204,6 @@ export default function SalesReportPage() {
             mt={2}
             gap={5}
             px={5}
-            h={"100%"}
             overflowY={"scroll"}
           >
             <BarChart salesData={salesData} />
