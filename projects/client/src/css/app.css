@@ -324,6 +324,9 @@
   #detail-product {
     width: 100%;
   }
+  .orderlist-filter {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 @media (max-width: 630px) {
@@ -363,6 +366,11 @@
   }
   .form-profile {
     flex-direction: column;
+  }
+}
+@media (max-width: 400px) {
+  .orderlist-filter {
+    grid-template-columns: 1fr;
   }
 }
 

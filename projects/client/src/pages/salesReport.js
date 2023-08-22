@@ -197,19 +197,17 @@ export default function SalesReportPage() {
                 ))}
             </Select>
           </Box>
+          <ReportCard salesData={salesData} />
           {/* card */}
-          <Flex
+          {/* <Flex
             flexWrap={"wrap"}
             justifyContent={"space-between"}
             alignItems={"center"}
-            mt={2}
             gap={5}
             px={5}
-            overflowY={"scroll"}
-          >
-            <BarChart salesData={salesData} />
-            <ReportCard salesData={salesData} />
-          </Flex>
+          > */}
+          <BarChart salesData={salesData} />
+          {/* </Flex> */}
         </Box>
       </Box>
     </>

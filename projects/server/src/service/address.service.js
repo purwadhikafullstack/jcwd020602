@@ -1,14 +1,10 @@
 const db = require("../models");
 const { Op } = require("sequelize");
+
 module.exports = {
   addressChecker: async (user_id) => {
     try {
-      return await db.Address.findAll({
-        where: {
-          user_id,
-        },
-        raw: true,
-      });
+      return await db.Address.findAll({ where: { user_id }, raw: true });
     } catch (err) {
       return err;
     }
@@ -16,20 +12,13 @@ module.exports = {
   titleChecker: async (title, user_id, id) => {
     try {
       let address;
-      console.log(id);
+
       id
         ? (address = await db.Address.findOne({
-            where: {
-              title,
-              user_id,
-              id: { [Op.not]: id },
-            },
+            where: { title, user_id, id: { [Op.not]: id } },
           }))
         : (address = await db.Address.findOne({
-            where: {
-              title,
-              user_id,
-            },
+            where: { title, user_id },
           }));
       return address;
     } catch (err) {
@@ -39,20 +28,12 @@ module.exports = {
   nameChecker: async (name, user_id, id) => {
     try {
       let address;
-      console.log(id);
       id
         ? (address = await db.Address.findOne({
-            where: {
-              name,
-              user_id,
-              id: { [Op.not]: id },
-            },
+            where: { name, user_id, id: { [Op.not]: id } },
           }))
         : (address = await db.Address.findOne({
-            where: {
-              name,
-              user_id,
-            },
+            where: { name, user_id },
           }));
       return address;
     } catch (err) {
@@ -62,10 +43,7 @@ module.exports = {
   primaryChecker: async (user_id) => {
     try {
       return await db.Address.findOne({
-        where: {
-          is_primary: true,
-          user_id,
-        },
+        where: { is_primary: true, user_id },
         raw: true,
       });
     } catch (err) {
@@ -75,16 +53,8 @@ module.exports = {
   updatePrimary: async (t, user_id) => {
     try {
       return await db.Address.update(
-        {
-          is_primary: false,
-        },
-        {
-          where: {
-            is_primary: true,
-            user_id,
-          },
-          transaction: t,
-        }
+        { is_primary: false },
+        { where: { is_primary: true, user_id }, transaction: t }
       );
     } catch (err) {
       return err;
@@ -93,17 +63,8 @@ module.exports = {
   updateEditPrimary: async (t, user_id, id) => {
     try {
       return await db.Address.update(
-        {
-          is_primary: false,
-        },
-        {
-          where: {
-            id,
-            is_primary: true,
-            user_id,
-          },
-          transaction: t,
-        }
+        { is_primary: false },
+        { where: { id, is_primary: true, user_id }, transaction: t }
       );
     } catch (err) {
       return err;
