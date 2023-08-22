@@ -5,7 +5,8 @@ module.exports = {
   findAndCountAllOrder: async (body) => {
     try {
       console.log(body);
-      const time = body?.time || moment().format();
+      const timeFrom = body?.timeFrom || moment().format();
+      const timeTo = body?.timeTo || moment().format();
       const whereClause = {
         [Op.and]: [
           {
@@ -19,12 +20,12 @@ module.exports = {
           },
           {
             createdAt: {
-              [Op.gte]: moment(time).startOf("month").format(),
+              [Op.gte]: moment(timeFrom).startOf("month").format(),
             },
           },
           {
             createdAt: {
-              [Op.lte]: moment(time).endOf("month").format(),
+              [Op.lte]: moment(timeTo).endOf("month").format(),
             },
           },
         ],
@@ -42,10 +43,34 @@ module.exports = {
           break;
       }
       const result = await db.Order.findAndCountAll({
+        attributes: { exclude: ["updatedAt", "deletedAt"] },
         include: [
-          { model: db.OrderDetail, include: [{ model: db.Stock }] },
-          { model: db.User },
-          { model: db.Address },
+          {
+            model: db.OrderDetail,
+            attributes: { exclude: ["createdAt", "updatedAt", "deletedAt"] },
+            include: [
+              {
+                model: db.Stock,
+                attributes: {
+                  exclude: ["createdAt", "updatedAt", "deletedAt"],
+                },
+                include: {
+                  model: db.Shoe,
+                  attributes: ["id", "name", "price"],
+                  include: {
+                    model: db.ShoeImage,
+                    attributes: ["shoe_img"],
+                    limit: 1,
+                  },
+                },
+              },
+            ],
+          },
+          { model: db.User, attributes: ["name"] },
+          {
+            model: db.Address,
+            attributes: { exclude: ["createdAt", "updatedAt", "deletedAt"] },
+          },
         ],
         where: whereClause,
         order: [[...sort, body?.order]],

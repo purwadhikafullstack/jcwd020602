@@ -140,7 +140,12 @@
   border-radius: 0;
   border-color: black;
 }
+.shoe-list img {
+  height: 330px;
 
+  width: 100vw;
+  object-fit: cover;
+}
 /*---------------------- product detail ----------------------*/
 
 #detail-product {
@@ -277,7 +282,21 @@
   border: 2px solid;
   border-radius: 0;
 }
-
+/*---------------------- Order list ----------------------*/
+.orderlist-filter {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+  gap: 10px;
+}
+.orderlist-card {
+  display: grid;
+  grid-template-columns: 2fr 2fr 1fr;
+  gap: 5px;
+}
+.orderlist-card #a {
+  /* border-right: 1px solid; */
+  border: 1px solid;
+}
 /*---------------------- @media ----------------------*/
 @media (max-width: 960px) {
   #brands-section {
@@ -289,6 +308,12 @@
   .product {
     grid-template-columns: 1fr 1fr 1fr;
   }
+  .shoe-list img {
+    height: 250px;
+
+    width: 100vw;
+    object-fit: cover;
+  }
 }
 
 @media (max-width: 750px) {
@@ -298,6 +323,14 @@
 
   #detail-product {
     width: 100%;
+  }
+
+  .orderlist-filter {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .orderlist-card {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -320,6 +353,12 @@
   .product {
     grid-template-columns: 1fr 1fr;
   }
+  .shoe-list img {
+    height: 230px;
+
+    width: 100vw;
+    object-fit: cover;
+  }
 }
 @media (max-width: 630px) {
   .category {
@@ -332,6 +371,17 @@
   }
   .form-profile {
     flex-direction: column;
+  }
+}
+@media (max-width: 400px) {
+  .orderlist-filter {
+    grid-template-columns: 1fr;
+  }
+  .shoe-list img {
+    height: 140px;
+    /* max-height: 330px; */
+    width: 100vw;
+    object-fit: cover;
   }
 }
 

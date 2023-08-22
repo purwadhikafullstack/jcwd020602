@@ -48,9 +48,14 @@ export default function Pagination({ shown, setShown, datas, pages }) {
           <>
             {shown.page < Math.ceil(pages.length / 3) && (
               <>
-                {pages.slice(0, 3).map((val) => (
-                  <PageCard val={val} />
-                ))}
+                {pages
+                  .slice(
+                    shown.page >= 2 ? shown.page - 2 : 0,
+                    shown.page >= 2 ? shown.page + 1 : shown.page + 2
+                  )
+                  .map((val) => (
+                    <PageCard val={val} />
+                  ))}
               </>
             )}
             {shown.page >= Math.ceil(pages.length / 3) &&

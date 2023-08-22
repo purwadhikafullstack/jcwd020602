@@ -9,6 +9,8 @@ import { Link, useLocation } from "react-router-dom";
 import Footer from "../components/website/footer";
 import { RiEmotionUnhappyLine } from "react-icons/ri";
 import Pagination from "../components/dashboard/pagination";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import "react-lazy-load-image-component/src/effects/blur.css";
 
 export default function ProductList() {
   const loc = useLocation();
@@ -126,67 +128,75 @@ export default function ProductList() {
           </Select>
         </Box>
         {shoes?.rows?.length > 0 ? (
-          <Box
-            border={"2px"}
-            display={"grid"}
-            className="product"
-            gridGap={5}
-            my={5}
-            p={2}
-          >
-            {shoes &&
-              shoes?.rows?.map((shoe) => (
-                <Link to={`/${shoe.name.replace(/ /g, "-")}`}>
-                  <Box
-                    key={shoe.id}
-                    cursor={"pointer"}
-                    _hover={{ bg: "black", color: "white" }}
-                    pos={"relative"}
-                    onMouseEnter={(e) => {
-                      const images = e.currentTarget.querySelectorAll("img");
-                      images[1].style.opacity = 1;
-                    }}
-                    onMouseLeave={(e) => {
-                      const images = e.currentTarget.querySelectorAll("img");
-                      images[1].style.opacity = 0;
-                    }}
-                  >
-                    <Image
-                      src={`${process.env.REACT_APP_API_BASE_URL}/${shoe.ShoeImages[0]?.shoe_img}`}
-                      objectFit={"cover"}
-                      maxH={"330px"}
-                      w={"100%"}
-                    />
-                    <Image
-                      maxH={"330px"}
-                      w={"100%"}
-                      src={`${process.env.REACT_APP_API_BASE_URL}/${shoe.ShoeImages[1]?.shoe_img}`}
-                      objectFit={"cover"}
-                      pos={"absolute"}
-                      top={0}
-                      opacity={0}
-                      transition="opacity 0.5s"
-                    />
-                    <Flex flexDir={"column"} p={2}>
-                      <Text fontWeight={"bold"}>{shoe.name}</Text>
-                      <Divider />
-                      <Text>{shoe.brand.name}</Text>
-                      <Divider />
-                      <Text fontSize={13} color={"gray"}>
-                        {shoe.Category.name} {shoe.subcategory.name}
-                      </Text>
-                      <Divider />
-                      <Text>
-                        {shoe.price.toLocaleString("id-ID", {
-                          style: "currency",
-                          currency: "IDR",
-                        })}
-                      </Text>
-                    </Flex>
-                  </Box>
-                </Link>
-              ))}
-          </Box>
+          <>
+            <Box
+              border={"2px"}
+              display={"grid"}
+              className="product"
+              gridGap={5}
+              my={5}
+              p={2}
+            >
+              {shoes &&
+                shoes?.rows?.map((shoe) => (
+                  <Link to={`/${shoe.name.replace(/ /g, "-")}`}>
+                    <Box
+                      className="shoe-list"
+                      key={shoe.id}
+                      cursor={"pointer"}
+                      _hover={{ bg: "black", color: "white" }}
+                      pos={"relative"}
+                      onMouseEnter={(e) => {
+                        const images = e.currentTarget.querySelectorAll("img");
+                        images[1].style.opacity = 1;
+                      }}
+                      onMouseLeave={(e) => {
+                        const images = e.currentTarget.querySelectorAll("img");
+                        images[1].style.opacity = 0;
+                      }}
+                    >
+                      <LazyLoadImage
+                        effect="blur"
+                        src={`${process.env.REACT_APP_API_BASE_URL}/${shoe.ShoeImages[0]?.shoe_img}`}
+                        key={shoe.id}
+                      />
+                      <Image
+                        src={`${process.env.REACT_APP_API_BASE_URL}/${shoe.ShoeImages[1]?.shoe_img}`}
+                        pos={"absolute"}
+                        top={0}
+                        opacity={0}
+                        transition="opacity 0.5s"
+                      />
+
+                      <Flex flexDir={"column"} p={2}>
+                        <Text fontWeight={"bold"}>{shoe.name}</Text>
+                        <Divider />
+                        <Text>{shoe.brand.name}</Text>
+                        <Divider />
+                        <Text fontSize={13} color={"gray"}>
+                          {shoe.Category.name} {shoe.subcategory.name}
+                        </Text>
+                        <Divider />
+                        <Text>
+                          {shoe.price.toLocaleString("id-ID", {
+                            style: "currency",
+                            currency: "IDR",
+                          })}
+                        </Text>
+                      </Flex>
+                    </Box>
+                  </Link>
+                ))}
+            </Box>
+            <Flex p={2} mb={5} justify={"center"} border={"2px"}>
+              <Pagination
+                shown={shown}
+                setShown={setShown}
+                datas={shoes?.totalPages}
+                pages={pages}
+              />
+            </Flex>
+          </>
         ) : (
           <Center border={"2px"} my={5} p={2} h={"460px"}>
             <Box fontSize={30} textAlign={"center"}>
@@ -195,14 +205,6 @@ export default function ProductList() {
             </Box>
           </Center>
         )}
-        <Flex p={2} mb={5} justify={"center"} border={"2px"}>
-          <Pagination
-            shown={shown}
-            setShown={setShown}
-            datas={shoes?.totalPages}
-            pages={pages}
-          />
-        </Flex>
       </Flex>
       <Footer />
     </Center>
