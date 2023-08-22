@@ -107,15 +107,17 @@ module.exports = {
         whereClause.shoe_id = body?.shoe_id;
         whereClause.shoe_size_id = body?.shoe_size_id;
       }
-      return await db.Stock.update(
-        {
-          stock: body?.stock,
-        },
-        {
-          where: whereClause,
-          transaction: body?.t,
-        }
-      );
+      const update = {};
+      if (body?.stock) {
+        update.stock = body?.stock;
+      }
+      if (body?.booked_stock) {
+        update.booked_stock = body?.booked_stock;
+      }
+      return await db.Stock.update(update, {
+        where: whereClause,
+        transaction: body?.t,
+      });
     } catch (error) {
       return error;
     }

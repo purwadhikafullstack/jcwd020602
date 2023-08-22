@@ -27,6 +27,7 @@ import ProfilePage from "../pages/profilePage";
 import AddressBookPage from "../pages/addressBookPage";
 import OrderListUser from "../pages/orderListUserPage";
 import OrderListPage from "../pages/orderList";
+import SalesReportPage from "../pages/salesReport";
 
 const routes = [
   <Route
@@ -282,6 +283,16 @@ const routes = [
         <NavbarDashboard />
         <Sidebar />
         <OrderListPage />
+      </ProtectedPage>
+    }
+  />,
+  <Route
+    path="/salesReport"
+    element={
+      <ProtectedPage staffOnly={true} guestOnly={false}>
+        <NavbarDashboard />
+        <Sidebar />
+        <SalesReportPage />
       </ProtectedPage>
     }
   />,

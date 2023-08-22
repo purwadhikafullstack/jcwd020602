@@ -208,7 +208,7 @@ export default function AddStockMutation(props) {
                 <FormLabel>Select to Warehouse Name</FormLabel>
                 <Select placeholder="Select Warehouse name">
                   {userSelector.role != "SUPERADMIN" ? (
-                    <option value={props.ware.id}>{props.ware.name}</option>
+                    <option value={props?.ware?.id}>{props?.ware?.name}</option>
                   ) : (
                     <>
                       {warehouses &&

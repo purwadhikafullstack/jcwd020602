@@ -134,8 +134,8 @@ export default function Sidebar(props) {
                   <Link to="/orderList">
                     <Box id="asyu">Order List</Box>
                   </Link>
-                  <Link to="/">
-                    <Box id="asyu">blabla</Box>
+                  <Link to="/salesReport">
+                    <Box id="asyu">Sales Report</Box>
                   </Link>
                   <Link to="/">
                     <Box id="asyu">blabla</Box>

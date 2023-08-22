@@ -4,8 +4,7 @@ const moment = require("moment");
 module.exports = {
   findAndCountAllOrder: async (body) => {
     try {
-      console.log(body);
-      const timeFrom = body?.timeFrom || moment().format();
+      const timeFrom = body?.timeFrom || moment().startOf("week").format();
       const timeTo = body?.timeTo || moment().format();
       const whereClause = {
         [Op.and]: [
@@ -20,12 +19,12 @@ module.exports = {
           },
           {
             createdAt: {
-              [Op.gte]: moment(timeFrom).startOf("month").format(),
+              [Op.gte]: moment(timeFrom).startOf("date").format(),
             },
           },
           {
             createdAt: {
-              [Op.lte]: moment(timeTo).endOf("month").format(),
+              [Op.lte]: moment(timeTo).endOf("date").format(),
             },
           },
         ],
@@ -54,15 +53,21 @@ module.exports = {
                 attributes: {
                   exclude: ["createdAt", "updatedAt", "deletedAt"],
                 },
-                include: {
-                  model: db.Shoe,
-                  attributes: ["id", "name", "price"],
-                  include: {
-                    model: db.ShoeImage,
-                    attributes: ["shoe_img"],
-                    limit: 1,
+                include: [
+                  {
+                    model: db.Shoe,
+                    attributes: ["id", "name", "price"],
+                    include: {
+                      model: db.ShoeImage,
+                      attributes: ["shoe_img"],
+                      limit: 1,
+                    },
                   },
-                },
+                  {
+                    model: db.ShoeSize,
+                    attributes: ["size"],
+                  },
+                ],
               },
             ],
           },
@@ -70,10 +75,17 @@ module.exports = {
           {
             model: db.Address,
             attributes: { exclude: ["createdAt", "updatedAt", "deletedAt"] },
+            include: [
+              {
+                model: db.City,
+                attributes: ["type", "city_name", "province", "postal_code"],
+              },
+            ],
           },
         ],
         where: whereClause,
         order: [[...sort, body?.order]],
+        distinct: true,
       });
       return {
         count: result.count,
@@ -88,17 +100,66 @@ module.exports = {
   },
   updateOrder: async (body) => {
     try {
-      return await db.Order.update(
-        { status: body?.status },
-        { where: { id: body?.id }, transaction: body?.t }
-      );
+      const update = {};
+      if (body?.status) {
+        update.status = body?.status;
+      }
+      if (body?.last_payment_date) {
+        update.last_payment_date = body?.last_payment_date;
+      }
+      return await db.Order.update(update, {
+        where: { id: body?.id },
+        transaction: body?.t,
+      });
     } catch (error) {
       return error;
     }
   },
   findOneOrder: async (body) => {
     try {
-      return await db.Order.findOne({ where: { id: body?.id } });
+      return await db.Order.findOne({
+        where: { id: body?.id },
+        include: [
+          {
+            model: db.OrderDetail,
+            attributes: { exclude: ["createdAt", "updatedAt", "deletedAt"] },
+            include: [
+              {
+                model: db.Stock,
+                attributes: {
+                  exclude: ["createdAt", "updatedAt", "deletedAt"],
+                },
+                include: [
+                  {
+                    model: db.Shoe,
+                    attributes: ["id", "name", "price", "weight"],
+                    include: {
+                      model: db.ShoeImage,
+                      attributes: ["shoe_img"],
+                      limit: 1,
+                    },
+                  },
+                  {
+                    model: db.ShoeSize,
+                    attributes: ["size"],
+                  },
+                ],
+              },
+            ],
+          },
+          { model: db.User, attributes: ["name"] },
+          {
+            model: db.Address,
+            attributes: { exclude: ["createdAt", "updatedAt", "deletedAt"] },
+            include: [
+              {
+                model: db.City,
+                attributes: ["type", "city_name", "province", "postal_code"],
+              },
+            ],
+          },
+        ],
+      });
     } catch (error) {
       return error;
     }

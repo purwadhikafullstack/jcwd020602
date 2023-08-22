@@ -285,7 +285,7 @@
 /*---------------------- Order list ----------------------*/
 .orderlist-filter {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
   gap: 10px;
 }
 .orderlist-card {
@@ -323,14 +323,6 @@
 
   #detail-product {
     width: 100%;
-  }
-
-  .orderlist-filter {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .orderlist-card {
-    grid-template-columns: 1fr;
   }
 }
 
@@ -371,17 +363,6 @@
   }
   .form-profile {
     flex-direction: column;
-  }
-}
-@media (max-width: 400px) {
-  .orderlist-filter {
-    grid-template-columns: 1fr;
-  }
-  .shoe-list img {
-    height: 140px;
-    /* max-height: 330px; */
-    width: 100vw;
-    object-fit: cover;
   }
 }
 
