@@ -10,6 +10,7 @@ const {
 const {
   findAndCountAllOrder,
   updateOrder,
+
   findOneOrder,
   findAndCountAllOrderUser,
 } = require("../service/order.service");
@@ -24,6 +25,7 @@ const {
   updateStock,
 } = require("../service/stock.service");
 const { addStockHistory } = require("../service/stockHistory.service");
+
 const generateTransactionCode = () =>
   `ORD${moment().format("YYYYMMDDHHmmss")}${Math.floor(Math.random() * 10000)}`;
 const orderController = {
@@ -243,6 +245,7 @@ const orderController = {
       });
     }
   },
+
   cancelPaymentUser: async (req, res) => {
     const t = await db.sequelize.transaction();
     try {
@@ -292,6 +295,7 @@ const orderController = {
       errorResponse(res, err, CustomError);
     }
   },
+
   getOrderAdmin: async (req, res) => {
     try {
       const warehouse = await getWarehouse({
@@ -304,7 +308,10 @@ const orderController = {
         search: req.query?.search || "",
         page: req.query?.page || 1,
         status: req.query?.status,
-        time: req.query?.time,
+
+        timeFrom: req.query?.timeFrom,
+        timeTo: req.query?.timeTo,
+
         limit: 2,
       });
       return res
@@ -356,23 +363,28 @@ const orderController = {
               to_warehouse_id: val.stock.warehouse_id,
               qty: val.qty - val?.stock?.stock,
               status: "APPROVED",
+
               stock_id: closestWarehouse.stocks[0].id,
+
               t,
             });
             // stock transfer & history
             const fromStock = await findStockBy({
-              id: closestWarehouse.stocks[0].id,
+
+              id: closestWarehouse.stock.id,
             });
             fromStock.stock -= val.qty;
             await fromStock.save({ transaction: t });
-            const [shoeStock, created] = await findCreateStock({
+            const [toStock, created] = await findCreateStock({
+
               warehouse_id: val.stock.warehouse_id,
               shoe_id: val.stock.shoe_id,
               shoe_size_id: val.stock.shoe_size_id,
               t,
             });
-            shoeStock.stock += val.qty;
-            await shoeStock.save({ transaction: t });
+
+            toStock.stock += val.qty;
+            await toStock.save({ transaction: t });
             if (fromStock.stock + val.qty != fromStock.stock) {
               await addStockHistory({
                 stock_before: fromStock.stock + stockMutation.qty,
@@ -382,20 +394,25 @@ const orderController = {
                 t,
               });
             }
-            if (shoeStock.stock - val.qty != shoeStock.stock) {
+
+            if (toStock.stock - val.qty != toStock.stock) {
               await addStockHistory({
-                stock_before: shoeStock.stock - stockMutation.qty,
-                stock_after: shoeStock.stock,
-                stock_id: shoeStock.id,
+                stock_before: toStock.stock - stockMutation.qty,
+                stock_after: toStock.stock,
+                stock_id: toStock.id,
+
                 reference: req?.order?.transaction_code,
                 t,
               });
             }
             // Decrease booked_stock in the Product table
-            shoeStock.booked_stock = shoeStock.booked_stock - val.qty;
-            await shoeStock.save({ transaction: t });
+
+            toStock.booked_stock = toStock.booked_stock - val.qty;
+            await toStock.save({ transaction: t });
           }
         }
+        await updateOrder({ t, status: "DELIVERY", id: req.order?.id });
+
       }
       await t.commit();
       return res

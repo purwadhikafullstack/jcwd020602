@@ -148,11 +148,20 @@ db.Order.hasMany(db.OrderDetail, {
   foreignKey: "order_id",
   targetKey: "id",
 });
+db.OrderDetail.belongsTo(db.Order, {
+  foreignKey: "order_id",
+  targetKey: "id",
+});
 db.Stock.hasMany(db.OrderDetail, {
   foreignKey: "stock_id",
   targetKey: "id",
 });
-db.OrderDetail.belongsTo(db.Stock, { foreignKey: "stock_id", targetKey: "id" });
+
+db.OrderDetail.belongsTo(db.Stock, {
+  foreignKey: "stock_id",
+  targetKey: "id",
+});
+
 
 //db.StockHistory foreignKey
 db.StockHistory.belongsTo(db.Stock, {
@@ -165,11 +174,14 @@ db.User.hasMany(db.Order, { foreignKey: "user_id", targetKey: "id" });
 db.Order.belongsTo(db.User, { foreignKey: "user_id", targetKey: "id" });
 db.Address.hasMany(db.Order, { foreignKey: "address_id", targetKey: "id" });
 db.Order.belongsTo(db.Address, { foreignKey: "address_id", targetKey: "id" });
+
+db.Warehouse.hasMany(db.Order, { foreignKey: "warehouse_id", targetKey: "id" });
+
 db.Order.belongsTo(db.Warehouse, {
   foreignKey: "warehouse_id",
   targetKey: "id",
 });
-db.Warehouse.hasMany(db.Order, { foreignKey: "warehouse_id", targetKey: "id" });
+
 
 //db.Warehouse foreignKey
 db.Warehouse.belongsTo(db.City, {

@@ -5,6 +5,7 @@ const userTokenDecoder = require("../middlewares/roleDecoder");
 const { fileUploader } = require("../middlewares/multer");
 const findWarehouse = require("../middlewares/findWarehouse");
 
+
 router.post(
   "/",
   userTokenDecoder.checkUser,

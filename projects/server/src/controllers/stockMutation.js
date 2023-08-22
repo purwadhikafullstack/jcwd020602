@@ -6,10 +6,7 @@ const {
 } = require("../utils/customErrors");
 const { addStockHistory } = require("../service/stockHistory.service");
 const { errorResponse } = require("../utils/function");
-const {
-  findStockBy,
-  findCreateStockForMutation,
-} = require("../service/stock.service");
+const { findStockBy, findCreateStock } = require("../service/stock.service");
 const {
   createMutation,
   findOneMutation,
@@ -68,7 +65,7 @@ const stockMutationController = {
         }
         fromStock.stock -= stockMutation.qty;
         await fromStock.save({ transaction: t });
-        const [toStock, created] = await findCreateStockForMutation({
+        const [toStock, created] = await findCreateStock({
           warehouse_id: stockMutation.to_warehouse_id,
           shoe_id: stockMutation.stock.shoe_id,
           shoe_size_id: stockMutation.stock.shoe_size_id,

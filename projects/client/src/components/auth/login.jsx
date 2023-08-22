@@ -15,7 +15,6 @@ import { fetch } from "../../hoc/authProvider";
 import { auth } from "../../lib/firebase";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
-
 export default function Login() {
   YupPassword(Yup);
   const dispatch = useDispatch();
@@ -42,8 +41,8 @@ export default function Login() {
       email: Yup.string().email("Invalid email address").required("Required"),
       password: Yup.string()
         .min(8, "at least 8 characters")
-        .minUppercase(1, "at least 1 capital letter")
         .required("Required"),
+      // .minUppercase(1, "at least 1 capital letter")
     }),
     onSubmit: async () => {
       let token;
