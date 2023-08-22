@@ -23,6 +23,8 @@ import {
   MenuList,
   MenuItem,
   Center,
+  Grid,
+  Image,
 } from "@chakra-ui/react";
 import { AiOutlinePlus } from "react-icons/ai";
 import { GrClose, GrMenu } from "react-icons/gr";
@@ -83,8 +85,8 @@ export default function OrderListPage() {
     }
   }, [shown]);
   //----------------------------------------------------------------
+  console.log(orders);
   useEffect(() => {
-    console.log(orders);
     const token = JSON.parse(localStorage.getItem("user"));
     if (token) {
       warehouseAdmin(token);
@@ -108,47 +110,10 @@ export default function OrderListPage() {
       <Box id="content" pt={"52px"}>
         <Box mx={2} my={3}>
           <Flex justify={"space-between"} flexWrap={"wrap"}>
-            <Box fontSize={"30px"}>Stock Mutation</Box>
-            <ButtonGroup onClick={onOpen} isAttached variant="outline">
-              <IconButton
-                icon={<AiOutlinePlus />}
-                bg={"black"}
-                color={"white"}
-              />
-              <Button id="button-add" bg={"white"}>
-                Stock Mutation
-              </Button>
-            </ButtonGroup>
-            <AddStockMutation
-              isOpen={isOpen}
-              onClose={onClose}
-              ware={wareAdmin}
-              fetch={fetch}
-            />
-            <EditStockMutation
-              id={stockMutId}
-              isOpen={editSM.isOpen}
-              onClose={editSM.onClose}
-              fetch={fetch}
-              setId={setStockMutId}
-            />
-            <DeleteStockMutation
-              id={stockMutId}
-              setShown={setShown}
-              isOpen={deleteSM.isOpen}
-              onClose={deleteSM.onClose}
-              setId={setStockMutId}
-            />
-            <ConfirmStockMutation
-              id={stockMutId}
-              status={status}
-              setStatus={setStatus}
-              isOpen={confirmSM.isOpen}
-              onClose={confirmSM.onClose}
-              fetch={fetch}
-              setId={setStockMutId}
-            />
+            <Box fontSize={"30px"}>order list</Box>
           </Flex>
+
+          {/*  */}
           <Flex flexWrap={"wrap"} gap={2} my={2} justify={"space-between"}>
             <InputGroup size={"sm"} w={"500px"}>
               <Input placeholder="Search..." ref={inputFileRef} />
@@ -162,196 +127,267 @@ export default function OrderListPage() {
                 <Icon as={FaSearch} color={"black"} />
               </InputRightAddon>
             </InputGroup>
-
-            <Flex gap={2} flexWrap={"wrap"}>
-              <Flex align={"center"} gap={1}>
-                {userSelector.role != "SUPERADMIN" ? null : (
-                  <>
-                    <Box whiteSpace={"nowrap"}>province:</Box>
-                    <Select
-                      id="province"
-                      onChange={(e) => {
-                        setprovince(e.target.value);
-                      }}
-                      size={"sm"}
-                    >
-                      <option key={""} value={""}>
-                        choose province..
-                      </option>
-                      {provinces &&
-                        provinces.map((val, idx) => (
-                          <option value={val?.city?.province}>
-                            {val?.city?.province}
-                          </option>
-                        ))}
-                    </Select>
-
-                    <Box whiteSpace={"nowrap"}>city:</Box>
-                    <Select
-                      onChange={(e) => {
-                        setShown({ page: 1 });
-                        setFilter({ ...filter, warehouse_id: e.target.value });
-                      }}
-                      id="warehouse_id"
-                      size={"sm"}
-                      value={filter.warehouse_id}
-                    >
-                      <option key={""} value={""}>
-                        choose city..
-                      </option>
-                      {cities &&
-                        cities.map((val, idx) => (
-                          <option key={val.id} value={val.id}>
-                            {`Warehouse ${val.name} (${val.city.type} ${val.city.city_name})`}
-                          </option>
-                        ))}
-                    </Select>
-                  </>
-                )}
-                <Box whiteSpace={"nowrap"}>Date Range:</Box>
-                <InputGroup size={"sm"}>
-                  <Input
-                    id="time"
-                    placeholder="Month & Year..."
-                    type="month"
-                    onChange={(e) => {
-                      setShown({ page: 1 });
-                      setFilter({ ...filter, time: e.target.value });
-                    }}
-                  />
-                </InputGroup>
-                <Box whiteSpace={"nowrap"}> Sort By:</Box>
-                <Select
-                  onChange={(e) => {
-                    setShown({ page: 1 });
-                    setFilter({
-                      ...filter,
-                      sort: e.target.value,
-                      order: "ASC",
-                    });
-                  }}
-                  size={"sm"}
-                >
-                  <option value={""}>select..</option>
-                  <option value={"createdAt"} selected>
-                    Date Time
-                  </option>
-                  <option value={`status`}>Status</option>
-                  <option value={`qty`}>Quantity</option>
-                  <option value={`brand`}>Brand</option>
-                  <option value={"name"}>Product Name</option>
-                  <option value={"size"}>Size</option>
-                </Select>
-              </Flex>
-              <Flex align={"center"} gap={1}>
-                <Box whiteSpace={"nowrap"}> Order By:</Box>
-                <Select
-                  onChange={(e) => {
-                    setShown({ page: 1 });
-                    setFilter({ ...filter, order: e.target.value });
-                  }}
-                  value={filter.order}
-                  size={"sm"}
-                  placeholder="select.."
-                >
-                  <option value={"ASC"}>ASC</option>
-                  <option value={"DESC"} selected>
-                    DESC
-                  </option>
-                </Select>
-              </Flex>
-            </Flex>
           </Flex>
-          {/* tampilan mobile card */}
-          <Box>
-            <Flex flexDir={"column"} py={1}>
-              {orders?.rows &&
-                orders?.rows.map((order, idx) => (
-                  <Flex p={1} m={1} key={order?.id} border={"solid"} gap={1}>
-                    <Flex justify={"space-between"}>
-                      <Box>#{idx + 1}</Box>{" "}
-                      {order.status == "PENDING" ? (
-                        <Flex gap={1}>
-                          <Menu>
-                            {({ isOpen }) => (
-                              <>
-                                <MenuButton isActive={isOpen} as={Button} p={0}>
-                                  <Icon as={isOpen ? GrClose : GrMenu} />
-                                </MenuButton>
-                                {filter.warehouse_id ==
-                                order?.fromWarehouse?.id ? (
-                                  <MenuList>
-                                    <MenuItem
-                                      onClick={() => {
-                                        setStatus("REJECTED");
-                                        setStockMutId(order?.id);
-                                        confirmSM.onOpen();
-                                      }}
-                                    >
-                                      Reject
-                                    </MenuItem>
-                                    <MenuItem
-                                      onClick={() => {
-                                        setStatus("APPROVED");
-                                        setStockMutId(order?.id);
-                                        confirmSM.onOpen();
-                                      }}
-                                    >
-                                      Approve
-                                    </MenuItem>
-                                  </MenuList>
-                                ) : (
-                                  <MenuList>
-                                    <MenuItem
-                                      onClick={() => {
-                                        setStockMutId(order?.id);
-                                        editSM.onOpen();
-                                      }}
-                                    >
-                                      Edit
-                                    </MenuItem>
-                                    <MenuItem
-                                      onClick={() => {
-                                        setStockMutId(order?.id);
-                                        deleteSM.onOpen();
-                                      }}
-                                    >
-                                      Delete
-                                    </MenuItem>
-                                  </MenuList>
-                                )}
-                              </>
-                            )}
-                          </Menu>
-                        </Flex>
-                      ) : null}
-                    </Flex>
-                    <Box>
-                      Transaction Code:
-                      {order?.transaction_code}
-                    </Box>
-                    <Center height="100%" w={"100px"}>
-                      <Divider orientation="vertical" bgColor={"red"} />
-                    </Center>
-                    <Box>CUSTOMER: {order?.user?.name}</Box>
-                    <Divider />
-                    <Box>
-                      Shoe: {`${order?.orderDetails?.stock?.Sho?.name}`}
-                    </Box>
-                    <Divider />
-                    <Box>Stock: {order?.orderDetails?.qty}</Box>
-                    <Divider />
-                    <Box>Status: {order?.status}</Box>
-                    <Divider />
-                    <Box>
-                      Date Time:{" "}
-                      {moment(order?.createdAt).format("DD/MM/YYYY, HH:MM")}
-                    </Box>
-                    <Divider />
-                  </Flex>
-                ))}
-            </Flex>
+
+          <Box className="orderlist-filter">
+            {userSelector?.role != "SUPERADMIN" ? null : (
+              <>
+                <Select
+                  id="province"
+                  onChange={(e) => {
+                    setprovince(e.target.value);
+                  }}
+                  size={"sm"}
+                >
+                  <option key={""} value={""}>
+                    choose province..
+                  </option>
+                  {provinces &&
+                    provinces.map((val, idx) => (
+                      <option value={val?.city?.province}>
+                        {val?.city?.province}
+                      </option>
+                    ))}
+                </Select>
+
+                <Select
+                  onChange={(e) => {
+                    setShown({ page: 1 });
+                    setFilter({ ...filter, warehouse_id: e.target.value });
+                  }}
+                  id="warehouse_id"
+                  size={"sm"}
+                  value={filter.warehouse_id}
+                >
+                  <option key={""} value={""}>
+                    choose city..
+                  </option>
+                  {cities &&
+                    cities.map((val, idx) => (
+                      <option key={val.id} value={val.id}>
+                        {`Warehouse ${val.name} (${val.city.type} ${val.city.city_name})`}
+                      </option>
+                    ))}
+                </Select>
+                {/* </Flex> */}
+              </>
+            )}
+            <Box pos={"relative"}>
+              <Box
+                pos={"absolute"}
+                bg={"white"}
+                zIndex={2}
+                fontSize={10}
+                transform={"translate(10px,-7px)"}
+              >
+                Time from:
+              </Box>
+              <Input
+                size={"sm"}
+                id="time"
+                type="date"
+                onChange={(e) => {
+                  setShown({ page: 1 });
+                  setFilter({ ...filter, time: e.target.value });
+                }}
+              />
+            </Box>
+            <Box pos={"relative"}>
+              <Box
+                pos={"absolute"}
+                bg={"white"}
+                zIndex={2}
+                fontSize={10}
+                transform={"translate(10px,-7px)"}
+              >
+                Time to:
+              </Box>
+              <Input
+                size={"sm"}
+                id="time"
+                type="date"
+                onChange={(e) => {
+                  setShown({ page: 1 });
+                  setFilter({ ...filter, time: e.target.value });
+                }}
+              />
+            </Box>
+
+            <Select
+              onChange={(e) => {
+                setShown({ page: 1 });
+                setFilter({
+                  ...filter,
+                  sort: e.target.value,
+                  order: "ASC",
+                });
+              }}
+              size={"sm"}
+            >
+              <option value={""}>select..</option>
+              <option value={"createdAt"} selected>
+                Date Time
+              </option>
+              <option value={`status`}>Status</option>
+              <option value={`qty`}>Quantity</option>
+              <option value={`brand`}>Brand</option>
+              <option value={"name"}>Product Name</option>
+              <option value={"size"}>Size</option>
+            </Select>
+
+            <Select
+              onChange={(e) => {
+                setShown({ page: 1 });
+                setFilter({ ...filter, order: e.target.value });
+              }}
+              value={filter.order}
+              size={"sm"}
+              placeholder="select.."
+            >
+              <option value={"ASC"}>ASC</option>
+              <option value={"DESC"} selected>
+                DESC
+              </option>
+            </Select>
           </Box>
+
+          {/* card */}
+          <Flex flexDir={"column"} py={1}>
+            {orders?.rows &&
+              orders?.rows.map((order, idx) => (
+                <Box border={"1px"} m={1}>
+                  <Flex
+                    justify={"space-between"}
+                    p={1}
+                    bg={"black"}
+                    align={"center"}
+                  >
+                    <Flex flexWrap={"wrap"} gap={1} color={"white"}>
+                      <Box>{order?.status}/</Box>
+                      <Box>{order?.transaction_code}/</Box>
+                      <Box>{order?.user.name}/</Box>
+                      <Box>
+                        {moment(order?.createdAt).format("DD MMM YYYY, HH:MM")}
+                      </Box>
+                    </Flex>
+
+                    {order.status != "PENDING" ? (
+                      <Flex gap={1}>
+                        <Menu>
+                          {({ isOpen }) => (
+                            <>
+                              <MenuButton isActive={isOpen} as={Button} p={0}>
+                                <Icon as={isOpen ? GrClose : GrMenu} />
+                              </MenuButton>
+                              {filter.warehouse_id ==
+                              order?.fromWarehouse?.id ? (
+                                <MenuList>
+                                  <MenuItem
+                                    onClick={() => {
+                                      setStatus("REJECTED");
+                                      setStockMutId(order?.id);
+                                      confirmSM.onOpen();
+                                    }}
+                                  >
+                                    Reject
+                                  </MenuItem>
+                                  <MenuItem
+                                    onClick={() => {
+                                      setStatus("APPROVED");
+                                      setStockMutId(order?.id);
+                                      confirmSM.onOpen();
+                                    }}
+                                  >
+                                    Approve
+                                  </MenuItem>
+                                </MenuList>
+                              ) : (
+                                <MenuList>
+                                  <MenuItem
+                                    onClick={() => {
+                                      setStockMutId(order?.id);
+                                      editSM.onOpen();
+                                    }}
+                                  >
+                                    Edit
+                                  </MenuItem>
+                                  <MenuItem
+                                    onClick={() => {
+                                      setStockMutId(order?.id);
+                                      deleteSM.onOpen();
+                                    }}
+                                  >
+                                    Delete
+                                  </MenuItem>
+                                </MenuList>
+                              )}
+                            </>
+                          )}
+                        </Menu>
+                      </Flex>
+                    ) : null}
+                  </Flex>
+
+                  {/*  */}
+                  <Box className="orderlist-card" m={1}>
+                    {/* product */}
+                    <Box id="a">
+                      {order?.orderDetails?.map((val) => (
+                        <Flex gap={2} m={2} align={"center"} border={"1px"}>
+                          <Image
+                            src={`${process.env.REACT_APP_API_BASE_URL}/${val?.stock?.Sho?.ShoeImages[0]?.shoe_img}`}
+                            w={"100%"}
+                            objectFit={"cover"}
+                            maxW={"140px"}
+                            maxH={"140px"}
+                          />
+                          <Flex flexDir={"column"} gap={1} w={"100%"} mr={1}>
+                            <Flex gap={1}>
+                              <Box>Name: </Box>
+                              <Box> {val?.stock?.Sho?.name} </Box>
+                            </Flex>
+                            <Flex gap={1}>
+                              <Box>Size: </Box>
+                              <Box> {val?.qty}</Box>
+                            </Flex>
+                            <Flex gap={1}>
+                              <Box>Qty: </Box>
+                              <Box> {val?.qty}</Box>
+                            </Flex>
+                            <Flex gap={1}>
+                              <Box>Price: </Box>
+                              <Box> {val?.price}</Box>
+                            </Flex>
+                          </Flex>
+                        </Flex>
+                      ))}
+                    </Box>
+                    {/* addrees */}
+                    <Box id="a">
+                      <Box px={2} fontWeight={"bold"} borderBottom={"1px"}>
+                        Address
+                      </Box>
+                      <Box m={2}>{order?.address?.address}</Box>
+                    </Box>
+                    {/* courir */}
+                    <Box id="a">
+                      <Box px={2} fontWeight={"bold"} borderBottom={"1px"}>
+                        Courier
+                      </Box>
+                      <Box m={2}> {order?.courier}</Box>
+                      <Box></Box>
+                    </Box>
+                  </Box>
+
+                  {/*  */}
+                  <Flex justify={"space-between"} m={1} p={1} bg={"gray.100"}>
+                    <Box>Total Price: </Box>
+                    <Box>{order?.total_price}</Box>
+                  </Flex>
+                </Box>
+              ))}
+          </Flex>
+
           <Flex p={2} m={2} justify={"center"} border={"2px"}>
             <Pagination
               shown={shown}
