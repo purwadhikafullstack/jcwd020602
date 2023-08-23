@@ -2,7 +2,6 @@ import {
   Box,
   Center,
   Flex,
-  Grid,
   Table,
   TableContainer,
   Tbody,
@@ -10,34 +9,54 @@ import {
   Th,
   Thead,
   Tr,
+  Button,
 } from "@chakra-ui/react";
 import { Chart as ChartJS } from "chart.js/auto";
 import moment from "moment";
 import { useEffect, useState } from "react";
-import { Line } from "react-chartjs-2";
+import { Bar, Line } from "react-chartjs-2";
+import { useFetchExcelReport } from "../../hooks/useFetchOrder";
 
 export default function BarChart(props) {
+  const { setExcel } = useFetchExcelReport();
   const { salesData } = props;
   const [mapData, setMapData] = useState([]);
+  const options = {
+    maintainAspectRatio: false,
+    scales: {
+      y: {
+        beginAtZero: true,
+        stacked: true,
+        grid: {
+          display: true,
+          color: "rgba(255,99,132,0.2)",
+        },
+      },
+      x: {
+        grid: {
+          display: false,
+        },
+      },
+    },
+  };
+  const style = {
+    hoverBackgroundColor: "rgba(0,0,0,0.8)",
+    backgroundColor: "rgba(0,0,0,0.1)",
+    hoverBorderColor: "rgba(0,0,0,1)",
+    borderColor: "rgba(0,0,0,1)",
+    borderWidth: 2,
+    fill: true,
+  };
   const [priceData, setPriceData] = useState({
     labels: [],
     datasets: [
       {
         label: "Incomes",
         data: [],
-        backgroundColor: ["black", "blue", "red"],
+        ...style,
       },
     ],
-    options: {
-      responsive: true,
-      width: 400, // Adjust width as needed
-      height: 300, // Adjust height as needed
-      scales: {
-        y: {
-          beginAtZero: true,
-        },
-      },
-    },
+    options,
   });
   const [shoeData, setShoeData] = useState({
     labels: [],
@@ -45,33 +64,21 @@ export default function BarChart(props) {
       {
         label: "Shoes Sold",
         data: [],
-        backgroundColor: ["black", "blue", "red"],
+        ...style,
       },
     ],
-    options: {
-      scales: {
-        y: {
-          beginAtZero: true,
-        },
-      },
-    },
+    options,
   });
   const [traData, setTraData] = useState({
     labels: [],
     datasets: [
       {
-        label: "Transactions Made",
+        label: "Transactions",
         data: [],
-        backgroundColor: ["black", "blue", "red"],
+        ...style,
       },
     ],
-    options: {
-      scales: {
-        y: {
-          beginAtZero: true,
-        },
-      },
-    },
+    options,
   });
   async function dataTotPrc() {
     const priceData = salesData?.data?.reduce((prev, curr) => {
@@ -83,15 +90,13 @@ export default function BarChart(props) {
       }
       return prev;
     }, {});
-    const labels = Object.keys(priceData);
-    const values = Object.values(priceData);
     setPriceData((prevData) => ({
       ...prevData,
-      labels: labels,
+      labels: Object.keys(priceData),
       datasets: [
         {
           ...prevData.datasets[0],
-          data: values,
+          data: Object.values(priceData),
         },
       ],
     }));
@@ -106,15 +111,13 @@ export default function BarChart(props) {
       }
       return prev;
     }, {});
-    const labels = Object.keys(shoeData);
-    const values = Object.values(shoeData);
     setShoeData((prevData) => ({
       ...prevData,
-      labels: labels,
+      labels: Object.keys(shoeData),
       datasets: [
         {
           ...prevData.datasets[0],
-          data: values,
+          data: Object.values(shoeData),
         },
       ],
     }));
@@ -134,15 +137,13 @@ export default function BarChart(props) {
       }
       return prev;
     }, {});
-    const labels = Object.keys(traData);
-    const values = Object.values(traData);
     setTraData((prevData) => ({
       ...prevData,
-      labels: labels,
+      labels: Object.keys(traData),
       datasets: [
         {
           ...prevData.datasets[0],
-          data: values,
+          data: Object.values(traData),
         },
       ],
     }));
@@ -155,7 +156,7 @@ export default function BarChart(props) {
     }
   }, [salesData]);
   useEffect(() => {
-    setMapData([priceData, shoeData, traData]);
+    setMapData([priceData, traData, shoeData]);
   }, [priceData, shoeData, traData]);
   return (
     <Box className="barChart">
@@ -166,13 +167,18 @@ export default function BarChart(props) {
                 flexDir={"column"}
                 p={1}
                 border={"1px"}
-                maxW={"400px"}
-                w={"100%"}
+                maxW={"500px"}
+                w={"90%"}
               >
-                <Box maxW={"500px"} w={"100%"}>
-                  <Line data={val} options={val?.options} />
+                <Box
+                  maxW={"500px"}
+                  w={"100%"}
+                  h={"250px"}
+                  border={"1px solid black"}
+                >
+                  <Bar data={val} options={val?.options} />
                 </Box>
-                <Box maxW={"500px"} w={"100%"}>
+                <Box w={"100%"}>
                   <TableContainer mt={2}>
                     <Table variant="simple">
                       <Thead>
@@ -196,6 +202,19 @@ export default function BarChart(props) {
                     </Table>
                   </TableContainer>
                 </Box>
+                <Button
+                  onClick={() => {
+                    setExcel({
+                      header: val.datasets[0].label,
+                      label: val.labels,
+                      data: val.datasets[0].data,
+                    });
+                  }}
+                  color={"white"}
+                  backgroundColor={"black"}
+                >
+                  Export excel
+                </Button>
               </Flex>
             </Center>
           ))

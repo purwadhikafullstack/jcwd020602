@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "../api/api";
+import { downloadExcel } from "react-export-table-to-excel";
 
 export const useFetchOrder = (filter) => {
   const [orders, setOrders] = useState();
@@ -66,4 +67,37 @@ export const useFetchSalesReport = (filter) => {
     fetchSalesData();
   }, [filter]);
   return { salesData, fetchSalesData };
+};
+
+export const useFetchExcelReport = () => {
+  const [excel, setExcel] = useState({ header: "", label: [], data: [] });
+  const header = ["Date", excel.header];
+  const handleDownloadExcel = (body) => {
+    const opt = "downloadExcel Method";
+    downloadExcel({
+      fileName: `${excel.header} - ${opt}`,
+      sheet: "1",
+      tablePayload: {
+        header,
+        body,
+      },
+    });
+    setExcel({ header: "", label: [], data: [] });
+  };
+  const bodyMaker = () => {
+    if (excel.label.length && excel.data.length) {
+      const data = [];
+      let total = 0;
+      excel.label.map((val, idx) => {
+        data.push([[val], [excel.data[idx]]]);
+        tot += excel.data[idx];
+      });
+      data.push([["Total"], [total]]);
+      handleDownloadExcel(data);
+    }
+  };
+  useEffect(() => {
+    bodyMaker();
+  }, [excel]);
+  return { setExcel };
 };
