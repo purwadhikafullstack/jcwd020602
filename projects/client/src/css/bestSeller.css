@@ -1,0 +1,115 @@
+.container {
+  padding: 1rem 1rem;
+}
+
+.swiper_container {
+  position: relative;
+}
+.swiper_container_rec {
+  position: relative;
+  border: 2px solid;
+}
+
+.bestseller {
+  width: 35rem;
+  height: 30rem;
+  position: relative;
+}
+.recommend {
+  width: 20rem;
+  height: 25rem;
+  position: relative;
+  padding: 5px;
+}
+
+@media (max-width: 500px) {
+  .swiper_container {
+    height: auto;
+  }
+  .bestseller {
+    width: 28rem !important;
+    height: auto !important;
+  }
+  .bestseller img {
+    width: 28rem !important;
+    height: 36rem !important;
+  }
+}
+
+.bestseller img {
+  width: 35rem;
+  height: 30rem;
+  border-radius: 2rem;
+  object-fit: cover;
+}
+
+/* .swiper-slide-shadow-left,
+.swiper-slide-shadow-right {
+  display: none;
+} */
+
+.slider-controler {
+  position: relative;
+  bottom: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* background: black; */
+  height: 0;
+}
+
+.swiper-button-next {
+  right: 0% !important;
+}
+.swiper-button-prev {
+  left: 0% !important;
+}
+
+@media (max-width: 990px) {
+  .slider-controler .swiper-button-next {
+    left: 70% !important;
+    transform: translateX(-70%) !important;
+  }
+}
+
+@media (max-width: 450px) {
+  .slider-controler .swiper-button-next {
+    left: 80% !important;
+    transform: translateX(-80%) !important;
+  }
+}
+
+@media (max-width: 990px) {
+  .slider-controler .swiper-button-prev {
+    left: 30% !important;
+    transform: translateX(-30%) !important;
+  }
+}
+
+@media (max-width: 450px) {
+  .slider-controler .swiper-button-prev {
+    left: 20% !important;
+    transform: translateX(-20%) !important;
+  }
+}
+
+.slider-arrow {
+  background: white;
+  color: black;
+  width: 3.5rem;
+  height: 3.5rem;
+  filter: drop-shadow(0px 8px 24px rgba(18, 28, 53, 0.1));
+}
+
+.swiper-pagination {
+  position: relative;
+  width: 15rem !important;
+}
+
+.swiper-pagination .swiper-pagination-bullet {
+  filter: drop-shadow(0px 8px 24px rgba(18, 28, 53, 0.1));
+}
+
+.swiper-pagination .swiper-pagination-bullet-active {
+  background: var(blue);
+}

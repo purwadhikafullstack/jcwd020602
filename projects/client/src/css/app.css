@@ -1,0 +1,420 @@
+@import url("https://fonts.googleapis.com/css2?family=Oswald:wght@400;500&family=Poppins:wght@500&display=swap");
+
+* {
+  font-family: "Poppins", sans-serif;
+}
+
+#button {
+  border-radius: 0;
+  background: white;
+  border: 2px solid;
+  max-width: 500px;
+}
+#button:hover {
+  background: black;
+  color: white;
+}
+
+/*---------------------- banner ----------------------*/
+.banner-carosel {
+  border: 2px;
+}
+/*---------------------- navbar ----------------------*/
+.navbar {
+  background: rgba(255, 255, 255, 0.8);
+  width: 100vw;
+  position: fixed;
+  top: -3px;
+  z-index: 9;
+  border-bottom: 2px solid;
+}
+.navbar.sticky {
+  background: white;
+}
+.navbar-atas {
+  gap: 5px;
+  margin-bottom: 2px;
+  cursor: pointer;
+  font-size: 10px;
+}
+.navbar-atas text {
+  padding-left: 2px;
+  padding-right: 2px;
+}
+.navbar-atas text:hover {
+  text-decoration: underline;
+}
+.menu {
+  display: flex;
+  justify-content: space-between;
+  width: 50%;
+  cursor: pointer;
+  font-weight: bold;
+}
+.categorymenu {
+  transform: translateY(25px);
+}
+.burger,
+.search {
+  display: none;
+  cursor: pointer;
+  border-radius: 100%;
+  padding: 5px;
+}
+
+.search:hover,
+.burger:hover,
+.cart:hover {
+  background: #e8e8e8;
+}
+.cart {
+  border-radius: 100%;
+  padding: 5px;
+  cursor: pointer;
+}
+.navbar-atas {
+  display: flex;
+  justify-content: right;
+  align-items: center;
+}
+.menubrands img {
+  cursor: pointer;
+}
+@media (max-width: 850px) {
+  .menu {
+    display: none;
+  }
+  .input {
+    display: none;
+  }
+  .navbar-atas {
+    display: none;
+  }
+  .burger {
+    display: flex;
+  }
+  .search {
+    display: flex;
+  }
+}
+/*---------------------- sidemenu ----------------------*/
+
+.Accordion text:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+.Accordion #option:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/*---------------------- foot ----------------------*/
+.foot {
+  display: flex;
+  width: 800px;
+  justify-content: space-between;
+}
+.foot #text {
+  cursor: pointer;
+  font-size: 10px;
+}
+.foot #text:hover {
+  color: white;
+}
+.socialmedia {
+  cursor: pointer;
+}
+
+.socialmedia #logo:hover {
+  background: white;
+  color: black;
+  transform: translateY(-10px);
+  animation: none;
+}
+
+/*---------------------- product list ----------------------*/
+.product {
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+.select-custom #select {
+  border-radius: 0;
+  border-color: black;
+}
+.shoe-list img {
+  height: 330px;
+
+  width: 100vw;
+  object-fit: cover;
+}
+/*---------------------- product detail ----------------------*/
+
+#detail-product {
+  width: 30%;
+  border: 2px solid;
+}
+#detail-product #detail {
+  border: 1px solid;
+  padding: 5px;
+}
+
+/*---------------------- scroll ----------------------*/
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: black;
+}
+
+.scrollbox-sidebar:hover {
+  overflow-y: scroll;
+}
+
+/*---------------------- @keyframes ----------------------*/
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes logop {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(0%);
+  }
+}
+@keyframes tulisan {
+  0% {
+    transform: translateX(100%);
+  }
+
+  100% {
+    transform: translateX(0%);
+  }
+}
+@keyframes medsos {
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
+    transform: rotateY(360deg);
+  }
+}
+/*---------------------- animation ----------------------*/
+#logoo {
+  animation: logop 2s;
+}
+#tulisan {
+  animation: tulisan 2s;
+}
+
+.socialmedia #logo {
+  animation: medsos 5s infinite;
+}
+
+/*---------------------- logo slider ----------------------*/
+
+#slider {
+  display: flex;
+  overflow: hidden;
+  position: relative;
+}
+
+#slider-track {
+  animation: scroll 10s linear infinite;
+  display: flex;
+  align-items: center;
+  gap: 60px;
+}
+
+#slide {
+  width: 155px;
+  height: auto;
+}
+
+/*---------------------- brands ----------------------*/
+#brands-section {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.animate {
+  animation: slideIn 2s forwards;
+}
+
+/*---------------------- category ----------------------*/
+.category {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+/*---------------------- my-account ----------------------*/
+.my-account {
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+  padding-bottom: 100px;
+  gap: 10px;
+}
+
+.form-profile {
+  display: flex;
+  gap: 20px;
+}
+.form-profile input {
+  border: 2px solid;
+  border-radius: 0;
+}
+/*---------------------- Order list ----------------------*/
+.orderlist-filter {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  gap: 10px;
+}
+.orderlist-card {
+  display: grid;
+  grid-template-columns: 2fr 2fr 1fr;
+  gap: 5px;
+}
+.orderlist-card #a {
+  /* border-right: 1px solid; */
+  border: 1px solid;
+}
+/*---------------------- @media ----------------------*/
+@media (max-width: 960px) {
+  #brands-section {
+    grid-template-columns: 1fr 1fr;
+  }
+  .foot img {
+    display: none;
+  }
+  .product {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  .shoe-list img {
+    height: 250px;
+
+    width: 100vw;
+    object-fit: cover;
+  }
+}
+
+@media (max-width: 750px) {
+  #product-detail {
+    flex-direction: column;
+  }
+
+  #detail-product {
+    width: 100%;
+  }
+  .orderlist-filter {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 630px) {
+  #brands-section {
+    grid-template-columns: 1fr;
+  }
+  #slide {
+    width: 100px;
+    height: auto;
+  }
+  .foot {
+    display: block;
+    width: 100%;
+    align-items: center;
+  }
+  .foot img {
+    display: block;
+  }
+  .product {
+    grid-template-columns: 1fr 1fr;
+  }
+  .shoe-list img {
+    height: 230px;
+
+    width: 100vw;
+    object-fit: cover;
+  }
+}
+@media (max-width: 630px) {
+  .category {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 560px) {
+  .my-account {
+    grid-template-columns: 1fr;
+  }
+  .form-profile {
+    flex-direction: column;
+  }
+}
+@media (max-width: 400px) {
+  .orderlist-filter {
+    grid-template-columns: 1fr;
+  }
+}
+
+/*---------------------- banner ----------------------*/
+.banner {
+  /* width: 35rem; */
+  /* height: 40rem; */
+
+  position: relative;
+  object-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid;
+}
+.banner img {
+  /* object-position: 50% 50%; */
+  /* max-width: 1250px; */
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/*---------------------- inputan ----------------------*/
+.inputbox {
+  position: relative;
+}
+.inputbox label {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: 0.5s;
+  /* z-index: 2; */
+  background: white;
+  padding-left: 5px;
+  padding-right: 5px;
+  font-size: 12px;
+}
+input:focus ~ label {
+  top: -1px;
+  z-index: 2;
+}
+.input-has-value label {
+  top: -1px;
+  z-index: 2;
+}

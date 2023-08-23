@@ -19,5 +19,8 @@
   },
   "workspaces": [
     "projects/*"
-  ]
+  ],
+  "dependencies": {
+    "@chakra-ui/icons": "^2.1.0"
+  }
 }
