@@ -1,3 +1,4 @@
+const { Op } = require("sequelize");
 const db = require("../models");
 const fs = require("fs");
 
@@ -35,13 +36,29 @@ const brandController = {
         });
       }
       await t.rollback();
-      return res.status(500).send(err.message);
+      return res.status(500).send({ message: err.message });
     }
   },
   getAll: async (req, res) => {
     try {
-      const brand = await db.Brand.findAll({ include: [db.Shoe] });
-      return res.status(200).send(brand);
+      const search = req?.query?.search || "";
+      const sort = req?.query?.sort || "id";
+      const order = req?.query?.order || "ASC";
+      const limit = req?.query?.limit || 8;
+      const page = req?.query?.page || 1;
+      const offset = (parseInt(page) - 1) * limit;
+
+      const brand = await db.Brand.findAndCountAll({
+        include: [db.Shoe],
+        where: { name: { [Op.like]: `%${search}%` } },
+        distinct: true,
+        offset,
+        order: [[sort, order]],
+      });
+      console.log("mmmmmmememmmmmkk");
+      return res
+        .status(200)
+        .send({ ...brand, totalPages: Math.ceil(brand.count / limit) });
     } catch (err) {
       return res.status(500).send(err.message);
     }

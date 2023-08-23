@@ -199,15 +199,8 @@ export default function SalesReportPage() {
           </Box>
           <ReportCard salesData={salesData} />
           {/* card */}
-          {/* <Flex
-            flexWrap={"wrap"}
-            justifyContent={"space-between"}
-            alignItems={"center"}
-            gap={5}
-            px={5}
-          > */}
+
           <BarChart salesData={salesData} />
-          {/* </Flex> */}
         </Box>
       </Box>
     </>

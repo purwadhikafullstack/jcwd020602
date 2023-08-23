@@ -95,8 +95,8 @@ export default function Navbar() {
                   onMouseLeave={(e) => setBrand(false)}
                 >
                   <Box align={"center"}>
-                    {brands &&
-                      brands?.map((val) => (
+                    {/* {brands &&
+                      brands?.rows.map((val) => (
                         <Link to={`/b/${val.name.replace(/ /g, "-")}`}>
                           <Box
                             p={2}
@@ -108,7 +108,7 @@ export default function Navbar() {
                             {val.name}
                           </Box>
                         </Link>
-                      ))}
+                      ))} */}
                   </Box>
                 </Box>
               </Flex>
