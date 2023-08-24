@@ -54,7 +54,7 @@ export default function ChangePassword() {
         return nav("/auth");
       } catch (err) {
         toast({
-          title: err.response.data,
+          title: err?.response?.data?.message,
           status: "error",
         });
       }

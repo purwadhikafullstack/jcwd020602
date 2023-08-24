@@ -30,12 +30,13 @@ export default function Cart() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const carts = useSelector(cartSelector.selectAll);
+
   const totalPriceSum = useSelector(getTotalPriceInCart);
   const sumItem = useSelector(getTotalProductsInCart);
   const weightTotal = useSelector(getTotalWeightInCart);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 2;
-
+  console.log(carts);
   useEffect(() => {
     dispatch(getCarts());
   }, [dispatch]);

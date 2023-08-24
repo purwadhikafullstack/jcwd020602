@@ -1,5 +1,4 @@
 const db = require("../models");
-SHOE_URL = process.env.SHOE_URL;
 const { Op } = require("sequelize");
 const fs = require("fs");
 const { errorResponse } = require("../utils/function");
@@ -28,6 +27,7 @@ const includeOptions = [
   },
 ];
 
+//-------------------------------------------------- DONE CLEAN CODE! -FAHMI
 const shoeController = {
   addShoe: async (req, res) => {
     const t = await db.sequelize.transaction();
@@ -62,7 +62,7 @@ const shoeController = {
       const imageArr = [];
       for (const file of req.files) {
         const { filename } = file;
-        const imageUrl = SHOE_URL + filename;
+        const imageUrl = "shoe/" + filename;
         imageArr.push({ shoe_id: shoe.id, shoe_img: imageUrl });
       }
 
@@ -201,7 +201,22 @@ const shoeController = {
       if (!shoe) {
         return res.status(400).send({ message: "shoe not found" });
       }
-      return res.status(200).send(shoe);
+
+      const sizeAndStock = shoe.stocks.reduce((prev, curr) => {
+        if (prev[curr.shoeSize.size]) {
+          prev[curr.shoeSize.size] += curr.stock;
+        } else {
+          prev[curr.shoeSize.size] = curr.stock;
+        }
+
+        return prev;
+      }, {});
+
+      const sizeAndStockArray = Object.entries(sizeAndStock).map(
+        ([size, stock]) => ({ size, stock })
+      );
+
+      return res.status(200).send({ shoe, sizeAndStock: sizeAndStockArray });
     } catch (err) {
       return res.status(500).send(err.message);
     }
