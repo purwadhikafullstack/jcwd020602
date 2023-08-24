@@ -14,6 +14,8 @@ router.post(
 );
 
 router.get("/", categoryController.getAllCategory);
+router.get("/selectCategory", categoryController.getAllCategorySelect);
+router.get("/selectSubcategory", categoryController.getAllSubSelect);
 
 router.get("/:id", roleDecoder.checkSuper, categoryController.getCategoryById);
 
@@ -26,7 +28,6 @@ router.patch(
   }).single("category"),
   categoryController.editCategory
 );
-
 
 router.delete(
   "/:id",

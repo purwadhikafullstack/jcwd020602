@@ -14,10 +14,23 @@ export const useFetchBrand = () => {
       console.log(err?.response?.data);
     }
   };
-
   useEffect(() => {
     fetch();
   }, []);
-
   return { brands, fetch };
+};
+export const useFetchSelectBrand = () => {
+  const [brands, setBrands] = useState([]);
+  const fetch = async () => {
+    try {
+      const res = await api().get(`/brands/select`);
+      setBrands(res.data);
+    } catch (err) {
+      console.log(err?.response?.data);
+    }
+  };
+  useEffect(() => {
+    fetch();
+  }, []);
+  return { brands };
 };

@@ -13,16 +13,20 @@ import { useEffect, useRef, useState } from "react";
 import { useFetchWareProv, useFetchWareCity } from "../hooks/useFetchWarehouse";
 import { api } from "../api/api";
 import { useFetchSalesReport } from "../hooks/useFetchOrder";
-import BarChart from "../components/dashboard/barChart";
-import { useFetchBrand } from "../hooks/useFetchBrand";
+import {
+  useFetchSelectCategory,
+  useFetchSelectSubcategory,
+} from "../hooks/useFetchCategory";
+import { useFetchSelectBrand } from "../hooks/useFetchBrand";
+import { useFetchSelectShoe } from "../hooks/useFetchShoe";
 import ReportCard from "../components/dashboard/reportCard";
+import BarChart from "../components/dashboard/barChart";
 
 export default function SalesReportPage() {
   const userSelector = useSelector((state) => state.auth);
   const { provinces } = useFetchWareProv();
   const [province, setprovince] = useState(0);
   const { cities } = useFetchWareCity(province);
-  const { brands } = useFetchBrand();
   const inputFileRef = useRef(null);
   const [timeFrom, setTimeFrom] = useState();
   const [timeTo, setTimeTo] = useState();
@@ -32,27 +36,15 @@ export default function SalesReportPage() {
     timeFrom: "",
     timeTo: "",
     brand_id: "",
+    category_id: "",
+    subcategory_id: "",
+    shoe_id: "",
   });
-  //pagination ------------------------------------------------------
-  const [pages, setPages] = useState([]);
-  const [shown, setShown] = useState({ page: 1 });
-  const { salesData, fetchSalesData } = useFetchSalesReport(filter);
-  function pageHandler() {
-    const output = [];
-    for (let i = 1; i <= salesData.totalPages; i++) {
-      output.push(i);
-    }
-    setPages(output);
-  }
-  useEffect(() => {
-    pageHandler();
-  }, [salesData]);
-  useEffect(() => {
-    if (shown.page > 0 && shown.page <= salesData.totalPages) {
-      setFilter({ ...filter, page: shown.page });
-    }
-  }, [shown]);
-  //----------------------------------------------------------------
+  const { brands } = useFetchSelectBrand();
+  const { categories } = useFetchSelectCategory();
+  const { sub } = useFetchSelectSubcategory(filter);
+  const { shoes } = useFetchSelectShoe(filter);
+  const { salesData } = useFetchSalesReport(filter);
   useEffect(() => {
     if (timeFrom && timeTo) {
       setFilter({ ...filter, timeFrom, timeTo });
@@ -89,7 +81,6 @@ export default function SalesReportPage() {
               <InputRightAddon
                 cursor={"pointer"}
                 onClick={() => {
-                  setShown({ page: 1 });
                   setFilter({ ...filter, search: inputFileRef.current.value });
                 }}
               >
@@ -120,7 +111,6 @@ export default function SalesReportPage() {
                 </Select>
                 <Select
                   onChange={(e) => {
-                    setShown({ page: 1 });
                     setFilter({ ...filter, warehouse_id: e.target.value });
                   }}
                   id="warehouse_id"
@@ -179,8 +169,11 @@ export default function SalesReportPage() {
             </Box>
             <Select
               onChange={(e) => {
-                setShown({ page: 1 });
-                setFilter({ ...filter, brand_id: e.target.value });
+                setFilter({
+                  ...filter,
+                  brand_id: e.target.value,
+                  shoe_id: "",
+                });
               }}
               id="brand_id"
               size={"sm"}
@@ -196,10 +189,74 @@ export default function SalesReportPage() {
                   </option>
                 ))}
             </Select>
+            <Select
+              onChange={(e) => {
+                setFilter({
+                  ...filter,
+                  category_id: e.target.value,
+                  subcategory_id: "",
+                  shoe_id: "",
+                });
+              }}
+              id="category_id"
+              size={"sm"}
+              value={filter?.category_id}
+            >
+              <option key={""} value={""}>
+                choose category..
+              </option>
+              {categories &&
+                categories?.map((val, idx) => (
+                  <option key={val?.id} value={val?.id}>
+                    {val?.name}
+                  </option>
+                ))}
+            </Select>
+            <Select
+              onChange={(e) => {
+                setFilter({
+                  ...filter,
+                  subcategory_id: e.target.value,
+                  shoe_id: "",
+                });
+              }}
+              id="subcategory_id"
+              size={"sm"}
+              value={filter?.subcategory_id}
+            >
+              <option key={""} value={""}>
+                choose subcategory..
+              </option>
+              {sub &&
+                sub?.map((val, idx) => (
+                  <option key={val?.id} value={val?.id}>
+                    {val?.name}
+                  </option>
+                ))}
+            </Select>
+            <Select
+              onChange={(e) => {
+                setFilter({
+                  ...filter,
+                  shoe_id: e.target.value,
+                });
+              }}
+              id="shoe_id"
+              size={"sm"}
+              value={filter?.shoe_id}
+            >
+              <option key={""} value={""}>
+                choose shoe..
+              </option>
+              {shoes &&
+                shoes?.map((val, idx) => (
+                  <option key={val?.id} value={val?.id}>
+                    {val?.name}
+                  </option>
+                ))}
+            </Select>
           </Box>
           <ReportCard salesData={salesData} />
-          {/* card */}
-
           <BarChart salesData={salesData} />
         </Box>
       </Box>

@@ -2,6 +2,8 @@ const db = require("../models");
 SHOE_URL = process.env.SHOE_URL;
 const { Op } = require("sequelize");
 const fs = require("fs");
+const { errorResponse } = require("../utils/function");
+const { CustomError } = require("../utils/customErrors");
 const includeOptions = [
   {
     model: db.Brand,
@@ -159,6 +161,33 @@ const shoeController = {
         .send({ ...shoes, totalPages: Math.ceil(shoes.count / limit) });
     } catch (err) {
       return res.status(500).send(err.message);
+    }
+  },
+  getAllShoeSelect: async (req, res) => {
+    try {
+      const whereClause = {};
+      if (req.query.subcategory_id) {
+        whereClause.subcategory_id = req.query.subcategory_id;
+      } else if (req.query.category_id) {
+        whereClause.category_id = req.query.category_id;
+      }
+      if (req.query.brand_id) {
+        whereClause.brand_id = req.query.brand_id;
+      }
+      let shoes = await db.Shoe.findAll({
+        where: whereClause,
+      });
+      if (
+        !req.query.brand_id &&
+        !req.query.subcategory_id &&
+        !req.query.category_id
+      ) {
+        shoes = [];
+      }
+
+      return res.status(200).send(shoes);
+    } catch (err) {
+      errorResponse(res, err, CustomError);
     }
   },
   getShoeByName: async (req, res) => {

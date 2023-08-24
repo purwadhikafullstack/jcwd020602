@@ -9,7 +9,7 @@ import Pagination from "../components/dashboard/pagination";
 import { api } from "../api/api";
 import { useFetchStockHistory } from "../hooks/useFetchStockHistory";
 import moment from "moment";
-import { useFetchBrand } from "../hooks/useFetchBrand";
+import { useFetchSelectBrand } from "../hooks/useFetchBrand";
 
 export default function StockHistoryPage() {
   const userSelector = useSelector((state) => state.auth);
@@ -17,7 +17,7 @@ export default function StockHistoryPage() {
   const { provinces } = useFetchWareProv();
   const [province, setprovince] = useState(0);
   const { cities } = useFetchWareCity(province);
-  const { brands } = useFetchBrand();
+  const { brands } = useFetchSelectBrand();
   const [filter, setFilter] = useState({
     page: 1,
     sort: "",
