@@ -199,7 +199,7 @@ export default function DashboardChart(props) {
     }, {});
     const bestSeller = [];
     Object.keys(bS).map((val) => {
-      if (bestSeller.length < 3) {
+      if (bestSeller.length < 5) {
         bestSeller.push(bS[val]);
       } else {
         if (bS[val].qty > bestSeller[1].qty) {
@@ -208,6 +208,10 @@ export default function DashboardChart(props) {
           bestSeller.splice(1, 1, bS[val]);
         } else if (bS[val] > bestSeller[3].qty) {
           bestSeller.splice(2, 1, bS[val]);
+        } else if (bS[val] > bestSeller[4].qty) {
+          bestSeller.splice(3, 1, bS[val]);
+        } else if (bS[val] > bestSeller[5].qty) {
+          bestSeller.splice(4, 1, bS[val]);
         }
       }
       setBestShoes(bestSeller);
