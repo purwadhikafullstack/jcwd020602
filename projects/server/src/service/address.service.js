@@ -94,7 +94,6 @@ module.exports = {
   },
   editAddress: async (t, body, response) => {
     try {
-      console.log(body);
       return await db.Address.update(
         {
           title: body.title,

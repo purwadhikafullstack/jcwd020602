@@ -90,7 +90,7 @@ export const useFetchExcelReport = () => {
       let total = 0;
       excel.label.map((val, idx) => {
         data.push([[val], [excel.data[idx]]]);
-        tot += excel.data[idx];
+        total += excel.data[idx];
       });
       data.push([["Total"], [total]]);
       handleDownloadExcel(data);

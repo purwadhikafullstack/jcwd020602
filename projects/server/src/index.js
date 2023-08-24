@@ -55,16 +55,16 @@ app.use("/api/stockMutations", verify, routes.stockMutationRoutes);
 app.use("/api/carts", verify, routes.cartRoutes);
 app.use("/api/checkOuts", verify, routes.checkOutRoutes);
 app.use("/api/orders", verify, routes.orderRoutes);
-app.use(
-  "/api/paymentProof",
-  express.static(`${__dirname}/public/paymentProof`)
-);
 
 // ===========================
 app.use("/api/category", express.static(`${__dirname}/public/category`));
 app.use("/api/brand", express.static(`${__dirname}/public/brand`));
 app.use("/api/avatar", express.static(`${__dirname}/public/avatar`));
 app.use("/api/shoe", express.static(`${__dirname}/public/shoe`));
+app.use(
+  "/api/paymentProof",
+  express.static(`${__dirname}/public/paymentProof`)
+);
 
 // not found
 app.use((req, res, next) => {

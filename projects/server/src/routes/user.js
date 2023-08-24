@@ -4,6 +4,10 @@ const userController = require("../controllers").userController;
 const {
   validateRegister,
   validateVerification,
+  validateLogin,
+  validateEditProfile,
+  validateForgotPass,
+  validateEditPassword,
 } = require("../middlewares/validator");
 const { fileUploader } = require("../middlewares/multer");
 const roleDecoder = require("../middlewares/roleDecoder");
@@ -12,10 +16,10 @@ const roleDecoder = require("../middlewares/roleDecoder");
 router.post("/register", validateRegister, userController.register);
 
 // VERIFICATION BY EMAIL
-router.patch("/verify", userController.verify);
+router.patch("/verify", validateVerification, userController.verify);
 
 //login
-router.post("/login", userController.login);
+router.post("/login", validateLogin, userController.login);
 
 router.get(
   "/userbytoken",
@@ -29,21 +33,23 @@ router.get("/generate-token/email", userController.generateTokenByEmail);
 //forgot password
 router.patch(
   "/forgot-password",
+  validateForgotPass,
   userController.tokenDecoder,
   userController.forgotPassword
 );
 
+//edit profile
 router.patch(
   "/profile",
   fileUploader({
     destinationFolder: "avatar",
     fileType: "image",
   }).single("avatar"),
+  validateEditProfile,
   userController.editProfile
 );
 
-
-router.patch("/password", userController.editPassword);
+router.patch("/password", validateEditPassword, userController.editPassword);
 
 // ------------- admin
 router.post(
@@ -56,13 +62,13 @@ router.post(
   userController.addAdmin
 );
 router.patch(
-  "/admin/:id",
+  "/editAdmin",
   roleDecoder.checkSuper,
   fileUploader({
     destinationFolder: "avatar",
     fileType: "image",
   }).single("avatar"),
-  userController.editAdminById
+  userController.editProfile
 );
 router.get("/", roleDecoder.checkSuper, userController.getAllUser);
 router.get("/:id", roleDecoder.checkSuper, userController.getAdminById);
