@@ -14,6 +14,7 @@ const {
   updateEditPrimary,
 } = require("../service/address.service");
 const { openCage } = require("../service/opencage.service");
+
 const addressControllers = {
   insertAddress: async (req, res) => {
     const t = await db.sequelize.transaction();

@@ -37,14 +37,13 @@ export default function EditAdmin(props) {
     formData.append("name", admin.name);
     formData.append("phone", admin.phone);
     formData.append("email", admin.email);
-    formData.append("password", admin.password);
+
     if (selectedFile) {
       formData.append("avatar", selectedFile);
     }
-    // formData.append("avatar", !selectedFile ? admin.avatar_url : selectedFile);
 
     try {
-      const response = await api().patch("/auth/admin/" + props.id, formData);
+      const response = await api().patch("/auth/editAdmin", formData);
       toast({
         title: response.data.message,
         status: "success",
@@ -119,10 +118,6 @@ export default function EditAdmin(props) {
                 onChange={inputhandler}
                 defaultValue={admin.phone}
               />
-            </Box>
-            <Box>
-              Password:
-              <Input id="password" onChange={inputhandler} />
             </Box>
           </ModalBody>
 

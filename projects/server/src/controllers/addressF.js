@@ -1,6 +1,4 @@
 const db = require("../models");
-const dotenv = require("dotenv");
-dotenv.config();
 const { Op } = require("sequelize");
 const { openCage } = require("../service/opencage.service");
 const {
@@ -14,6 +12,7 @@ const {
   editAddress,
 } = require("../service/address.service");
 
+//-------------------------------------------------- DONE CLEAN CODE! -FAHMI
 const addressFControllers = {
   addAddress: async (req, res) => {
     const t = await db.sequelize.transaction();
@@ -24,14 +23,10 @@ const addressFControllers = {
       const titleCheck = await titleChecker(title, user_id);
 
       if (nameCheck) {
-        return res.status(400).send({
-          message: "name already used",
-        });
+        return res.status(400).send({ message: "name already used" });
       }
       if (titleCheck) {
-        return res.status(400).send({
-          message: "title already used",
-        });
+        return res.status(400).send({ message: "title already used" });
       }
       const city = await db.City.findOne({ where: { city_id } });
       const postcode = city?.dataValues?.postal_code;
@@ -55,7 +50,7 @@ const addressFControllers = {
       );
 
       await t.commit();
-      return res.status(200).send({ message: "New address data added" });
+      return res.status(200).send({ message: "New address added" });
     } catch (err) {
       await t.rollback();
       return res.status(500).send({ message: err.message });
@@ -70,7 +65,7 @@ const addressFControllers = {
       });
       return res.status(200).send(address);
     } catch (err) {
-      return res.status(500).send(err.message);
+      return res.status(500).send({ message: err.message });
     }
   },
   deleteAddress: async (req, res) => {

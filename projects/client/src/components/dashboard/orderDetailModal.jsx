@@ -78,7 +78,12 @@ export default function OrderDetailModal(props) {
                     </Flex>
                     <Flex gap={1}>
                       <Box>Price: </Box>
-                      <Box> {val?.price}</Box>
+                      <Box>
+                        {val?.price.toLocaleString("id-ID", {
+                          style: "currency",
+                          currency: "IDR",
+                        })}
+                      </Box>
                     </Flex>
                   </Flex>
                 </Flex>
@@ -99,13 +104,26 @@ export default function OrderDetailModal(props) {
             </Box>
             <Divider my="4" />
             <Box as="b">Payment Details</Box>
-            <Box>Shipping cost: Rp{order.shipping_cost}</Box>
             <Box>
-              All shoe price: Rp{order.total_price - order.shipping_cost}
+              Shipping cost:{" "}
+              {order.shipping_cost.toLocaleString("id-ID", {
+                style: "currency",
+                currency: "IDR",
+              })}
+            </Box>
+            <Box>
+              All shoe price:{" "}
+              {(order.total_price - order.shipping_cost).toLocaleString(
+                "id-ID",
+                { style: "currency", currency: "IDR" }
+              )}
             </Box>
             <Box as="b">
-              Total price: Rp
-              {order.total_price}
+              Total price:{" "}
+              {order.total_price.toLocaleString("id-ID", {
+                style: "currency",
+                currency: "IDR",
+              })}
             </Box>
           </ModalBody>
 

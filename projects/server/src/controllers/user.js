@@ -1,18 +1,18 @@
 const db = require("../models");
 const bcrypt = require("bcrypt");
 const { nanoid } = require("nanoid");
-const moment = require("moment");
-const mailer = require("../lib/nodemailer");
 const fs = require("fs");
-const handlebars = require("handlebars");
 const {
   findUser,
   createToken,
   updateToken,
   findToken,
-  updateUser,
+  verifUser,
+  addAdmin,
+  editProfile,
+  editPassword,
+  mailerEmail,
 } = require("../service/user.service");
-const AVATAR_URL = process.env.AVATAR_URL;
 
 const userController = {
   register: async (req, res) => {
@@ -22,41 +22,28 @@ const userController = {
       const findEmail = await findUser(email);
 
       if (findEmail) {
-        throw new Error("Email was registered");
-      } else {
-        const user = await db.User.create({ email, role: "USER" });
-        const id = JSON.stringify({ id: user.dataValues.id });
-        const generateToken = nanoid();
-        await createToken(id, generateToken, 1, "VERIFY", t);
-
-        const template = fs.readFileSync(
-          "./src/template/register.html",
-          "utf-8"
-        );
-        let compiledTemplate = handlebars.compile(template);
-        let registerTemplate = compiledTemplate({
-          registrationLink: `${process.env.URL}/verify/${generateToken}`,
-          email,
-        });
-        mailer({
-          subject: "email verification link",
-          to: email,
-          html: registerTemplate,
-        });
-        t.commit();
-        return res.status(201).send({
-          message: "Check your email for verification",
-        });
+        console.log("email sudah ada");
+        return res.status(400).send({ message: "email was registered" });
       }
+
+      const user = await db.User.create({ email, role: "USER" });
+      const id = JSON.stringify({ id: user.dataValues.id });
+      const generateToken = nanoid();
+      await createToken(id, generateToken, 1, "VERIFY", t);
+      mailerEmail("register", email, generateToken);
+      t.commit();
+      return res.status(201).send({
+        message: "Check your email for verification",
+      });
     } catch (err) {
       t.rollback();
-      return res.status(500).send(err.message);
+      return res.status(500).send({ message: err.message });
     }
   },
   verify: async (req, res) => {
     const t = await db.sequelize.transaction();
     try {
-      await updateUser(req.body, "", t); //req.body: pass, name, email
+      await verifUser(req.body, "", t); //req.body: pass, name, email
       const user = await findUser(req.body.email);
       const id = JSON.stringify({ id: user.dataValues.id });
       await db.Token.update(
@@ -67,7 +54,7 @@ const userController = {
       return res.status(201).send({ message: "Success create account" });
     } catch (err) {
       t.rollback();
-      return res.status(500).send(err.message);
+      return res.status(500).send({ message: err.message });
     }
   },
   login: async (req, res) => {
@@ -76,12 +63,12 @@ const userController = {
       const { email, password } = req.body;
       const user = await findUser(email);
       if (!user) {
-        throw new Error("email not found");
+        return res.status(400).send({ message: "email not found" });
       }
 
       const match = await bcrypt.compare(password, user.dataValues.password);
       if (!match) {
-        throw new Error("Wrong password");
+        return res.status(400).send({ message: "wrong password" });
       }
 
       const id = JSON.stringify({ id: user.dataValues.id });
@@ -102,7 +89,7 @@ const userController = {
       });
     } catch (err) {
       t.rollback();
-      return res.status(500).send(err.message);
+      return res.status(500).send({ message: err.message });
     }
   },
   tokenDecoder: async (req, res, next) => {
@@ -142,28 +129,15 @@ const userController = {
         } else {
           await createToken(id, generateToken, 1, "FORGOT-PASSWORD", t);
         }
-
-        const template = fs.readFileSync(
-          "./src/template/forgotPassword.html",
-          "utf-8"
-        );
-        let compiledTemplate = handlebars.compile(template);
-        let resetPasswordTemplate = compiledTemplate({
-          registrationLink: `${process.env.URL}/forgot-password/${generateToken}`,
-        });
-        mailer({
-          subject: "RESET PASSWORD",
-          to: email,
-          html: resetPasswordTemplate,
-        });
+        mailerEmail("forgotPassword", email, generateToken);
         await t.commit();
-        return res.send({ message: "check your email" });
+        return res.status(200).send({ message: "check your email" });
       } else {
-        throw new Error("Email not found");
+        return res.status(400).send({ message: "Email not found" });
       }
     } catch (err) {
       await t.rollback();
-      return res.status(500).send(err.message);
+      return res.status(500).send({ message: err.message });
     }
   },
   forgotPassword: async (req, res) => {
@@ -185,19 +159,8 @@ const userController = {
     const t = await db.sequelize.transaction();
     const filename = req?.file?.filename;
     try {
-      const { name, phone, email } = req.body;
-      const check = await findUser(email);
-
-      await db.User.update(
-        {
-          name,
-          phone,
-          avatar_url: filename
-            ? "avatar/" + filename
-            : check?.dataValues?.avatar_url || null,
-        },
-        { where: { email }, transaction: t }
-      );
+      const check = await findUser(req.body.email);
+      await editProfile(req.body, filename, check, t);
 
       if (filename) {
         if (check?.dataValues?.avatar_url) {
@@ -222,31 +185,26 @@ const userController = {
         fs.unlinkSync(`${__dirname}/../public/avatar/${filename}`);
       }
       await t.rollback();
-      return res.status(500).send(err.message);
+      return res.status(500).send({ message: err.message });
     }
   },
   editPassword: async (req, res) => {
     const t = await db.sequelize.transaction();
     try {
-      const { oldPassword, newPassword, email } = req.body;
-      const check = await findUser(email);
+      const check = await findUser(req.body.email);
       const match = await bcrypt.compare(
-        oldPassword,
+        req.body.oldPassword,
         check.dataValues.password
       );
       if (!match) {
         return res.status(400).send({ message: "Password not match" });
       }
-      const hashPassword = await bcrypt.hash(newPassword, 10);
-      await db.User.update(
-        { password: hashPassword },
-        { where: { email }, transaction: t }
-      );
+      await editPassword(req.body, check, t);
       await t.commit();
       return res.status(200).send({ message: "success change password" });
     } catch (err) {
       await t.rollback();
-      return res.status(500).send(err.message);
+      return res.status(500).send({ message: err.message });
     }
   },
   // -------------------------- SUPERADMIN
@@ -254,9 +212,7 @@ const userController = {
     const t = await db.sequelize.transaction();
     const { filename } = req?.file;
     try {
-      const { name, email, phone, password } = req.body;
-      const { filename } = req.file;
-      const hashPassword = await bcrypt.hash(password, 10);
+      const { email } = req.body;
       const check = await findUser(email);
 
       if (check) {
@@ -266,18 +222,7 @@ const userController = {
         return res.status(400).send({ message: "email alrdy exist" });
       }
 
-      await db.User.create(
-        {
-          name,
-          email,
-          phone,
-          password: hashPassword,
-          avatar_url: AVATAR_URL + filename,
-          role: "ADMIN",
-          status: "verified",
-        },
-        { transaction: t }
-      );
+      await addAdmin(req.body, req.file, t);
       await t.commit();
       return res.status(200).send({ message: "success add admin" });
     } catch (err) {
@@ -285,7 +230,7 @@ const userController = {
         fs.unlinkSync(`${__dirname}/../public/avatar/${filename}`);
       }
       await t.rollback();
-      return res.status(500).send(err.message);
+      return res.status(500).send({ message: err.message });
     }
   },
   getAllUser: async (req, res) => {
@@ -293,9 +238,7 @@ const userController = {
       const result = await db.User.findAll();
       return res.status(200).send(result);
     } catch (err) {
-      res.status(500).send({
-        message: err.message,
-      });
+      res.status(500).send({ message: err.message });
     }
   },
   getAdminById: async (req, res) => {
@@ -303,42 +246,6 @@ const userController = {
       where: { id: req.params.id },
     });
     return res.status(200).send(user);
-  },
-  editAdminById: async (req, res) => {
-    const t = await db.sequelize.transaction();
-    const filename = req?.file?.filename;
-    try {
-      const { name, email, phone, password } = req.body;
-      const hashPassword = await bcrypt.hash(password, 10);
-      const check = findUser(email);
-
-      if (check?.dataValues?.avatar_url) {
-        fs.unlinkSync(
-          `${__dirname}/../public/avatar/${
-            check.dataValues.avatar_url.split("/")[1]
-          }`
-        );
-      }
-
-      await db.User.update(
-        {
-          name,
-          email,
-          phone,
-          password: hashPassword,
-          avatar_url: filename
-            ? "avatar/" + filename
-            : check?.dataValues?.avatar_url || null,
-        },
-        { where: { id: req.params.id }, transaction: t }
-      );
-      await t.commit();
-      return res.send({ message: "success update admin" });
-    } catch (err) {
-      fs.unlinkSync(req.file.path);
-      await t.rollback();
-      return res.status(500).send(err.message);
-    }
   },
   deleteAdmin: async (req, res) => {
     const t = await db.sequelize.transaction();

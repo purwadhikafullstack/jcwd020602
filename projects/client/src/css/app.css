@@ -15,6 +15,16 @@
   color: white;
 }
 
+.select-filter {
+  position: relative;
+}
+.select-filter #title {
+  position: absolute;
+  background: white;
+  z-index: 2;
+  font-size: 9px;
+  transform: translate(5px, -7px);
+}
 /*---------------------- banner ----------------------*/
 .banner-carosel {
   border: 2px;
@@ -326,6 +336,10 @@
   }
   .orderlist-filter {
     grid-template-columns: 1fr 1fr;
+  }
+  .orderlist-card {
+    grid-template-columns: 1fr;
+    gap: 5px;
   }
 }
 

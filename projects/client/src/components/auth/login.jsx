@@ -1,8 +1,9 @@
-import { Box, Button, Flex } from "@chakra-ui/react";
+import { Box, Button, Center, Divider, Flex } from "@chakra-ui/react";
 import { FormControl, FormErrorMessage } from "@chakra-ui/react";
 import { Heading, Icon, Input, InputGroup } from "@chakra-ui/react";
 import { InputRightElement, Stack, Text, useToast } from "@chakra-ui/react";
 import { TbAlertCircleFilled } from "react-icons/tb";
+import { FcGoogle } from "react-icons/fc";
 import { ViewOffIcon, ViewIcon, EmailIcon } from "@chakra-ui/icons";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -41,8 +42,9 @@ export default function Login() {
       email: Yup.string().email("Invalid email address").required("Required"),
       password: Yup.string()
         .min(8, "at least 8 characters")
-        .required("Required"),
-      // .minUppercase(1, "at least 1 capital letter")
+        .required("Required")
+        .minUppercase(1, "at least 1 capital letter")
+        .minNumbers(1, "at least 1 number"),
     }),
     onSubmit: async () => {
       let token;
@@ -67,7 +69,7 @@ export default function Login() {
         return nav("/");
       } catch (err) {
         toast({
-          title: err.response?.data,
+          title: err?.response?.data.message,
           status: "error",
         });
       }
@@ -87,6 +89,14 @@ export default function Login() {
       </Heading>
 
       <Stack spacing={"20px"}>
+        <Button onClick={socialLogin} size={"sm"} rightIcon={<FcGoogle />}>
+          login with google
+        </Button>
+        <Flex justify={"space-between"} align={"center"}>
+          <Box borderBottom={"1px"} w={"45%"} />
+          <Box>OR</Box>
+          <Box w={"45%"} borderBottom={"1px"} />
+        </Flex>
         <FormControl isInvalid={formField === "email" && formik.errors.email}>
           <Box
             className={`inputbox ${
@@ -162,7 +172,6 @@ export default function Login() {
           <Link to="/forgot-password">
             <Box _hover={{ color: "blue.500" }}> click here</Box>
           </Link>
-          <Button onClick={socialLogin}>login with google</Button>
         </Flex>
       </Stack>
     </Box>

@@ -22,7 +22,6 @@ export const addProduct = createAsyncThunk(
   async ({ name, size }) => {
     try {
       const token = JSON.parse(localStorage.getItem("user"));
-      console.log(token);
 
       const response = await api().post(
         "/carts",

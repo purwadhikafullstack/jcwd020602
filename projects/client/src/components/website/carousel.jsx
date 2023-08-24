@@ -49,7 +49,7 @@ export function Recommend(props) {
                 .filter((val) => val.id != props.id)
                 .map((shoe, idx) => (
                   <SwiperSlide key={idx} className="recommend">
-                    <Link to={`/${shoe.name}`}>
+                    <Link to={`/${shoe.name.replace(/ /g, "-")}`}>
                       <Box border={"1px"} h={"100%"} cursor={"pointer"}>
                         <Image
                           src={`${process.env.REACT_APP_API_BASE_URL}/${shoe.ShoeImages[0]?.shoe_img}`}
@@ -119,7 +119,7 @@ export function BestSeller() {
                 .filter((val) => val.status == "BESTSELLER")
                 .map((shoe, idx) => (
                   <SwiperSlide key={idx} className="recommend">
-                    <Link to={`/${shoe.name}`}>
+                    <Link to={`/${shoe.name.replace(/ /g, "-")}`}>
                       <Box border={"1px"} h={"100%"} cursor={"pointer"}>
                         <Image
                           src={`${process.env.REACT_APP_API_BASE_URL}/${shoe.ShoeImages[0]?.shoe_img}`}

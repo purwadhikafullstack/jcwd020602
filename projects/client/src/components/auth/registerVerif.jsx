@@ -31,18 +31,20 @@ export default function Verify() {
       name: "",
       password: "",
       confirmPassword: "",
+      phone: "",
       email,
     },
     validationSchema: Yup.object().shape({
       name: Yup.string().required("required"),
       phone: Yup.string()
-        .min(12, "min 12 digits")
-        .min(12, "min 12 digits")
+        .min(10, "min 10 digits")
+        .max(12, "max 12 digits")
         .required("required"),
       password: Yup.string()
         .matches(/^(?=.*[A-Z])/, "Must contain at least one uppercase")
         .matches(/^(?=.*[a-z])/, "Must contain at least one lowercase")
         .min(8, "Password minimum 8 character")
+        .minNumbers(1, "at least 1 number")
         .required("required"),
       confirmPassword: Yup.string().oneOf(
         [Yup.ref("password"), null],
@@ -59,7 +61,7 @@ export default function Verify() {
         return nav("/auth");
       } catch (err) {
         toast({
-          title: err?.response?.data,
+          title: err?.response?.data.message,
           status: "error",
         });
       }

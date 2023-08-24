@@ -20,6 +20,8 @@ import ImageModal from "../components/dashboard/imageModal";
 import { DeleteProduct } from "../components/dashboard/deleteProduct";
 import EditProduct from "../components/dashboard/editProduct";
 import Pagination from "../components/dashboard/pagination";
+import { useFetchBrand } from "../hooks/useFetchBrand";
+import { useFetchCategory } from "../hooks/useFetchCategory";
 
 export default function ProductPage() {
   const { isOpen, onClose, onOpen } = useDisclosure();
@@ -31,6 +33,8 @@ export default function ProductPage() {
   const inputFileRef = useRef(null);
   const [shoeId, setShoeId] = useState();
   const [category, setCategory] = useState();
+  const { brands } = useFetchBrand();
+  const { categories } = useFetchCategory();
   const [filter, setFilter] = useState({
     page: 1,
     sort: "",
@@ -39,8 +43,6 @@ export default function ProductPage() {
     brand: "",
   });
   const { shoes, fetch } = useFetchShoe(category, "", filter);
-  console.log(category);
-  console.log(shoes);
 
   // -------------------------- pagination
   const [pages, setPages] = useState([]);
@@ -72,7 +74,9 @@ export default function ProductPage() {
       <Box id="content" pt={"52px"}>
         <Box mx={2} my={3}>
           <Flex justify={"space-between"} flexWrap={"wrap"}>
-            <Box fontSize={"30px"}>Product</Box>
+            <Box fontSize={"30px"} fontWeight={"bold"}>
+              Product
+            </Box>
             {userSelector.role == "SUPERADMIN" ? (
               <ButtonGroup
                 onClick={addModal.onOpen}
@@ -96,7 +100,7 @@ export default function ProductPage() {
             />
           </Flex>
 
-          <Flex flexWrap={"wrap"} gap={2} my={2} justify={"space-between"}>
+          <Flex flexWrap={"wrap"} gap={4} my={2}>
             <InputGroup size={"sm"} w={"500px"}>
               <Input placeholder="Search..." ref={inputFileRef} />
               <InputRightAddon
@@ -111,51 +115,58 @@ export default function ProductPage() {
             </InputGroup>
 
             <Flex gap={2}>
-              <Select
-                size={"sm"}
-                onChange={(e) => {
-                  setShown({ page: 1 });
-                  setFilter({ ...filter, brand: e.target.value });
-                }}
-              >
-                <option value={""}>FILTER BY BRAND:</option>
-                <option value={"Adidas"}>Adidas</option>
-                <option value={"Nike"}>Nike</option>
-                <option value={"Converse"}>Converse</option>
-                <option value={"Vans"}>Vans</option>
-                <option value={"Puma"}>Puma</option>
-                <option value={"New Balance"}>New Balance</option>
-              </Select>
-              <Select
-                size={"sm"}
-                onChange={(e) => {
-                  setShown({ page: 1 });
-                  setCategory(e.target.value);
-                }}
-              >
-                <option value={""}>FILTER BY CATEGORY:</option>
-                <option value={"Men"}>Men</option>
-                <option value={"Women"}>Women</option>
-                <option value={"Kid"}>Kid</option>
-              </Select>
+              <Box className="select-filter">
+                <Box id="title">BRAND</Box>
+                <Select
+                  size={"sm"}
+                  placeholder="select"
+                  onChange={(e) => {
+                    setShown({ page: 1 });
+                    setFilter({ ...filter, brand: e.target.value });
+                  }}
+                >
+                  {brands?.map((val) => (
+                    <option value={val.name}>{val.name}</option>
+                  ))}
+                </Select>
+              </Box>
 
-              <Select
-                size={"sm"}
-                onChange={(e) => {
-                  setShown({ page: 1 });
-                  setFilter({
-                    ...filter,
-                    sort: e.target.value.split(",")[0],
-                    order: e.target.value.split(",")[1],
-                  });
-                }}
-              >
-                <option value={","}>ORDER BY: </option>
-                <option value={"name,ASC"}>Name: A to Z</option>
-                <option value={"name,DESC"}>Name: Z to A</option>
-                <option value={"price,ASC"}>Price: LOW to HIGH</option>
-                <option value={"price,DESC"}>Price: HIGH to LOW</option>
-              </Select>
+              <Box className="select-filter">
+                <Box id="title">CATEGORY</Box>
+                <Select
+                  size={"sm"}
+                  placeholder="select"
+                  onChange={(e) => {
+                    setShown({ page: 1 });
+                    setCategory(e.target.value);
+                  }}
+                >
+                  {categories?.map((val) => (
+                    <option value={val.name}>{val.name}</option>
+                  ))}
+                </Select>
+              </Box>
+
+              <Box className="select-filter">
+                <Box id="title">order by</Box>
+                <Select
+                  size={"sm"}
+                  placeholder="select"
+                  onChange={(e) => {
+                    setShown({ page: 1 });
+                    setFilter({
+                      ...filter,
+                      sort: e.target.value.split(",")[0],
+                      order: e.target.value.split(",")[1],
+                    });
+                  }}
+                >
+                  <option value={"name,ASC"}>Name: A to Z</option>
+                  <option value={"name,DESC"}>Name: Z to A</option>
+                  <option value={"price,ASC"}>Price: LOW to HIGH</option>
+                  <option value={"price,DESC"}>Price: HIGH to LOW</option>
+                </Select>
+              </Box>
             </Flex>
           </Flex>
 
@@ -326,7 +337,7 @@ export default function ProductPage() {
             </Table>
           </TableContainer>
         </Box>
-        <Flex p={2} m={2} justify={"center"} border={"2px"}>
+        <Flex p={2} m={2} justify={"center"}>
           <Pagination
             shown={shown}
             setShown={setShown}

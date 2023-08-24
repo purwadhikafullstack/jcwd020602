@@ -1,13 +1,13 @@
 const db = require("../models");
-const CATEGORY_URL = process.env.CATEGORY_URL;
 const fs = require("fs");
 
+//-------------------------------------------------- DONE CLEAN CODE! -FAHMI
 const categoryController = {
   addCategory: async (req, res) => {
     const t = await db.sequelize.transaction();
+    const filename = req?.file?.filename;
     try {
       const { name } = req.body;
-      const filename = req?.file?.filename;
       const check = await db.Category.findOne({ where: { name } });
 
       if (check) {
