@@ -1,8 +1,9 @@
+const { join } = require("path");
+// require("dotenv/config");
 const dotenv = require("dotenv");
-dotenv.config();
+dotenv.config({ path: join(__dirname, "../.env") });
 const express = require("express");
 const cors = require("cors");
-const { join } = require("path");
 
 const PORT = process.env.PORT || 8000;
 const app = express();

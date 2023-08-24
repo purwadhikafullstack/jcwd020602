@@ -32,4 +32,11 @@ module.exports = {
     host: db_host,
     dialect: db_dialect,
   },
+  production: {
+    username: db_username,
+    password: db_password,
+    database: db_database,
+    host: db_host,
+    dialect: db_dialect,
+  },
 };
