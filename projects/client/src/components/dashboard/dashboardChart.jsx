@@ -3,12 +3,11 @@ import moment from "moment";
 import { useEffect, useState } from "react";
 import { Chart as ChartJS } from "chart.js/auto"; // tolong jangan dihapus
 import { Bar, Doughnut } from "react-chartjs-2";
+import { api } from "../../api/api";
 
 export default function DashboardChart(props) {
   const { salesData } = props;
   const [barData, setBarData] = useState([]);
-  const [doughnutData, setDoughnutData] = useState([]);
-  const [bestSeller, setBestSeller] = useState({});
   const options = {
     maintainAspectRatio: false,
   };
@@ -19,24 +18,29 @@ export default function DashboardChart(props) {
     borderColor: "rgba(0,0,0,1)",
     borderWidth: 2,
   };
-  const styleDoughnut = {
-    hoverBackgroundColor: "rgba(0,0,0,0.8)",
-    backgroundColor: "rgba(0,0,0,0.1)",
-    hoverBorderColor: "rgba(0,0,0,1)",
-    borderColor: "rgba(0,0,0,1)",
-    borderWidth: 2,
-  };
-  const generateRandomRGBAColor = () => {
-    const colors = [];
-    const r = Math.floor(Math.random() * 255);
-    const g = Math.floor(Math.random() * 255);
-    const b = Math.floor(Math.random() * 255);
-    const a = Math.floor(Math.random() * 100) / 100;
-    for (let i = 0; i < 10; i++) {
-      colors.push(`rgba(${r}, ${g}, ${b}, ${a})`);
+  function generateRandomRGBAColor(length) {
+    const colors1 = [];
+    const colors2 = [];
+    for (let i = 0; i < length; i++) {
+      const r = Math.floor(Math.random() * 255);
+      const g = Math.floor(Math.random() * 255);
+      const b = Math.floor(Math.random() * 255);
+      colors1.push(`rgba(${r}, ${g}, ${b}, 1)`);
+      colors2.push(`rgba(${r}, ${g}, ${b}, 0.6)`);
     }
-    return colors;
-  };
+    return { colors1, colors2 };
+  }
+  function styleDoughnut(length) {
+    const { colors1, colors2 } = generateRandomRGBAColor(length);
+    const style = {
+      hoverBackgroundColor: colors1,
+      backgroundColor: colors2,
+      hoverBorderColor: colors2,
+      borderColor: colors1,
+      borderWidth: 2,
+    };
+    return style;
+  }
   const [priceData, setPriceData] = useState({
     labels: [],
     datasets: [
@@ -76,7 +80,7 @@ export default function DashboardChart(props) {
       {
         label: "Brand Sold",
         data: [],
-        ...styleDoughnut,
+        ...style,
       },
     ],
     options,
@@ -87,7 +91,7 @@ export default function DashboardChart(props) {
       {
         label: "Best Seller",
         data: [],
-        ...styleDoughnut,
+        ...style,
       },
     ],
     options,
@@ -177,20 +181,13 @@ export default function DashboardChart(props) {
         {
           ...prevData.datasets[0],
           data: Object.values(brData),
+          ...styleDoughnut(Object.keys(brData).length),
         },
       ],
     }));
   }
+  const [bestShoes, setBestShoes] = useState([]);
   async function dataBestSeller() {
-    const bsData = salesData?.reduce((prev, curr) => {
-      const shoe = curr.stock.Sho.name;
-      if (prev[shoe]) {
-        prev[shoe] += curr?.qty;
-      } else {
-        prev[shoe] = curr?.qty;
-      }
-      return prev;
-    }, {});
     const bS = salesData.reduce((prev, curr) => {
       const shoe = curr.stock.Sho.name;
       if (prev[shoe]) {
@@ -200,25 +197,25 @@ export default function DashboardChart(props) {
       }
       return prev;
     }, {});
-    console.log(bS);
-    setBestSeller(
-      Object.keys(bS).reduce((prev, curr) => {
-        if (!prev?.qty || prev.qty < bS[curr].qty) prev = bS[curr];
-        return prev;
-      }, {})
-    );
-    setBestData((prevData) => ({
-      ...prevData,
-      labels: Object.keys(bsData),
-      datasets: [
-        {
-          ...prevData.datasets[0],
-          data: Object.values(bsData),
-        },
-      ],
-    }));
+    const bestSeller = [];
+    Object.keys(bS).map((val) => {
+      if (bestSeller.length < 3) {
+        bestSeller.push(bS[val]);
+      } else {
+        if (bS[val].qty > bestSeller[1].qty) {
+          bestSeller.splice(0, 1, bS[val]);
+        } else if (bS[val] > bestSeller[2].qty) {
+          bestSeller.splice(1, 1, bS[val]);
+        } else if (bS[val] > bestSeller[3].qty) {
+          bestSeller.splice(2, 1, bS[val]);
+        }
+      }
+      setBestShoes(bestSeller);
+    });
+    const res = await api().patch("/shoes/bestSeller", {
+      shoe_ids: bestSeller.map((val) => val.stock.shoe_id),
+    });
   }
-  console.log(bestSeller);
   useEffect(() => {
     dataTotalPrc();
     dataTotalSho();
@@ -228,7 +225,6 @@ export default function DashboardChart(props) {
   }, [salesData]);
   useEffect(() => {
     setBarData([priceData, traData, shoeData]);
-    setDoughnutData([brandData, bestData]);
   }, [priceData, traData, shoeData]);
   return (
     <>
@@ -255,28 +251,6 @@ export default function DashboardChart(props) {
               </Center>
             ))
           : null}
-        {doughnutData
-          ? doughnutData?.map((val) => (
-              <Center>
-                <Flex
-                  flexDir={"column"}
-                  p={1}
-                  border={"1px"}
-                  maxW={"500px"}
-                  w={"90%"}
-                >
-                  <Box
-                    maxW={"500px"}
-                    w={"100%"}
-                    h={"250px"}
-                    border={"1px solid black"}
-                  >
-                    <Doughnut data={val} options={val?.options} />
-                  </Box>
-                </Flex>
-              </Center>
-            ))
-          : null}
         <Center>
           <Flex
             flexDir={"column"}
@@ -286,43 +260,49 @@ export default function DashboardChart(props) {
             w={"90%"}
           >
             <Box
-              className="shoe-list"
-              cursor={"pointer"}
-              _hover={{ bg: "black", color: "white" }}
-              pos={"relative"}
               maxW={"500px"}
               w={"100%"}
               h={"250px"}
               border={"1px solid black"}
             >
-              {/* <LazyLoadImage
-                effect="blur"
-                src={`${process.env.REACT_APP_API_BASE_URL}/${bestSeller.stock?.Sho?.shoeImage?.shoe_img}`}
-              /> */}
+              <Doughnut data={brandData} options={brandData?.options} />
+            </Box>
+          </Flex>
+        </Center>
+      </Box>
+      <Flex p={5}>
+        {bestShoes.map((val, idx) => (
+          <Flex
+            flexDir={"column"}
+            p={1}
+            border={"1px"}
+            maxW={"500px"}
+            w={"90%"}
+          >
+            <Box
+              className="shoe-list"
+              _hover={{ bg: "black", color: "white" }}
+              pos={"relative"}
+              maxW={"500px"}
+              w={"100%"}
+              h={"500px"}
+              border={"1px solid black"}
+            >
               <Image
-                src={`${process.env.REACT_APP_API_BASE_URL}/${
-                  bestSeller.stock?.Sho?.shoeImages[0]
-                    ? bestSeller.stock?.Sho?.shoeImages[0]?.shoe_img
-                    : ""
-                }`}
-                pos={"absolute"}
-                top={0}
-                opacity={0}
-                transition="opacity 0.5s"
+                src={`${process.env.REACT_APP_API_BASE_URL}/${val.stock?.Sho?.ShoeImages[0]?.shoe_img}`}
               />
-
               <Flex flexDir={"column"} p={2}>
-                <Text fontWeight={"bold"}>{bestSeller.stock?.Sho?.name}</Text>
+                <Text fontWeight={"bold"}>{val.stock?.Sho?.name}</Text>
                 <Divider />
-                <Text>{bestSeller.stock?.Sho?.brand?.name}</Text>
+                <Text>{val.stock?.Sho?.brand?.name}</Text>
                 <Divider />
                 <Text fontSize={13} color={"gray"}>
-                  {bestSeller.stock?.Sho?.Category?.name}{" "}
-                  {bestSeller.stock?.Sho?.subcategory?.name}
+                  {val.stock?.Sho?.Category?.name}{" "}
+                  {val.stock?.Sho?.subcategory?.name}
                 </Text>
                 <Divider />
                 <Text>
-                  {bestSeller.stock?.Sho?.price.toLocaleString("id-ID", {
+                  {val.stock?.Sho?.price.toLocaleString("id-ID", {
                     style: "currency",
                     currency: "IDR",
                   })}
@@ -330,8 +310,8 @@ export default function DashboardChart(props) {
               </Flex>
             </Box>
           </Flex>
-        </Center>
-      </Box>
+        ))}
+      </Flex>
     </>
   );
 }

@@ -328,6 +328,31 @@ const shoeController = {
       return res.status(500).send(err.message);
     }
   },
+  setBestSeller: async (req, res) => {
+    const t = await db.sequelize.transaction();
+    try {
+      const shoe_ids = req.body.shoe_ids || [];
+      await db.Shoe.update(
+        { status: "NORMAL" },
+        { where: { status: "BESTSELLER" }, transaction: t }
+      );
+      for (const id of shoe_ids) {
+        const shoe = await db.Shoe.findOne({ where: { id } });
+        if (!shoe) {
+          return res.status(200).send({ message: "shoe not found" });
+        }
+        await db.Shoe.update(
+          { status: "BESTSELLER" },
+          { where: { id }, transaction: t }
+        );
+      }
+      await t.commit();
+      return res.status(200).send({ message: "Best seller marked" });
+    } catch (err) {
+      await t.rollback();
+      errorResponse(res, err, CustomError);
+    }
+  },
 };
 
 module.exports = shoeController;

@@ -16,6 +16,11 @@ router.get("/", shoeController.getAllShoe);
 router.get("/select", shoeController.getAllShoeSelect);
 router.get("/:name", shoeController.getShoeByName);
 router.patch(
+  "/bestSeller",
+  roleDecoder.checkAdmin,
+  shoeController.setBestSeller
+);
+router.patch(
   "/:id",
   roleDecoder.checkSuper,
   fileUploader({
