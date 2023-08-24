@@ -11,33 +11,19 @@ import {
   Tr,
   Button,
 } from "@chakra-ui/react";
-import { Chart as ChartJS } from "chart.js/auto";
 import moment from "moment";
 import { useEffect, useState } from "react";
-import { Bar, Line } from "react-chartjs-2";
+import { Chart as ChartJS } from "chart.js/auto"; // tolong jangan dihapus
+import { Bar } from "react-chartjs-2";
 import { useFetchExcelReport } from "../../hooks/useFetchOrder";
 
 export default function BarChart(props) {
-  const { setExcel } = useFetchExcelReport();
+  const [isLoading, setIsLoading] = useState(false);
+  const { excel, setExcel } = useFetchExcelReport(setIsLoading);
   const { salesData } = props;
   const [mapData, setMapData] = useState([]);
   const options = {
     maintainAspectRatio: false,
-    scales: {
-      y: {
-        beginAtZero: true,
-        stacked: true,
-        grid: {
-          display: true,
-          color: "rgba(255,99,132,0.2)",
-        },
-      },
-      x: {
-        grid: {
-          display: false,
-        },
-      },
-    },
   };
   const style = {
     hoverBackgroundColor: "rgba(0,0,0,0.8)",
@@ -45,7 +31,6 @@ export default function BarChart(props) {
     hoverBorderColor: "rgba(0,0,0,1)",
     borderColor: "rgba(0,0,0,1)",
     borderWidth: 2,
-    fill: true,
   };
   const [priceData, setPriceData] = useState({
     labels: [],
@@ -80,8 +65,8 @@ export default function BarChart(props) {
     ],
     options,
   });
-  async function dataTotPrc() {
-    const priceData = salesData?.data?.reduce((prev, curr) => {
+  async function dataTotalPrc() {
+    const priceData = salesData?.reduce((prev, curr) => {
       const date = moment(curr.createdAt?.split("T")[0]).format("DD-MM-YYYY");
       if (prev[date]) {
         prev[date] += curr?.price;
@@ -101,8 +86,8 @@ export default function BarChart(props) {
       ],
     }));
   }
-  async function dataTotSho() {
-    const shoeData = salesData?.data?.reduce((prev, curr) => {
+  async function dataTotalSho() {
+    const shoeData = salesData?.reduce((prev, curr) => {
       const date = moment(curr.createdAt?.split("T")[0]).format("DD-MM-YYYY");
       if (prev[date]) {
         prev[date] += curr?.qty;
@@ -122,9 +107,9 @@ export default function BarChart(props) {
       ],
     }));
   }
-  async function dataTotTra() {
+  async function dataTotalTra() {
     const processedOrders = [];
-    const traData = salesData?.data?.reduce((prev, curr) => {
+    const traData = salesData?.reduce((prev, curr) => {
       const order = curr.order.transaction_code;
       const date = moment(curr.createdAt?.split("T")[0]).format("DD-MM-YYYY");
       if (!processedOrders.includes(order)) {
@@ -149,11 +134,9 @@ export default function BarChart(props) {
     }));
   }
   useEffect(() => {
-    if (salesData) {
-      dataTotPrc();
-      dataTotSho();
-      dataTotTra();
-    }
+    dataTotalPrc();
+    dataTotalSho();
+    dataTotalTra();
   }, [salesData]);
   useEffect(() => {
     setMapData([priceData, traData, shoeData]);
@@ -190,12 +173,18 @@ export default function BarChart(props) {
                       <Tbody>
                         {val.labels
                           ? val?.labels?.map((label, idx) => {
-                              return (
-                                <Tr>
-                                  <Td>{label}</Td>
-                                  <Td>{val.datasets[0].data[idx]}</Td>
-                                </Tr>
-                              );
+                              {
+                                return idx < 2 ? (
+                                  <Tr>
+                                    <Td>{label}</Td>
+                                    <Td>
+                                      {val.datasets[0].data[idx].toLocaleString(
+                                        "id-ID"
+                                      )}
+                                    </Td>
+                                  </Tr>
+                                ) : null;
+                              }
                             })
                           : null}
                       </Tbody>
@@ -209,11 +198,14 @@ export default function BarChart(props) {
                       label: val.labels,
                       data: val.datasets[0].data,
                     });
+                    setIsLoading(true);
                   }}
+                  _hover={{ color: "black", backgroundColor: "white" }}
                   color={"white"}
-                  backgroundColor={"black"}
+                  backgroundColor={"rgba(0,0,0,1)"}
+                  isLoading={isLoading}
                 >
-                  Export excel
+                  To see all download excel
                 </Button>
               </Flex>
             </Center>

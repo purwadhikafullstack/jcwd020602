@@ -3,7 +3,6 @@ import { api } from "../api/api";
 
 export const useFetchShoe = (category, sub, filter) => {
   const [shoes, setShoes] = useState({ rows: [] });
-  // console.log(filter);
   const fetch = async () => {
     try {
       const res = await api().get(`/shoes`, {
@@ -20,4 +19,29 @@ export const useFetchShoe = (category, sub, filter) => {
   }, []);
 
   return { shoes, fetch };
+};
+
+export const useFetchSelectShoe = ({
+  brand_id,
+  category_id,
+  subcategory_id,
+}) => {
+  const [shoes, setShoes] = useState([]);
+  const fetch = async () => {
+    try {
+      const res = await api().get(`/shoes/select`, {
+        params: { subcategory_id, category_id, brand_id },
+      });
+      console.log(res.data);
+      setShoes(res.data);
+    } catch (err) {
+      console.log(err?.response);
+    }
+  };
+
+  useEffect(() => {
+    fetch();
+  }, [brand_id, category_id, subcategory_id]);
+
+  return { shoes };
 };

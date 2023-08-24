@@ -15,7 +15,7 @@ import Pagination from "../components/dashboard/pagination";
 import DeleteStock from "../components/dashboard/deleteStock";
 import EditStock from "../components/dashboard/editStock";
 import { api } from "../api/api";
-import { useFetchBrand } from "../hooks/useFetchBrand";
+import { useFetchSelectBrand } from "../hooks/useFetchBrand";
 
 export default function InventoryPage() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -23,7 +23,7 @@ export default function InventoryPage() {
   const editS = useDisclosure();
   const userSelector = useSelector((state) => state.auth);
   const inputFileRef = useRef(null);
-  const { brands } = useFetchBrand();
+  const { brands } = useFetchSelectBrand();
   const { provinces } = useFetchWareProv();
   const [province, setprovince] = useState(0);
   const { cities } = useFetchWareCity(province);

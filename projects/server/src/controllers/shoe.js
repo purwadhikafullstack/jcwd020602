@@ -1,6 +1,8 @@
 const db = require("../models");
 const { Op } = require("sequelize");
 const fs = require("fs");
+const { errorResponse } = require("../utils/function");
+const { CustomError } = require("../utils/customErrors");
 const includeOptions = [
   {
     model: db.Brand,
@@ -161,6 +163,33 @@ const shoeController = {
       return res.status(500).send(err.message);
     }
   },
+  getAllShoeSelect: async (req, res) => {
+    try {
+      const whereClause = {};
+      if (req.query.subcategory_id) {
+        whereClause.subcategory_id = req.query.subcategory_id;
+      } else if (req.query.category_id) {
+        whereClause.category_id = req.query.category_id;
+      }
+      if (req.query.brand_id) {
+        whereClause.brand_id = req.query.brand_id;
+      }
+      let shoes = await db.Shoe.findAll({
+        where: whereClause,
+      });
+      if (
+        !req.query.brand_id &&
+        !req.query.subcategory_id &&
+        !req.query.category_id
+      ) {
+        shoes = [];
+      }
+
+      return res.status(200).send(shoes);
+    } catch (err) {
+      errorResponse(res, err, CustomError);
+    }
+  },
   getShoeByName: async (req, res) => {
     try {
       const name = req?.params?.name;
@@ -312,6 +341,31 @@ const shoeController = {
       }
       await t.rollback();
       return res.status(500).send(err.message);
+    }
+  },
+  setBestSeller: async (req, res) => {
+    const t = await db.sequelize.transaction();
+    try {
+      const shoe_ids = req.body.shoe_ids || [];
+      await db.Shoe.update(
+        { status: "NORMAL" },
+        { where: { status: "BESTSELLER" }, transaction: t }
+      );
+      for (const id of shoe_ids) {
+        const shoe = await db.Shoe.findOne({ where: { id } });
+        if (!shoe) {
+          return res.status(200).send({ message: "shoe not found" });
+        }
+        await db.Shoe.update(
+          { status: "BESTSELLER" },
+          { where: { id }, transaction: t }
+        );
+      }
+      await t.commit();
+      return res.status(200).send({ message: "Best seller marked" });
+    } catch (err) {
+      await t.rollback();
+      errorResponse(res, err, CustomError);
     }
   },
 };

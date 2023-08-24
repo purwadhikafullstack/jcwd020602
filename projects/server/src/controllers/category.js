@@ -1,5 +1,7 @@
 const db = require("../models");
 const fs = require("fs");
+const { errorResponse } = require("../utils/function");
+const { CustomError } = require("../utils/customErrors");
 
 //-------------------------------------------------- DONE CLEAN CODE! -FAHMI
 const categoryController = {
@@ -62,6 +64,24 @@ const categoryController = {
       return res.status(200).send(subcategories);
     } catch (err) {
       return res.status(500).send(err.message);
+    }
+  },
+  getAllCategorySelect: async (req, res) => {
+    try {
+      const categories = await db.Category.findAll();
+      return res.status(200).send(categories);
+    } catch (err) {
+      errorResponse(res, err, CustomError);
+    }
+  },
+  getAllSubSelect: async (req, res) => {
+    try {
+      const subcategories = await db.SubCategory.findAll({
+        where: { category_id: req.query.category_id },
+      });
+      return res.status(200).send(subcategories);
+    } catch (err) {
+      errorResponse(res, err, CustomError);
     }
   },
   getCategoryById: async (req, res) => {

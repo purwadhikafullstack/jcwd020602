@@ -3,7 +3,6 @@ import { api } from "../api/api";
 
 export const useFetchAddress = () => {
   const [address, setAddress] = useState([]);
-
   const fetch = async () => {
     try {
       const res = await api().get(`/address`);

@@ -37,7 +37,7 @@ import DeleteStockMutation from "../components/dashboard/deleteStockMutation";
 import EditStockMutation from "../components/dashboard/editStockMutation";
 import ConfirmStockMutation from "../components/dashboard/confirmStockMutation";
 import moment from "moment";
-import { useFetchBrand } from "../hooks/useFetchBrand";
+import { useFetchSelectBrand } from "../hooks/useFetchBrand";
 
 export default function StockMutationPage() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -49,7 +49,7 @@ export default function StockMutationPage() {
   const { provinces } = useFetchWareProv();
   const [province, setprovince] = useState(0);
   const { cities } = useFetchWareCity(province);
-  const { brands } = useFetchBrand();
+  const { brands } = useFetchSelectBrand();
   const [stockMutId, setStockMutId] = useState();
   const [status, setStatus] = useState();
   const [wareAdmin, setWareAdmin] = useState({});

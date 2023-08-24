@@ -1,6 +1,8 @@
 const { Op } = require("sequelize");
 const db = require("../models");
 const fs = require("fs");
+const { errorResponse } = require("../utils/function");
+const { CustomError } = require("../utils/customErrors");
 
 //-------------------------------------------------- DONE CLEAN CODE! -FAHMI
 const brandController = {
@@ -56,12 +58,19 @@ const brandController = {
         offset,
         order: [[sort, order]],
       });
-
       return res
         .status(200)
         .send({ ...brand, totalPages: Math.ceil(brand.count / limit) });
     } catch (err) {
       return res.status(500).send({ message: err.message });
+    }
+  },
+  getAllSelect: async (req, res) => {
+    try {
+      const brand = await db.Brand.findAll();
+      return res.status(200).send(brand);
+    } catch (err) {
+      errorResponse(res, err, CustomError);
     }
   },
   deleteBrand: async (req, res) => {
