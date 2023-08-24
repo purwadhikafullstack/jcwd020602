@@ -8,7 +8,6 @@ const { getWarehouseForSales } = require("../service/warehouse.service");
 const salesReportCotroller = {
   getSalesReport: async (req, res) => {
     try {
-      console.log(req.query);
       const warehouse = await getWarehouseForSales({
         id: req.query?.warehouse_id || req?.user?.warehouse_id,
       });

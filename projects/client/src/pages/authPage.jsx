@@ -3,6 +3,7 @@ import Footer from "../components/website/footer";
 import Login from "../components/auth/login";
 import Register from "../components/auth/register";
 import { useState } from "react";
+import Navbar from "../components/website/navbar";
 
 function OverlaySignUp(props) {
   return (
@@ -58,6 +59,7 @@ function AuthForm() {
 
   return (
     <Center flexDir={"column"}>
+      <Navbar />
       <Flex
         minH={"800px"}
         alignItems="center"

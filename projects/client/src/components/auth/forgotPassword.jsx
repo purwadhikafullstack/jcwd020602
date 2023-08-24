@@ -17,6 +17,7 @@ import Footer from "../website/footer";
 import { api } from "../../api/api";
 import { EmailIcon } from "@chakra-ui/icons";
 import { TbAlertCircleFilled } from "react-icons/tb";
+import Navbar from "../website/navbar";
 
 export default function ForgotPassword() {
   const toast = useToast({ duration: 3000, isClosable: true, position: "top" });
@@ -61,6 +62,7 @@ export default function ForgotPassword() {
 
   return (
     <Center flexDir={"column"}>
+      <Navbar />
       <Center h={"100vh"} maxH={"800px"}>
         <Flex
           flexDir={"column"}

@@ -38,6 +38,7 @@ import EditStockMutation from "../components/dashboard/editStockMutation";
 import ConfirmStockMutation from "../components/dashboard/confirmStockMutation";
 import moment from "moment";
 import { useFetchSelectBrand } from "../hooks/useFetchBrand";
+import NavbarDashboard from "../components/dashboard/navbarDashboard";
 
 export default function StockMutationPage() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -102,6 +103,7 @@ export default function StockMutationPage() {
   }
   return (
     <>
+      <NavbarDashboard />
       <Box id="content" pt={"52px"}>
         <Box mx={2} my={3}>
           <Flex justify={"space-between"} flexWrap={"wrap"}>

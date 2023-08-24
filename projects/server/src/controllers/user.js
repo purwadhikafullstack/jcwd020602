@@ -22,7 +22,6 @@ const userController = {
       const findEmail = await findUser(email);
 
       if (findEmail) {
-        console.log("email sudah ada");
         return res.status(400).send({ message: "email was registered" });
       }
 
@@ -106,7 +105,6 @@ const userController = {
       req.user = user;
       next();
     } catch (err) {
-      console.log(err);
       return res.status(500).send({ message: err.message });
     }
   },

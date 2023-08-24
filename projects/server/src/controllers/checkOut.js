@@ -38,7 +38,6 @@ const checkOutControllers = {
       const cityData = await db.City.findOne({
         where: { city_id },
       });
-      console.log(`cityData${cityData.dataValues}`);
       if (titleCheck) {
         return res.status(400).send({
           message: "Title already used",
@@ -55,7 +54,7 @@ const checkOutControllers = {
         if (is_primary && addressCheck.length) {
           await updatePrimary(t, user_id);
         }
-        console.log(`ini results ${response.data}`);
+        `ini results ${response.data}`;
 
         const addAddress = await db.Address.create(
           {
@@ -73,7 +72,6 @@ const checkOutControllers = {
           },
           { transaction: t }
         );
-        console.log(addAddress);
 
         await t.commit();
         return res.status(200).send({
@@ -82,7 +80,6 @@ const checkOutControllers = {
         });
       }
     } catch (error) {
-      console.log(error.message);
       await t.rollback();
       return res.status(500).send({ success: false, message: error.message });
     }
@@ -124,7 +121,6 @@ const checkOutControllers = {
     try {
       const user_id = req.user.id;
       const { id } = req.body;
-      console.log(`ini id c ${id}`);
 
       await db.Address.update({ is_primary: 0 }, { where: { user_id } });
 

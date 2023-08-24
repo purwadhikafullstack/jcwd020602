@@ -12,6 +12,7 @@ import { useFetchWarehouse } from "../hooks/useFetchWarehouse";
 import AddWarehouse from "../components/dashboard/addWarehouse";
 import EditWarehouse from "../components/dashboard/editWarehouse";
 import DeleteWarehouse from "../components/dashboard/deleteWarehouse";
+import NavbarDashboard from "../components/dashboard/navbarDashboard";
 
 export default function WarehousePage() {
   const addModal = useDisclosure();
@@ -25,6 +26,7 @@ export default function WarehousePage() {
 
   return (
     <>
+      <NavbarDashboard />
       <Box id="content" pt={"52px"}>
         <Box mx={2} my={3}>
           <Flex justify={"space-between"} flexWrap={"wrap"}>

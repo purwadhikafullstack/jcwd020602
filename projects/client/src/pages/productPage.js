@@ -1,4 +1,5 @@
 import {
+  Center,
   Grid,
   Icon,
   Input,
@@ -22,6 +23,7 @@ import EditProduct from "../components/dashboard/editProduct";
 import Pagination from "../components/dashboard/pagination";
 import { useFetchBrand } from "../hooks/useFetchBrand";
 import { useFetchCategory } from "../hooks/useFetchCategory";
+import NavbarDashboard from "../components/dashboard/navbarDashboard";
 
 export default function ProductPage() {
   const { isOpen, onClose, onOpen } = useDisclosure();
@@ -71,6 +73,7 @@ export default function ProductPage() {
 
   return (
     <>
+      <NavbarDashboard />
       <Box id="content" pt={"52px"}>
         <Box mx={2} my={3}>
           <Flex justify={"space-between"} flexWrap={"wrap"}>
@@ -279,7 +282,16 @@ export default function ProductPage() {
                           ))}
                         </Grid>
                       </Td>
-                      <Td>{shoe?.name}</Td>
+                      <Flex
+                        whiteSpace={"normal"}
+                        justify={"center"}
+                        align={"center"}
+                        h={"110px"}
+                      >
+                        <Box fontSize={14} m={1}>
+                          {shoe?.name}
+                        </Box>
+                      </Flex>
                       <Td>{shoe?.price}</Td>
                       <Td>{shoe?.brand?.name}</Td>
                       <Td>{shoe?.Category?.name}</Td>

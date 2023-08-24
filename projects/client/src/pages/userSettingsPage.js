@@ -16,6 +16,7 @@ import AssignAdmin, {
 import AddAdmin from "../components/dashboard/addAdmin";
 import EditAdmin from "../components/dashboard/editAdmin";
 import DeleteAdmin from "../components/dashboard/deleteAdmin";
+import NavbarDashboard from "../components/dashboard/navbarDashboard";
 
 export default function UserSettingsPage() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -30,6 +31,7 @@ export default function UserSettingsPage() {
   const [adminId, setAdminId] = useState();
   return (
     <>
+      <NavbarDashboard />
       <Box id="content" pt={"52px"}>
         <Box mx={2} my={3}>
           <Flex justify={"space-between"} flexWrap={"wrap"}>

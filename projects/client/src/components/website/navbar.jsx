@@ -10,7 +10,11 @@ import { useFetchCategory } from "../../hooks/useFetchCategory";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useFetchBrand } from "../../hooks/useFetchBrand";
-import { cartSelector, getCarts } from "../../redux/cart";
+import {
+  cartSelector,
+  getCarts,
+  getTotalProductsInCart,
+} from "../../redux/cart";
 
 export default function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -21,6 +25,7 @@ export default function Navbar() {
   const { categories } = useFetchCategory();
   const userSelector = useSelector((state) => state.auth);
   const carts = useSelector(cartSelector.selectAll);
+  const totalItem = useSelector(getTotalProductsInCart);
 
   const [keyword, setKeyword] = useState();
   const dispatch = useDispatch();
@@ -35,7 +40,9 @@ export default function Navbar() {
     setSubCategory({ [categoryId]: false });
   };
 
-  useEffect(() => {}, [carts.length]);
+  useEffect(() => {
+    dispatch(getCarts());
+  }, [dispatch]);
 
   return (
     <>
@@ -210,7 +217,7 @@ export default function Navbar() {
                   >
                     <Box h={"auto"} pos={"relative"}>
                       <Image as={AiOutlineShoppingCart} w={"30px"} h={"auto"} />
-                      {carts && carts.length ? (
+                      {totalItem && totalItem > 0 ? (
                         <Flex
                           fontSize={"8px"}
                           color={"white"}
@@ -224,7 +231,7 @@ export default function Navbar() {
                           align={"center"}
                           justify={"center"}
                         >
-                          {carts.length}
+                          {totalItem}
                         </Flex>
                       ) : null}
                     </Box>

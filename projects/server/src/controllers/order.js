@@ -33,8 +33,6 @@ const orderController = {
     try {
       const user_id = req.user.id;
       const warehouseData = req.closestWarehouse;
-      // console.log(warehouseData);
-      // console.log(req.user);
       const {
         courier,
         shipping_cost,
@@ -63,7 +61,6 @@ const orderController = {
         },
         { transaction: t }
       );
-      // console.log(addOrder);
       const cartsData = await db.Cart.findAll({
         where: { user_id },
         include: [
@@ -77,7 +74,6 @@ const orderController = {
           },
         ],
       });
-      // console.log(cartsData);
 
       for (let i = 0; i < cartsData.length; i++) {
         let shoe_id = cartsData[i].shoe_id;
@@ -106,7 +102,6 @@ const orderController = {
             qty: qty - shoeStock.stock,
           });
 
-          // console.log(warehouse);
           if (!warehouse?.length) {
             return res.status(500).send({ message: "stock insuficient" });
           }
@@ -128,7 +123,6 @@ const orderController = {
               closestWarehouse = val;
             }
           });
-          // console.log(closestWarehouse.stocks);
           //stockMutation Auto
           await createMutation({
             from_warehouse_id: closestWarehouse.id,
@@ -142,7 +136,6 @@ const orderController = {
           const fromStock = await findStockBy({
             id: closestWarehouse.stocks[0].id,
           });
-          // console.log(fromStock);
           fromStock.stock -= qty - shoeStock.stock;
           await fromStock.save({ transaction: t });
 
@@ -167,7 +160,6 @@ const orderController = {
             });
           }
         }
-        // console.log(shoeStock);
         await db.Stock.update(
           {
             booked_stock: shoeStock.booked_stock + qty,
@@ -198,7 +190,6 @@ const orderController = {
       const warehouse_id = req.closestWarehouse.id;
       const user_id = req.user.id;
       const pageSize = 3;
-      // console.log(warehouse_id, user_id);
       const result = await findAndCountAllOrderUser({
         warehouse_id: warehouse_id,
         user_id: user_id,
@@ -225,7 +216,6 @@ const orderController = {
       const user_id = JSON.parse(req.user.id);
       const { id } = req.body;
       const { filename } = req.file;
-      // console.log(user_id, id);
       await db.Order.update(
         {
           payment_proof: "paymentProof/" + filename,

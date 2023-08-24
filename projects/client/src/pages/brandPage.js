@@ -18,6 +18,7 @@ import ImageModal from "../components/dashboard/imageModal";
 import { AddBrand } from "../components/dashboard/addCategory";
 import { DeleteBrand } from "../components/dashboard/deleteCategory";
 import Pagination from "../components/dashboard/pagination";
+import NavbarDashboard from "../components/dashboard/navbarDashboard";
 
 export default function BrandPage() {
   const { isOpen, onClose, onOpen } = useDisclosure();
@@ -63,6 +64,7 @@ export default function BrandPage() {
 
   return (
     <>
+      <NavbarDashboard />
       <Box id="content" pt={"52px"}>
         <Box mx={2} my={3}>
           <Flex justify={"space-between"} flexWrap={"wrap"}>

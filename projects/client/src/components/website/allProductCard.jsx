@@ -2,7 +2,6 @@ import { Box, Divider, Flex, Image, Text } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 
 export default function AllProductCard({ shoes }) {
-  //   console.log(shoes);
   return (
     <Box
       border={"2px"}

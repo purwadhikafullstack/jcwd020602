@@ -58,7 +58,6 @@ export const deleteProduct = createAsyncThunk(
   async (id) => {
     try {
       const token = JSON.parse(localStorage.getItem("user"));
-      console.log(token);
 
       await api().delete(`/carts/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -93,7 +92,6 @@ export const getTotalWeightInCart = (state) => {
 
 // export const getNameSizeInCart = (state) => {
 //   const cartItems = cartSelector.selectAll(state);
-//   console.log(cartItems);
 //   const checkName = cartItems?.Shoes?.name;
 //   const checkSize = cartItems?.ShoeSize?.size;
 //   return { checkName, checkSize };

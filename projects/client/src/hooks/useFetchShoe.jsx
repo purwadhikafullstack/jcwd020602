@@ -32,7 +32,6 @@ export const useFetchSelectShoe = ({
       const res = await api().get(`/shoes/select`, {
         params: { subcategory_id, category_id, brand_id },
       });
-      console.log(res.data);
       setShoes(res.data);
     } catch (err) {
       console.log(err?.response);

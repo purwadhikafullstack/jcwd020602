@@ -10,6 +10,7 @@ import { api } from "../api/api";
 import { useFetchStockHistory } from "../hooks/useFetchStockHistory";
 import moment from "moment";
 import { useFetchSelectBrand } from "../hooks/useFetchBrand";
+import NavbarDashboard from "../components/dashboard/navbarDashboard";
 
 export default function StockHistoryPage() {
   const userSelector = useSelector((state) => state.auth);
@@ -66,6 +67,7 @@ export default function StockHistoryPage() {
   }
   return (
     <>
+      <NavbarDashboard />
       <Box id="content" pt={"52px"}>
         <Box mx={2} my={3}>
           <Flex justify={"space-between"} flexWrap={"wrap"}>

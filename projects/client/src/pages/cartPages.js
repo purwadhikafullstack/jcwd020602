@@ -25,6 +25,7 @@ import QtyOption from "../components/order/qtyButtonOpt";
 import Footer from "../components/website/footer";
 import { GrFormPrevious, GrFormNext } from "react-icons/gr";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../components/website/navbar";
 
 export default function Cart() {
   const dispatch = useDispatch();
@@ -36,13 +37,12 @@ export default function Cart() {
   const weightTotal = useSelector(getTotalWeightInCart);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 2;
-  console.log(carts);
+
   useEffect(() => {
     dispatch(getCarts());
   }, [dispatch]);
 
   const handleQuantityChange = (cartItemId, newQuantity) => {
-    console.log(cartItemId, newQuantity);
     dispatch(updateCarts({ id: cartItemId, qty: newQuantity }));
   };
   const handleDeleteProduct = (id) => {
@@ -51,18 +51,17 @@ export default function Cart() {
 
   return (
     <>
-      <Flex flexDir={{ base: "column", md: "row" }} w={"100%"} h={"100vh"}>
+      <Navbar />
+      <Flex flexDir={{ base: "column", md: "row" }} w={"100%"}>
         <Flex
           flexDir={"column"}
           w={{ base: "100%", md: "60vw" }}
-          h={"100%"}
           ml={{ base: "0", md: "10px" }}
           mt={{ base: "50px", md: "100px" }}
           mr={{ base: "0", md: "50px" }}
         >
           <Flex
             w={"100%"}
-            h={"100px"}
             justify={"space-between"}
             align={"center"}
             borderBottom={"1px"}
@@ -86,7 +85,7 @@ export default function Cart() {
               Continue Shopping
             </Text>
           </Flex>
-          <Flex h={"450px"} flexDir={"column"}>
+          <Flex flexDir={"column"}>
             {carts.length > 0 ? (
               carts
                 ?.slice(
@@ -95,15 +94,13 @@ export default function Cart() {
                 )
                 .map((val, idx) => {
                   const totalPrice = val.Shoes?.price * val.qty;
-                  console.log(totalPrice);
                   return (
                     <HStack
                       w={"100%"}
-                      h={"220px"}
                       borderBottom={"1px"}
                       borderBottomColor={"gray.400"}
                     >
-                      <HStack w={"100%"} h={"200px"} spacing={4}>
+                      <HStack w={"100%"} spacing={4}>
                         <Flex
                           h={"100%"}
                           w={"200px"}

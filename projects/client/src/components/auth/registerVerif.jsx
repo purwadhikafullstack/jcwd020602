@@ -10,6 +10,7 @@ import { useFormik } from "formik";
 import React, { useEffect, useState } from "react";
 import { api } from "../../api/api";
 import Footer from "../website/footer";
+import Navbar from "../website/navbar";
 
 export default function Verify() {
   YupPassword(Yup);
@@ -97,6 +98,7 @@ export default function Verify() {
 
   return (
     <>
+      <Navbar />
       {!user?.email ? (
         <Center h={"100vh"}>
           <Box fontSize={"50px"}>link has expired</Box>

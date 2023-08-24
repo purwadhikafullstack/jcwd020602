@@ -14,6 +14,7 @@ import Footer from "../components/website/footer";
 import { Recommend } from "../components/website/carousel";
 import { useDispatch, useSelector } from "react-redux";
 import { addProduct } from "../redux/cart";
+import Navbar from "../components/website/navbar";
 
 export default function ProductDetailPage() {
   const loc = useLocation();
@@ -29,7 +30,6 @@ export default function ProductDetailPage() {
   const [category, setCategory] = useState();
   const [shoeId, setShoeId] = useState();
   const [sizeAndStock, setSizeAndStock] = useState();
-  console.log(sizeAndStock);
 
   useEffect(() => {
     getShoe();
@@ -68,6 +68,7 @@ export default function ProductDetailPage() {
 
   return (
     <Center flexDir={"column"}>
+      <Navbar />
       <Box
         id="product-detail"
         display={"flex"}

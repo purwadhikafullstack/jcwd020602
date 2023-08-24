@@ -12,6 +12,7 @@ import { api } from "../api/api";
 import { useDispatch, useSelector } from "react-redux";
 import Footer from "../components/website/footer";
 import { fetch } from "../hoc/authProvider";
+import Navbar from "../components/website/navbar";
 
 export default function ProfilePage() {
   YupPassword(Yup);
@@ -118,6 +119,7 @@ export default function ProfilePage() {
 
   return (
     <Center flexDir={"column"}>
+      <Navbar />
       <Flex w={"100%"} maxW={"1535px"} zIndex={1} p={"1rem 1rem"} mt={"100px"}>
         <Flex gap={5} flexDir={"column"} p={2} border={"2px"} w={"100%"}>
           <Text fontSize={"30px"} fontWeight={"bold"}>

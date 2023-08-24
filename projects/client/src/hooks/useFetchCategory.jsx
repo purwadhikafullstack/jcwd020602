@@ -62,7 +62,6 @@ export const useFetchSelectSubcategory = ({ category_id }) => {
       const res = await api().get("/categories/selectSubcategory", {
         params: { category_id },
       });
-      console.log(res.data);
       setSub(res.data);
     } catch (err) {
       console.log(err?.response?.data);

@@ -23,8 +23,6 @@ export const useFetchAddress = (currentPage, perPage) => {
       console.log(err.response?.data);
     }
   };
-  console.log(address);
-  console.log(totalPages);
   useEffect(() => {
     fetch();
   }, [currentPage]);

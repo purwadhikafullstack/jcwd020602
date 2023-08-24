@@ -21,6 +21,7 @@ import { useFetchSelectBrand } from "../hooks/useFetchBrand";
 import { useFetchSelectShoe } from "../hooks/useFetchShoe";
 import ReportCard from "../components/dashboard/reportCard";
 import BarChart from "../components/dashboard/barChart";
+import NavbarDashboard from "../components/dashboard/navbarDashboard";
 
 export default function SalesReportPage() {
   const userSelector = useSelector((state) => state.auth);
@@ -69,6 +70,7 @@ export default function SalesReportPage() {
   }
   return (
     <>
+      <NavbarDashboard />
       <Box id="content" pt={"52px"}>
         <Box mx={2} my={3}>
           <Flex justify={"space-between"} flexWrap={"wrap"}>

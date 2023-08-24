@@ -25,6 +25,7 @@ import moment from "moment";
 import { useFetchOrderList } from "../hooks/useFetchOrder";
 import PaymentImageModal from "../components/dashboard/paymentImageModal";
 import OrderDetailModal from "../components/dashboard/orderDetailModal";
+import NavbarDashboard from "../components/dashboard/navbarDashboard";
 
 export default function OrderListPage() {
   const userSelector = useSelector((state) => state.auth);
@@ -69,7 +70,6 @@ export default function OrderListPage() {
     }
   }, [shown]);
   //----------------------------------------------------------------
-  console.log(orders);
   useEffect(() => {
     if (timeFrom && timeTo) {
       setFilter({ ...filter, timeFrom, timeTo });
@@ -94,6 +94,7 @@ export default function OrderListPage() {
   }
   return (
     <>
+      <NavbarDashboard />
       <Box id="content" pt={"52px"}>
         <Box mx={2} my={3}>
           <Flex justify={"space-between"} flexWrap={"wrap"}>
@@ -335,7 +336,7 @@ export default function OrderListPage() {
                               Price
                             </Box>
                             <Box px={1}>
-                              {order?.orderDetails[0]?.price.toLocaleString(
+                              {order?.orderDetails[0]?.price?.toLocaleString(
                                 "id-ID",
                                 {
                                   style: "currency",
@@ -366,12 +367,12 @@ export default function OrderListPage() {
                         Address
                       </Box>
                       <Box m={2}>
-                        {`${order?.address?.name} (${order?.address?.phone})`}
-                        {order?.address?.address}, {order?.address?.city?.type}{" "}
-                        {order?.address?.city?.city_name},{" "}
-                        {order?.address?.city?.province},{" "}
-                        {order?.address?.city?.postal_code}
-                        {`(footHub NOTE: ${order?.address?.address_details})`}
+                        {`${order?.address?.name}, ${order?.address?.phone}
+                        ${order?.address?.address}, ${order?.address?.city?.type},
+                        ${order?.address?.city?.city_name},
+                        ${order?.address?.city?.province},
+                        ${order?.address?.city?.postal_code},
+                        (footHub NOTE: ${order?.address?.address_details})`}
                       </Box>
                     </Box>
                     {/* courir */}
@@ -391,7 +392,7 @@ export default function OrderListPage() {
                   <Flex justify={"space-between"} m={1} border={"1px"} px={1}>
                     <Box fontWeight={"bold"}>Total Price</Box>
                     <Box fontWeight={"bold"}>
-                      {order?.total_price.toLocaleString("id-ID", {
+                      {order?.total_price?.toLocaleString("id-ID", {
                         style: "currency",
                         currency: "IDR",
                       })}

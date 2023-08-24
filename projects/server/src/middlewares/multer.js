@@ -37,7 +37,6 @@ const upload = multer({
     fileSize: 10000000, //byte
   },
   fileFilter: (req, file, cb) => {
-    console.log(file);
     if (file.mimetype.split("/")[0] != "image") {
       return cb(null, false);
     }

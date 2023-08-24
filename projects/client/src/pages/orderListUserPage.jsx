@@ -20,6 +20,8 @@ import OrderDetailsModal from "../components/order/orderDetailsModal";
 import { FaSearch } from "react-icons/fa";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import CancelOrderAlert from "../components/order/cancelOrderAlert";
+import Navbar from "../components/website/navbar";
+import Footer from "../components/website/footer";
 
 export default function OrderListUser() {
   const detailsModal = useDisclosure();
@@ -34,9 +36,7 @@ export default function OrderListUser() {
     fromDate: "",
     toDate: "",
   });
-  console.log(filter);
   const { orders, fetchOrders } = useFetchOrder(filter);
-  console.log(orders);
   const openDetailsModal = (val) => {
     setSelectedVal(val);
     detailsModal.onOpen();
@@ -100,9 +100,10 @@ export default function OrderListUser() {
   };
 
   return (
-    <Center>
+    <Center flexDir={"column"}>
+      <Navbar />
       <Flex
-        mt={{ base: "50px", md: "100px" }}
+        my={{ base: "50px", md: "100px" }}
         w={{ base: "90%", md: "70vw" }}
         h={"auto"}
         flexDir={"column"}
@@ -334,6 +335,7 @@ export default function OrderListUser() {
           )}
         </Flex>
       </Flex>
+      <Footer />
     </Center>
   );
 }

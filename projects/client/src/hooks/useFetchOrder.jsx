@@ -19,8 +19,6 @@ export const useFetchOrder = (filter) => {
     }
   };
 
-  console.log(orders);
-
   useEffect(() => {
     fetchOrders();
   }, [filter]);
@@ -56,7 +54,6 @@ export const useFetchSalesReport = (filter) => {
       const sales = await api().get("/orders/salesReport", {
         params: filter,
       });
-      console.log(sales.data);
       setSalesData(sales.data);
     } catch (err) {
       console.log(err.response.data);

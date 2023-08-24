@@ -14,7 +14,6 @@ module.exports = {
       if (body?.req_admin_id) {
         create.req_admin_id = body?.req_admin_id;
       }
-      console.log(body);
       return await db.StockMutation.create(create, {
         transaction: body?.t,
       });
