@@ -19,8 +19,6 @@ export const useFetchOrder = (filter) => {
     }
   };
 
-  console.log(orders);
-
   useEffect(() => {
     fetchOrders();
   }, [filter]);
@@ -49,15 +47,13 @@ export const useFetchOrderList = (filter) => {
 };
 
 export const useFetchSalesReport = (filter) => {
-  const [salesData, setSalesData] = useState({ data: [] });
+  const [salesData, setSalesData] = useState([]);
   const fetchSalesData = async () => {
     try {
       const token = JSON.parse(localStorage.getItem("user"));
       const sales = await api().get("/orders/salesReport", {
-        headers: { Authorization: `Bearer${token}` },
         params: filter,
       });
-      console.log(sales.data);
       setSalesData(sales.data);
     } catch (err) {
       console.log(err.response.data);
@@ -66,10 +62,10 @@ export const useFetchSalesReport = (filter) => {
   useEffect(() => {
     fetchSalesData();
   }, [filter]);
-  return { salesData, fetchSalesData };
+  return { salesData };
 };
 
-export const useFetchExcelReport = () => {
+export const useFetchExcelReport = (setIsLoading) => {
   const [excel, setExcel] = useState({ header: "", label: [], data: [] });
   const header = ["Date", excel.header];
   const handleDownloadExcel = (body) => {
@@ -82,6 +78,7 @@ export const useFetchExcelReport = () => {
         body,
       },
     });
+    setIsLoading(false);
     setExcel({ header: "", label: [], data: [] });
   };
   const bodyMaker = () => {
@@ -90,7 +87,7 @@ export const useFetchExcelReport = () => {
       let total = 0;
       excel.label.map((val, idx) => {
         data.push([[val], [excel.data[idx]]]);
-        tot += excel.data[idx];
+        total += excel.data[idx];
       });
       data.push([["Total"], [total]]);
       handleDownloadExcel(data);
@@ -99,5 +96,5 @@ export const useFetchExcelReport = () => {
   useEffect(() => {
     bodyMaker();
   }, [excel]);
-  return { setExcel };
+  return { excel, setExcel };
 };

@@ -17,11 +17,11 @@ const salesReportCotroller = {
         brand_id: req.query?.brand_id,
         category_id: req.query?.category_id,
         subcategory_id: req.query?.subcategory_id,
-        page: req.query?.page || 1,
+        shoe_id: req.query?.shoe_id,
         timeFrom: req.query?.timeFrom,
         timeTo: req.query?.timeTo,
       });
-      res.status(200).send({ message: "success", data });
+      res.status(200).send(data);
     } catch (err) {
       errorResponse(res, err, CustomError);
     }

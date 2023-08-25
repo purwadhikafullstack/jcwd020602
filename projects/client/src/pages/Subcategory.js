@@ -10,6 +10,7 @@ import { useEffect, useRef, useState } from "react";
 import { useFetchSubcategory } from "../hooks/useFetchCategory";
 import { EditSubcategory } from "../components/dashboard/editCategory";
 import { DeleteSubcategory } from "../components/dashboard/deleteCategory";
+import NavbarDashboard from "../components/dashboard/navbarDashboard";
 
 export default function SubcategoryPage() {
   const deleteModal = useDisclosure();
@@ -21,6 +22,7 @@ export default function SubcategoryPage() {
   const [subId, setSubId] = useState();
   return (
     <>
+      <NavbarDashboard />
       <Box id="content" pt={"52px"}>
         <Box mx={2} my={3}>
           <Box fontSize={"30px"}>Subcategory</Box>

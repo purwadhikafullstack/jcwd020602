@@ -10,6 +10,7 @@ import * as Yup from "yup";
 import YupPassword from "yup-password";
 import { api } from "../../api/api";
 import Footer from "../website/footer";
+import Navbar from "../website/navbar";
 
 export default function ChangePassword() {
   YupPassword(Yup);
@@ -54,7 +55,7 @@ export default function ChangePassword() {
         return nav("/auth");
       } catch (err) {
         toast({
-          title: err.response.data,
+          title: err?.response?.data?.message,
           status: "error",
         });
       }
@@ -90,6 +91,7 @@ export default function ChangePassword() {
 
   return (
     <>
+      <Navbar />
       {user.email ? (
         <Center flexDir={"column"}>
           <Center h={"100vh"} maxH={"800px"} maxW={"1531px"} w={"100%"}>

@@ -11,7 +11,6 @@ const cartController = {
       const user_id = req.user.id;
       const page = req.query.page || 1;
       const pageSize = req.query.pageSize || 10;
-      // console.log(req.user);
       const cartsData = await db.Cart.findAndCountAll({
         where: { user_id },
         include: [
@@ -46,7 +45,6 @@ const cartController = {
         });
         cartRow.Shoes.dataValues.availableStock = stockSum || 0;
       }
-      // console.log(cartRows[0].dataValues.Shoes.dataValues.availableStock);
       const totalPages = Math.ceil(cartsData.count / pageSize);
 
       return res.status(200).send({
@@ -118,8 +116,6 @@ const cartController = {
           shoe_size_id: cartData.dataValues.shoe_size_id,
         },
       });
-
-      console.log(availableStock);
 
       if (qty > availableStock.dataValues.stock) {
         return res.status(500).send({

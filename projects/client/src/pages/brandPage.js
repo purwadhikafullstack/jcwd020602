@@ -1,4 +1,9 @@
-import { InputRightAddon, InputGroup, ButtonGroup } from "@chakra-ui/react";
+import {
+  InputRightAddon,
+  InputGroup,
+  ButtonGroup,
+  InputRightElement,
+} from "@chakra-ui/react";
 import { useDisclosure, TableContainer, MenuButton } from "@chakra-ui/react";
 import { Select, Menu, MenuList, MenuItem, Image } from "@chakra-ui/react";
 import { Box, Button, Divider, Flex, Icon, Input } from "@chakra-ui/react";
@@ -12,6 +17,8 @@ import { useFetchBrand } from "../hooks/useFetchBrand";
 import ImageModal from "../components/dashboard/imageModal";
 import { AddBrand } from "../components/dashboard/addCategory";
 import { DeleteBrand } from "../components/dashboard/deleteCategory";
+import Pagination from "../components/dashboard/pagination";
+import NavbarDashboard from "../components/dashboard/navbarDashboard";
 
 export default function BrandPage() {
   const { isOpen, onClose, onOpen } = useDisclosure();
@@ -21,15 +28,49 @@ export default function BrandPage() {
   const [img, setImg] = useState();
   const userSelector = useSelector((state) => state.auth);
   const inputFileRef = useRef(null);
-  const [search, setSearch] = useState();
-  const { brands, fetch } = useFetchBrand();
   const [brandId, setBrandId] = useState();
+  const [filter, setFilter] = useState({
+    page: 1,
+    sort: "",
+    order: "",
+    search: "",
+  });
+  const { brandsFilter, fetch } = useFetchBrand(filter);
+
+  // -------------------------- pagination
+  const [pages, setPages] = useState([]);
+  const [shown, setShown] = useState({ page: 1 });
+
+  function pageHandler() {
+    const output = [];
+    for (let i = 1; i <= brandsFilter?.totalPages; i++) {
+      output.push(i);
+    }
+    setPages(output);
+  }
+  useEffect(() => {
+    pageHandler();
+  }, [brandsFilter]);
+  useEffect(() => {
+    if (shown.page > 0 && shown.page <= brandsFilter?.totalPages) {
+      setFilter({ ...filter, page: shown.page });
+    }
+  }, [shown]);
+  //  -------------------------
+
+  useEffect(() => {
+    fetch();
+  }, [filter]);
+
   return (
     <>
+      <NavbarDashboard />
       <Box id="content" pt={"52px"}>
         <Box mx={2} my={3}>
           <Flex justify={"space-between"} flexWrap={"wrap"}>
-            <Box fontSize={"30px"}>Brand</Box>
+            <Box fontSize={"30px"} fontWeight={"bold"}>
+              Brand
+            </Box>
             {userSelector.role == "SUPERADMIN" ? (
               <ButtonGroup
                 onClick={addModal.onOpen}
@@ -53,41 +94,43 @@ export default function BrandPage() {
             />
           </Flex>
 
-          <Flex flexWrap={"wrap"} gap={2} my={2} justify={"space-between"}>
-            <InputGroup size={"sm"} w={"500px"}>
+          <Flex gap={5} my={2}>
+            <InputGroup size={"sm"} maxW={"500px"}>
               <Input placeholder="Search..." ref={inputFileRef} />
               <InputRightAddon
                 cursor={"pointer"}
                 onClick={() => {
-                  setSearch(inputFileRef.current.value);
+                  setShown({ page: 1 });
+                  setFilter({ ...filter, search: inputFileRef.current.value });
                 }}
               >
                 <Icon as={FaSearch} color={"black"} />
               </InputRightAddon>
             </InputGroup>
 
-            <Flex gap={2}>
-              <Flex align={"center"} gap={1}>
-                <Box whiteSpace={"nowrap"}> Sort By:</Box>
-                <Select size={"sm"} placeholder="select..">
-                  <option>name</option>
-                </Select>
-              </Flex>
-              <Flex align={"center"} gap={1}>
-                <Box whiteSpace={"nowrap"}> Order By:</Box>
-                <Select size={"sm"} placeholder="select..">
-                  <option>ASC</option>
-                  <option>DESC</option>
-                </Select>
-              </Flex>
-            </Flex>
+            <Box className="select-filter" w={"100px"}>
+              <Box id="title">ORDER BY</Box>
+              <Select
+                size={"sm"}
+                onChange={(e) => {
+                  setShown({ page: 1 });
+                  setFilter({
+                    ...filter,
+                    order: e.target.value,
+                  });
+                }}
+              >
+                <option value={"ASC"}>ASC</option>
+                <option value={"DESC"}>DESC</option>
+              </Select>
+            </Box>
           </Flex>
 
           {/* tampilan mobile card */}
           <Box id="card-content" display={"none"}>
             <Flex flexDir={"column"} py={1}>
-              {brands &&
-                brands?.map((brand, idx) => (
+              {brandsFilter &&
+                brandsFilter?.rows.map((brand, idx) => (
                   <Flex
                     p={1}
                     m={1}
@@ -171,8 +214,8 @@ export default function BrandPage() {
                 </Tr>
               </Thead>
               <Tbody>
-                {brands &&
-                  brands?.map((brand, idx) => (
+                {brandsFilter &&
+                  brandsFilter?.rows.map((brand, idx) => (
                     <Tr>
                       <Td w={"5%"}>{idx + 1}</Td>
                       <Td>{brand.name}</Td>
@@ -238,13 +281,6 @@ export default function BrandPage() {
                   ))}
               </Tbody>
 
-              {/* <EditCategory
-                id={categoyId}
-                isOpen={editModal.isOpen}
-                onClose={editModal.onClose}
-                fetch={fetch}
-                setId={setCategoryId}
-              /> */}
               <DeleteBrand
                 id={brandId}
                 isOpen={deleteModal.isOpen}
@@ -255,6 +291,14 @@ export default function BrandPage() {
             </Table>
           </TableContainer>
         </Box>
+        <Flex p={2} m={2} justify={"center"}>
+          <Pagination
+            shown={shown}
+            setShown={setShown}
+            datas={brandsFilter?.totalPages}
+            pages={pages}
+          />
+        </Flex>
       </Box>
     </>
   );

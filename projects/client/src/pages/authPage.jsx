@@ -3,6 +3,7 @@ import Footer from "../components/website/footer";
 import Login from "../components/auth/login";
 import Register from "../components/auth/register";
 import { useState } from "react";
+import Navbar from "../components/website/navbar";
 
 function OverlaySignUp(props) {
   return (
@@ -20,12 +21,7 @@ function OverlaySignUp(props) {
       <Text align={"center"} pb={"10px"}>
         Be part of our family by clicking button bellow
       </Text>
-      <Button
-        variant="outline"
-        border={"2px"}
-        _hover={{ bg: "black", color: "white" }}
-        onClick={props.toggleMode}
-      >
+      <Button id="button" onClick={props.toggleMode}>
         Sign up
       </Button>
     </Flex>
@@ -47,12 +43,7 @@ function OverlaySignIn(props) {
       <Text align={"center"} pb={"10px"}>
         Thank for joining us, you can sign in by clicking button bellow
       </Text>
-      <Button
-        variant="outline"
-        border={"2px"}
-        _hover={{ bg: "black", color: "white" }}
-        onClick={props.toggleMode}
-      >
+      <Button id="button" onClick={props.toggleMode}>
         Sign in
       </Button>
     </Flex>
@@ -68,6 +59,7 @@ function AuthForm() {
 
   return (
     <Center flexDir={"column"}>
+      <Navbar />
       <Flex
         minH={"800px"}
         alignItems="center"
@@ -80,7 +72,7 @@ function AuthForm() {
           borderRadius="md"
           overflow="hidden"
           flexDir={["column", "column", "row", "row"]}
-          border={"2px"}
+          // border={"2px"}
         >
           <Box
             width={["100%", "100%", "50%", "50%"]}

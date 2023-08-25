@@ -4,9 +4,24 @@ const moment = require("moment");
 const include = [
   {
     model: db.Stock,
+    attributes: {
+      exclude: [
+        "payment_proof",
+        "status",
+        "courier",
+        "shipping_cost",
+        "total_price",
+        "updatedAt",
+        "deletedAt",
+      ],
+    },
     include: [
       {
         model: db.Shoe,
+        include: [
+          { model: db.Brand, attributes: ["name"] },
+          { model: db.ShoeImage, attributes: ["shoe_img"], limit: 1 },
+        ],
       },
     ],
   },
@@ -57,13 +72,19 @@ module.exports = {
         whereClause[Op.and].push({
           "$stock.Sho.brand_id$": body?.brand_id,
         });
+      }
+      if (body?.shoe_id) {
+        whereClause[Op.and].push({
+          "$stock.shoe_id$": body?.shoe_id,
+        });
+      }
+      if (body?.subcategory_id) {
+        whereClause[Op.and].push({
+          "$stock.Sho.subcategory_id$": body?.subcategory_id,
+        });
       } else if (body?.category_id) {
         whereClause[Op.and].push({
           "$stock.Sho.category_id$": body?.category_id,
-        });
-      } else if (body?.subcategory_id) {
-        whereClause[Op.and].push({
-          "$stock.Sho.sucategory_id$": body?.subcategory_id,
         });
       }
       const result = await db.OrderDetail.findAll({

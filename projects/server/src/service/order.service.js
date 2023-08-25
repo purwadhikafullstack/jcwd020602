@@ -166,10 +166,8 @@ module.exports = {
   },
   findAndCountAllOrderUser: async (body) => {
     try {
-      console.log(body);
       const fromDate = body?.fromDate || moment().startOf("month").format();
       const toDate = body?.toDate || moment().format();
-      console.log(fromDate, toDate);
       const whereClause = {
         [Op.and]: [
           // {

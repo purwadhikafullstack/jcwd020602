@@ -24,6 +24,8 @@ import { useFetchShipping } from "../hooks/useFetchCOShipping";
 import DeliveryServices from "../components/order/deliveryServiceCheckBox";
 import { GrFormPrevious, GrFormNext } from "react-icons/gr";
 import Payment from "../components/order/payment";
+import Navbar from "../components/website/navbar";
+import Footer from "../components/website/footer";
 
 export default function CheckOutPage() {
   const dispatch = useDispatch();
@@ -46,7 +48,6 @@ export default function CheckOutPage() {
   const perPage = 2;
   const { address, totalPages, fetch } = useFetchAddress(currentPage, perPage);
   const toast = useToast();
-  console.log(shipping);
 
   useEffect(() => {
     fetch();
@@ -131,6 +132,7 @@ export default function CheckOutPage() {
   };
   return (
     <Center>
+      <Navbar />
       <Flex justify={"space-between"} w={"70vw"} h={"120vh"}>
         <Flex flexDir={"column"} mt={"100px"} w={"55vw"} mr={"40px"}>
           <Box w={"100%"} py={"20px"}>
@@ -263,6 +265,7 @@ export default function CheckOutPage() {
           totalOrder={totalOrder}
         />
       </Flex>
+      <Footer />
     </Center>
   );
 }

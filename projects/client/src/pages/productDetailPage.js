@@ -14,7 +14,7 @@ import Footer from "../components/website/footer";
 import { Recommend } from "../components/website/carousel";
 import { useDispatch, useSelector } from "react-redux";
 import { addProduct } from "../redux/cart";
-// import { cartSelector, getNameSizeInCart } from "../redux/cart";
+import Navbar from "../components/website/navbar";
 
 export default function ProductDetailPage() {
   const loc = useLocation();
@@ -29,10 +29,7 @@ export default function ProductDetailPage() {
   const [selectedImage, setSelectedImage] = useState(0);
   const [category, setCategory] = useState();
   const [shoeId, setShoeId] = useState();
-  // const carts = useSelector(cartSelector.selectAll);
-  // const { checkName, checkSize } = useSelector(getNameSizeInCart);
-  // console.log(carts);
-  // console.log(checkName, checkSize);
+  const [sizeAndStock, setSizeAndStock] = useState();
 
   useEffect(() => {
     getShoe();
@@ -44,22 +41,16 @@ export default function ProductDetailPage() {
   }, [shoe]);
 
   const getShoe = async () => {
-    const res = await api().get("/shoes/" + name);
-    setShoe(res.data);
+    try {
+      const res = await api().get("/shoes/" + name);
+      setShoe(res.data.shoe);
+      setSizeAndStock(res.data.sizeAndStock);
+    } catch (err) {
+      console.log(err.response);
+    }
   };
 
   const handleToCart = async (name, size) => {
-    console.log(name, size);
-
-    // if (name == itemsInfo[0].checkName && size == itemsInfo[0].checkSize) {
-    //   toast({
-    //     title: "Shoe already in the cart, go to cart change your Shoe",
-    //     status: "warning",
-    //     position: "top",
-    //     duration: 5000,
-    //     isClosable: true,
-    //   });
-    // } else {
     dispatch(
       addProduct({
         name,
@@ -73,11 +64,11 @@ export default function ProductDetailPage() {
         isClosable: true,
       })
     );
-    // }
   };
 
   return (
     <Center flexDir={"column"}>
+      <Navbar />
       <Box
         id="product-detail"
         display={"flex"}
@@ -145,38 +136,37 @@ export default function ProductDetailPage() {
           <Flex flexDir={"column"} gap={1} id="detail">
             <Box id="detail"> select size:</Box>
             <Flex gap={2} flexWrap={"wrap"}>
-              {shoe?.stocks?.map((val) =>
-                val.stock <= 0 ? (
-                  <Button
-                    isDisabled
-                    variant={"outline"}
-                    border={"1px"}
-                    borderRadius={0}
-                  >
-                    {val?.shoeSize?.size}
-                  </Button>
-                ) : (
-                  <Button
-                    isActive={size === val.shoeSize.size}
-                    _active={{ bg: "black", color: "white" }}
-                    variant={"outline"}
-                    border={"1px"}
-                    borderRadius={0}
-                    onClick={() => {
-                      size == val.shoeSize.size
-                        ? setSIze(null)
-                        : setSIze(val?.shoeSize?.size);
-                      stock == val.stock ? setStock(0) : setStock(val.stock);
-                    }}
-                  >
-                    {val?.shoeSize?.size}
-                  </Button>
-                )
-              )}
+              {sizeAndStock &&
+                sizeAndStock.map((val) =>
+                  val.stock <= 0 ? (
+                    <Button
+                      isDisabled
+                      variant={"outline"}
+                      border={"1px"}
+                      borderRadius={0}
+                    >
+                      {val?.size}
+                    </Button>
+                  ) : (
+                    <Button
+                      isActive={size === val.size}
+                      _active={{ bg: "black", color: "white" }}
+                      variant={"outline"}
+                      border={"1px"}
+                      borderRadius={0}
+                      onClick={() => {
+                        size == val.size ? setSIze(null) : setSIze(val?.size);
+                        stock == val.stock ? setStock(0) : setStock(val.stock);
+                      }}
+                    >
+                      {val?.size}
+                    </Button>
+                  )
+                )}
             </Flex>
             {stock ? (
               <Box fontSize={"12px"} color={"red"}>
-                Only {stock} left in stock
+                {stock} left in stock
               </Box>
             ) : null}
           </Flex>

@@ -23,7 +23,6 @@ export const useFetchShipping = (weightTotal, courier) => {
       console.log(err.response?.data);
     }
   };
-  console.log(shipping);
   useEffect(() => {
     fetchShipping();
   }, []);

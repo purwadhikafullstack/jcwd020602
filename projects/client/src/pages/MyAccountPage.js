@@ -4,17 +4,19 @@ import { FaCircleUser, FaAddressBook } from "react-icons/fa6";
 import { AiOutlineShoppingCart, AiFillHeart } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import Footer from "../components/website/footer";
+import Navbar from "../components/website/navbar";
 
 export default function MyAccountPage() {
   const userSelector = useSelector((state) => state.auth);
   const menu = [
     { icon: FaCircleUser, name: "Profile" },
     { icon: FaAddressBook, name: "Address Book" },
-    { icon: AiOutlineShoppingCart, name: "Order History" },
+    { icon: AiOutlineShoppingCart, name: "Order List" },
     { icon: AiFillHeart, name: "My Wishlist" },
   ];
   return (
     <Center flexDir={"column"}>
+      <Navbar />
       <Flex
         w={"100%"}
         maxW={"1535px"}

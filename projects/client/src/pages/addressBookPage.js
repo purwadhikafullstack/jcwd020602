@@ -6,6 +6,7 @@ import { useFetchAddress } from "../hooks/useFetchAddress";
 import DeleteAddress from "../components/website/deleteAddress";
 import { useEffect, useState } from "react";
 import EditAddress from "../components/website/editAddress";
+import Navbar from "../components/website/navbar";
 
 export default function AddressBookPage() {
   const addModal = useDisclosure();
@@ -14,10 +15,9 @@ export default function AddressBookPage() {
   const [selectedAddress, setSelectedAddress] = useState(null);
   const { address, fetch } = useFetchAddress();
 
-  console.log(address);
-
   return (
     <Center flexDir={"column"}>
+      <Navbar />
       <Flex
         flexDir={"column"}
         w={"100%"}

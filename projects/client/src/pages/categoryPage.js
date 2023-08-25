@@ -16,6 +16,7 @@ import {
 import { EditCategory } from "../components/dashboard/editCategory";
 import { DeleteCategory } from "../components/dashboard/deleteCategory";
 import ImageModal from "../components/dashboard/imageModal";
+import NavbarDashboard from "../components/dashboard/navbarDashboard";
 
 export default function CategoryPage() {
   const { isOpen, onClose, onOpen } = useDisclosure();
@@ -31,6 +32,7 @@ export default function CategoryPage() {
   const [categoyId, setCategoryId] = useState();
   return (
     <>
+      <NavbarDashboard />
       <Box id="content" pt={"52px"}>
         <Box mx={2} my={3}>
           <Flex justify={"space-between"} flexWrap={"wrap"}>

@@ -12,6 +12,7 @@ import { api } from "../api/api";
 import { useDispatch, useSelector } from "react-redux";
 import Footer from "../components/website/footer";
 import { fetch } from "../hoc/authProvider";
+import Navbar from "../components/website/navbar";
 
 export default function ProfilePage() {
   YupPassword(Yup);
@@ -36,7 +37,7 @@ export default function ProfilePage() {
     validationSchema: Yup.object().shape({
       name: Yup.string().required("Name is required"),
       phone: Yup.string()
-        .min(12, "min 12 digits")
+        .min(10, "min 10 digits")
         .max(12, "max 12 digits")
         .required("phone is required"),
     }),
@@ -58,7 +59,7 @@ export default function ProfilePage() {
         fetch(dispatch);
       } catch (err) {
         toast({
-          title: err?.response?.data,
+          title: err?.response?.data.message,
           status: "error",
         });
       }
@@ -75,10 +76,14 @@ export default function ProfilePage() {
       oldPassword: Yup.string()
         .min(8, "at least 8 characters")
         .minUppercase(1, "at least 1 capital letter")
+        .minLowercase(1, "at least 1 lower letter")
+        .minNumbers(1, "at least 1 number")
         .required("Required"),
       newPassword: Yup.string()
         .min(8, "at least 8 characters")
         .minUppercase(1, "at least 1 capital letter")
+        .minLowercase(1, "at least 1 lower letter")
+        .minNumbers(1, "at least 1 number")
         .required("Required"),
     }),
     onSubmit: async () => {
@@ -114,6 +119,7 @@ export default function ProfilePage() {
 
   return (
     <Center flexDir={"column"}>
+      <Navbar />
       <Flex w={"100%"} maxW={"1535px"} zIndex={1} p={"1rem 1rem"} mt={"100px"}>
         <Flex gap={5} flexDir={"column"} p={2} border={"2px"} w={"100%"}>
           <Text fontSize={"30px"} fontWeight={"bold"}>

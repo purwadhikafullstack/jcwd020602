@@ -1,7 +1,8 @@
 const db = require("../models");
-SHOE_URL = process.env.SHOE_URL;
 const { Op } = require("sequelize");
 const fs = require("fs");
+const { errorResponse } = require("../utils/function");
+const { CustomError } = require("../utils/customErrors");
 const includeOptions = [
   {
     model: db.Brand,
@@ -26,6 +27,7 @@ const includeOptions = [
   },
 ];
 
+//-------------------------------------------------- DONE CLEAN CODE! -FAHMI
 const shoeController = {
   addShoe: async (req, res) => {
     const t = await db.sequelize.transaction();
@@ -60,7 +62,7 @@ const shoeController = {
       const imageArr = [];
       for (const file of req.files) {
         const { filename } = file;
-        const imageUrl = SHOE_URL + filename;
+        const imageUrl = "shoe/" + filename;
         imageArr.push({ shoe_id: shoe.id, shoe_img: imageUrl });
       }
 
@@ -161,6 +163,33 @@ const shoeController = {
       return res.status(500).send(err.message);
     }
   },
+  getAllShoeSelect: async (req, res) => {
+    try {
+      const whereClause = {};
+      if (req.query.subcategory_id) {
+        whereClause.subcategory_id = req.query.subcategory_id;
+      } else if (req.query.category_id) {
+        whereClause.category_id = req.query.category_id;
+      }
+      if (req.query.brand_id) {
+        whereClause.brand_id = req.query.brand_id;
+      }
+      let shoes = await db.Shoe.findAll({
+        where: whereClause,
+      });
+      if (
+        !req.query.brand_id &&
+        !req.query.subcategory_id &&
+        !req.query.category_id
+      ) {
+        shoes = [];
+      }
+
+      return res.status(200).send(shoes);
+    } catch (err) {
+      errorResponse(res, err, CustomError);
+    }
+  },
   getShoeByName: async (req, res) => {
     try {
       const name = req?.params?.name;
@@ -172,7 +201,22 @@ const shoeController = {
       if (!shoe) {
         return res.status(400).send({ message: "shoe not found" });
       }
-      return res.status(200).send(shoe);
+
+      const sizeAndStock = shoe.stocks.reduce((prev, curr) => {
+        if (prev[curr.shoeSize.size]) {
+          prev[curr.shoeSize.size] += curr.stock;
+        } else {
+          prev[curr.shoeSize.size] = curr.stock;
+        }
+
+        return prev;
+      }, {});
+
+      const sizeAndStockArray = Object.entries(sizeAndStock).map(
+        ([size, stock]) => ({ size, stock })
+      );
+
+      return res.status(200).send({ shoe, sizeAndStock: sizeAndStockArray });
     } catch (err) {
       return res.status(500).send(err.message);
     }
@@ -297,6 +341,31 @@ const shoeController = {
       }
       await t.rollback();
       return res.status(500).send(err.message);
+    }
+  },
+  setBestSeller: async (req, res) => {
+    const t = await db.sequelize.transaction();
+    try {
+      const shoe_ids = req.body.shoe_ids || [];
+      await db.Shoe.update(
+        { status: "NORMAL" },
+        { where: { status: "BESTSELLER" }, transaction: t }
+      );
+      for (const id of shoe_ids) {
+        const shoe = await db.Shoe.findOne({ where: { id } });
+        if (!shoe) {
+          return res.status(200).send({ message: "shoe not found" });
+        }
+        await db.Shoe.update(
+          { status: "BESTSELLER" },
+          { where: { id }, transaction: t }
+        );
+      }
+      await t.commit();
+      return res.status(200).send({ message: "Best seller marked" });
+    } catch (err) {
+      await t.rollback();
+      errorResponse(res, err, CustomError);
     }
   },
 };

@@ -3,13 +3,18 @@ import { InputGroup, useDisclosure, Input } from "@chakra-ui/react";
 import { InputRightAddon, InputRightElement } from "@chakra-ui/react";
 import { AiOutlineShoppingCart, AiOutlineSearch } from "react-icons/ai";
 import { BiMenuAltLeft } from "react-icons/bi";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import SideMenu from "./sideMenu";
 import logo from "../../assets/newlogo.png";
 import { useFetchCategory } from "../../hooks/useFetchCategory";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useFetchBrand } from "../../hooks/useFetchBrand";
+import {
+  cartSelector,
+  getCarts,
+  getTotalProductsInCart,
+} from "../../redux/cart";
 
 export default function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -19,6 +24,8 @@ export default function Navbar() {
   const { brands } = useFetchBrand();
   const { categories } = useFetchCategory();
   const userSelector = useSelector((state) => state.auth);
+  const carts = useSelector(cartSelector.selectAll);
+  const totalItem = useSelector(getTotalProductsInCart);
 
   const [keyword, setKeyword] = useState();
   const dispatch = useDispatch();
@@ -32,6 +39,10 @@ export default function Navbar() {
   const handleCategoryMouseLeave = (categoryId) => {
     setSubCategory({ [categoryId]: false });
   };
+
+  useEffect(() => {
+    dispatch(getCarts());
+  }, [dispatch]);
 
   return (
     <>
@@ -95,8 +106,8 @@ export default function Navbar() {
                   onMouseLeave={(e) => setBrand(false)}
                 >
                   <Box align={"center"}>
-                    {/* {brands &&
-                      brands?.rows.map((val) => (
+                    {brands &&
+                      brands?.map((val) => (
                         <Link to={`/b/${val.name.replace(/ /g, "-")}`}>
                           <Box
                             p={2}
@@ -108,7 +119,7 @@ export default function Navbar() {
                             {val.name}
                           </Box>
                         </Link>
-                      ))} */}
+                      ))}
                   </Box>
                 </Box>
               </Flex>
@@ -206,21 +217,23 @@ export default function Navbar() {
                   >
                     <Box h={"auto"} pos={"relative"}>
                       <Image as={AiOutlineShoppingCart} w={"30px"} h={"auto"} />
-                      <Flex
-                        fontSize={"8px"}
-                        color={"white"}
-                        w={"15px"}
-                        h={"15px"}
-                        pos={"absolute"}
-                        top={0}
-                        right={0}
-                        borderRadius={"full"}
-                        bg={"red"}
-                        align={"center"}
-                        justify={"center"}
-                      >
-                        99
-                      </Flex>
+                      {totalItem && totalItem > 0 ? (
+                        <Flex
+                          fontSize={"8px"}
+                          color={"white"}
+                          w={"15px"}
+                          h={"15px"}
+                          pos={"absolute"}
+                          top={0}
+                          right={0}
+                          borderRadius={"full"}
+                          bg={"red"}
+                          align={"center"}
+                          justify={"center"}
+                        >
+                          {totalItem}
+                        </Flex>
+                      ) : null}
                     </Box>
                   </Box>
                 </Link>
