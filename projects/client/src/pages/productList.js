@@ -4,14 +4,15 @@ import { useFetchShoe } from "../hooks/useFetchShoe";
 import { useFetchCategory } from "../hooks/useFetchCategory";
 import { useFetchBrand } from "../hooks/useFetchBrand";
 import { useFetchShoeSize } from "../hooks/useFetchShoeSize";
-import React, { useEffect, useState } from "react";
+import React, { lazy, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Footer from "../components/website/footer";
 import { RiEmotionUnhappyLine } from "react-icons/ri";
 import Pagination from "../components/dashboard/pagination";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
-import Navbar from "../components/website/navbar";
+// import Navbar from "../components/website/navbar";
+const Navbar = lazy(() => import("../components/website/navbar"));
 
 export default function ProductList() {
   const loc = useLocation();

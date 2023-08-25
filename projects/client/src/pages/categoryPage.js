@@ -17,6 +17,7 @@ import { EditCategory } from "../components/dashboard/editCategory";
 import { DeleteCategory } from "../components/dashboard/deleteCategory";
 import ImageModal from "../components/dashboard/imageModal";
 import NavbarDashboard from "../components/dashboard/navbarDashboard";
+import Pagination from "../components/dashboard/pagination";
 
 export default function CategoryPage() {
   const { isOpen, onClose, onOpen } = useDisclosure();
@@ -28,8 +29,39 @@ export default function CategoryPage() {
   const [img, setImg] = useState();
   const inputFileRef = useRef(null);
   const [search, setSearch] = useState();
-  const { categories, fetch } = useFetchCategory();
   const [categoyId, setCategoryId] = useState();
+  const [filter, setFilter] = useState({
+    page: 1,
+    sort: "",
+    order: "",
+    search: "",
+  });
+  const { categoriesFilter, fetch } = useFetchCategory(filter);
+
+  // -------------------------- pagination
+  const [pages, setPages] = useState([]);
+  const [shown, setShown] = useState({ page: 1 });
+
+  function pageHandler() {
+    const output = [];
+    for (let i = 1; i <= categoriesFilter?.totalPages; i++) {
+      output.push(i);
+    }
+    setPages(output);
+  }
+  useEffect(() => {
+    pageHandler();
+  }, [categoriesFilter]);
+  useEffect(() => {
+    if (shown.page > 0 && shown.page <= categoriesFilter?.totalPages) {
+      setFilter({ ...filter, page: shown.page });
+    }
+  }, [shown]);
+  //  -------------------------
+
+  useEffect(() => {
+    fetch();
+  }, [filter]);
   return (
     <>
       <NavbarDashboard />
@@ -60,41 +92,43 @@ export default function CategoryPage() {
             />
           </Flex>
 
-          <Flex flexWrap={"wrap"} gap={2} my={2} justify={"space-between"}>
-            <InputGroup size={"sm"} w={"500px"}>
+          <Flex gap={5} my={2}>
+            <InputGroup size={"sm"} maxW={"500px"}>
               <Input placeholder="Search..." ref={inputFileRef} />
               <InputRightAddon
                 cursor={"pointer"}
                 onClick={() => {
-                  setSearch(inputFileRef.current.value);
+                  setShown({ page: 1 });
+                  setFilter({ ...filter, search: inputFileRef.current.value });
                 }}
               >
                 <Icon as={FaSearch} color={"black"} />
               </InputRightAddon>
             </InputGroup>
 
-            <Flex gap={2}>
-              <Flex align={"center"} gap={1}>
-                <Box whiteSpace={"nowrap"}> Sort By:</Box>
-                <Select size={"sm"} placeholder="select..">
-                  <option>name</option>
-                </Select>
-              </Flex>
-              <Flex align={"center"} gap={1}>
-                <Box whiteSpace={"nowrap"}> Order By:</Box>
-                <Select size={"sm"} placeholder="select..">
-                  <option>ASC</option>
-                  <option>DESC</option>
-                </Select>
-              </Flex>
-            </Flex>
+            <Box className="select-filter" w={"100px"}>
+              <Box id="title">ORDER BY</Box>
+              <Select
+                size={"sm"}
+                onChange={(e) => {
+                  setShown({ page: 1 });
+                  setFilter({
+                    ...filter,
+                    order: e.target.value,
+                  });
+                }}
+              >
+                <option value={"ASC"}>ASC</option>
+                <option value={"DESC"}>DESC</option>
+              </Select>
+            </Box>
           </Flex>
 
           {/* tampilan mobile card */}
           <Box id="card-content" display={"none"}>
             <Flex flexDir={"column"} py={1}>
-              {categories &&
-                categories?.map((category, idx) => (
+              {categoriesFilter &&
+                categoriesFilter?.rows.map((category, idx) => (
                   <Flex
                     p={1}
                     m={1}
@@ -160,6 +194,9 @@ export default function CategoryPage() {
                     <Divider />
                     <Image
                       src={`${process.env.REACT_APP_API_BASE_URL}/${category.category_img}`}
+                      w={"100px"}
+                      h={"100px"}
+                      objectFit={"cover"}
                     />
                   </Flex>
                 ))}
@@ -178,8 +215,8 @@ export default function CategoryPage() {
                 </Tr>
               </Thead>
               <Tbody>
-                {categories &&
-                  categories?.map((category, idx) => (
+                {categoriesFilter &&
+                  categoriesFilter?.rows.map((category, idx) => (
                     <Tr>
                       <Td w={"5%"}>{idx + 1}</Td>
                       <Td>
@@ -269,6 +306,14 @@ export default function CategoryPage() {
             </Table>
           </TableContainer>
         </Box>
+        <Flex p={2} m={2} justify={"center"}>
+          <Pagination
+            shown={shown}
+            setShown={setShown}
+            datas={categoriesFilter?.totalPages}
+            pages={pages}
+          />
+        </Flex>
       </Box>
     </>
   );

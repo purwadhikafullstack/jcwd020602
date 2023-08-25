@@ -159,7 +159,7 @@
 /*---------------------- product detail ----------------------*/
 
 #detail-product {
-  width: 30%;
+  width: 40%;
   border: 2px solid;
 }
 #detail-product #detail {
@@ -167,6 +167,13 @@
   padding: 5px;
 }
 
+/*---------------------- cart ----------------------*/
+.cart-card {
+  display: flex;
+  gap: 7px;
+  border: 1px solid;
+  justify-content: space-between;
+}
 /*---------------------- scroll ----------------------*/
 ::-webkit-scrollbar {
   width: 5px;
@@ -368,6 +375,7 @@
     object-fit: cover;
   }
 }
+
 @media (max-width: 630px) {
   .category {
     grid-template-columns: 1fr;
@@ -381,6 +389,7 @@
     flex-direction: column;
   }
 }
+
 @media (max-width: 400px) {
   .orderlist-filter {
     grid-template-columns: 1fr;

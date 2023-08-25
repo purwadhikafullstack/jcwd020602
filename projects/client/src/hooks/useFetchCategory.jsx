@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { api } from "../api/api";
 
-export const useFetchCategory = () => {
+export const useFetchCategory = (filter) => {
   const [categories, setCategories] = useState([]);
+  const [categoriesFilter, setCategoriesFilter] = useState({ rows: [] });
   const fetch = async () => {
     try {
-      const res = await api().get(`/categories`);
-      setCategories(res.data);
+      const res = await api().get(`/categories`, { params: { ...filter } });
+      setCategories(res.data.rows);
+      setCategoriesFilter(res.data);
     } catch (err) {
       console.log(err?.response?.data);
     }
@@ -16,7 +18,7 @@ export const useFetchCategory = () => {
     fetch();
   }, []);
 
-  return { categories, fetch };
+  return { categories, categoriesFilter, fetch };
 };
 
 export const useFetchSubcategory = () => {

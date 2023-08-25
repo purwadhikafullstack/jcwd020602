@@ -110,14 +110,22 @@ const cartController = {
       const { id, qty } = req.body;
 
       const cartData = await db.Cart.findOne({ where: { id } });
-
-      const availableStock = await db.Stock.findOne({
+      const availableStock = await db.Stock.findAll({
         where: {
-          shoe_size_id: cartData.dataValues.shoe_size_id,
+          shoe_id: cartData.shoe_id,
+          shoe_size_id: cartData.shoe_size_id,
         },
       });
+      const aS = availableStock.reduce((prev, curr) => {
+        if (prev[curr.shoe_size_id]) {
+          prev[curr.shoe_size_id] += curr.stock;
+        } else {
+          prev[curr.shoe_size_id] = curr.stock;
+        }
+        return prev;
+      }, {});
 
-      if (qty > availableStock.dataValues.stock) {
+      if (qty > aS[cartData.shoe_size_id]) {
         return res.status(500).send({
           message: "Product in your cart exceeds available stocks",
           data: null,

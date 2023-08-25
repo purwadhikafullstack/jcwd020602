@@ -1,12 +1,4 @@
-import {
-  Flex,
-  Heading,
-  Text,
-  Center,
-  HStack,
-  Button,
-  Image,
-} from "@chakra-ui/react";
+import { Flex, Heading, Text, Center, HStack, Image } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { BsSearch } from "react-icons/bs";
 import DeleteProductAlert from "../components/order/DeleteProductAlert";

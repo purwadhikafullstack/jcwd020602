@@ -2,6 +2,7 @@ const db = require("../models");
 const fs = require("fs");
 const { errorResponse } = require("../utils/function");
 const { CustomError } = require("../utils/customErrors");
+const { Op } = require("sequelize");
 
 //-------------------------------------------------- DONE CLEAN CODE! -FAHMI
 const categoryController = {
@@ -48,10 +49,24 @@ const categoryController = {
   },
   getAllCategory: async (req, res) => {
     try {
-      const categories = await db.Category.findAll({
+      const search = req?.query?.search || "";
+      const sort = req?.query?.sort || "name";
+      const order = req?.query?.order || "ASC";
+      const limit = req?.query?.limit || 8;
+      const page = req?.query?.page || 1;
+      const offset = (parseInt(page) - 1) * limit;
+
+      const categories = await db.Category.findAndCountAll({
         include: [{ model: db.SubCategory, include: [db.Shoe] }],
+        where: { name: { [Op.like]: `%${search}%` } },
+        distinct: true,
+        offset,
+        order: [[sort, order]],
       });
-      return res.status(200).send(categories);
+      return res.status(200).send({
+        ...categories,
+        totalPages: Math.ceil(categories.count / limit),
+      });
     } catch (err) {
       return res.status(500).send(err.message);
     }

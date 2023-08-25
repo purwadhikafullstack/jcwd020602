@@ -7,9 +7,11 @@ import {
   AlertDialogHeader,
   AlertDialogOverlay,
   Button,
+  Image,
   useDisclosure,
 } from "@chakra-ui/react";
 import React from "react";
+import { MdOutlineDeleteOutline } from "react-icons/md";
 
 export default function DeleteProductAlert(props) {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -18,13 +20,12 @@ export default function DeleteProductAlert(props) {
 
   return (
     <>
-      <button
+      <Image
+        as={MdOutlineDeleteOutline}
+        w={"30px"}
+        h={"30px"}
         onClick={onOpen}
-        className="cursor-pointer rounded-l bg-gray-100 py-1 px-3.5 duration-100 hover:bg-red-500 hover:text-blue-50"
-      >
-        {" "}
-        Delete{" "}
-      </button>
+      />
 
       <AlertDialog
         leastDestructiveRef={cancelRef}

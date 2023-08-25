@@ -304,6 +304,7 @@ export default function OrderListPage() {
                           <Image
                             src={`${process.env.REACT_APP_API_BASE_URL}/${order?.orderDetails[0]?.stock?.Sho?.ShoeImages[0]?.shoe_img}`}
                             objectFit={"cover"}
+                            // w={"100%"}
                             w={"250px"}
                             h={"200px"}
                           />

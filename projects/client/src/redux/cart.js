@@ -76,10 +76,10 @@ export const getTotalProductsInCart = (state) => {
 
 export const getTotalPriceInCart = (state) => {
   const cartItems = cartSelector.selectAll(state);
-  return cartItems.reduce(
-    (total, cartItem) => total + cartItem.qty * cartItem.Shoes?.price,
-    0
-  );
+  return cartItems.reduce((total, cartItem) => {
+    total = total + cartItem.qty * cartItem.Shoes?.price;
+    return total;
+  }, 0);
 };
 
 export const getTotalWeightInCart = (state) => {

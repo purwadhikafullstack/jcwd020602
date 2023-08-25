@@ -8,7 +8,9 @@ import Category from "../components/website/category";
 import LogoCarousel from "../components/website/logoCarousel";
 import Banner from "../components/website/banner";
 import Footer from "../components/website/footer";
-import Navbar from "../components/website/navbar";
+// import Navbar from "../components/website/navbar";
+import { lazy } from "react";
+const Navbar = lazy(() => import("../components/website/navbar"));
 
 export default function LandingPage() {
   return (
