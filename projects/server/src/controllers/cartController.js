@@ -80,12 +80,13 @@ const cartController = {
       });
 
       const cartItem = await db.Cart.findOne({
-        where: { shoe_id: shoe.id, shoe_size_id: shoeSize.id },
+        where: { shoe_id: shoe.id, shoe_size_id: shoeSize.id, user_id },
       });
+
       if (cartItem) {
-        throw new Error(
-          "Shoe was already in Cart, go to cart to change your shoe"
-        );
+        return res.status(400).send({
+          message: "Shoe already in Cart",
+        });
       } else {
         await db.Cart.create({
           qty: 1,

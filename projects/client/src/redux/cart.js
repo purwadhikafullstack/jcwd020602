@@ -22,15 +22,15 @@ export const addProduct = createAsyncThunk(
   async ({ name, size }) => {
     try {
       const token = JSON.parse(localStorage.getItem("user"));
-
       const response = await api().post(
         "/carts",
         { name, size },
         { headers: { Authorization: `Bearer ${token}` } }
       );
+      alert("Successfully add shoe to cart");
       return response?.data?.data;
     } catch (err) {
-      console.log(err.response?.data);
+      alert(err.response.data.message);
     }
   }
 );

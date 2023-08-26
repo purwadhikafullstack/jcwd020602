@@ -162,6 +162,10 @@
   width: 40%;
   border: 2px solid;
 }
+#detail-product-ordersummary {
+  width: 40%;
+  border: 2px solid;
+}
 #detail-product #detail {
   border: 1px solid;
   padding: 5px;
@@ -173,6 +177,12 @@
   gap: 7px;
   border: 1px solid;
   justify-content: space-between;
+}
+/*---------------------- checkout ----------------------*/
+.courier {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
 }
 /*---------------------- scroll ----------------------*/
 ::-webkit-scrollbar {
@@ -347,6 +357,13 @@
     grid-template-columns: 1fr;
     gap: 5px;
   }
+
+  #detail-product-ordersummary {
+    display: none;
+  }
+  #accordion-summary {
+    display: block;
+  }
 }
 
 @media (max-width: 630px) {
@@ -387,6 +404,12 @@
   }
   .form-profile {
     flex-direction: column;
+  }
+  .courier {
+    display: none;
+  }
+  #courier-select {
+    display: block;
   }
 }
 

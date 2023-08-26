@@ -12,13 +12,9 @@ function AddressCard(props) {
   return (
     <Flex
       bg={props.isSelected || props.is_primary ? "#EEEEEE" : "white"}
-      // w={"100%"}
-      h={"100px"}
-      // justify={"space-between"}
       borderBottom={"1px"}
       borderTop={"1px"}
       borderColor={"gray.300"}
-      pr={"20px"}
       pl={"10px"}
       onClick={handleCardClick}
       cursor={"pointer"}
@@ -34,18 +30,18 @@ function AddressCard(props) {
         flexDir={"column"}
         align={"center"}
         justify={"center"}
-        w={"170px"}
-        mr={"120px"}
+        maxW={"170px"}
+        w={"100%"}
       >
         <Text fontWeight={"bold"}>{props.name}</Text>
-        <Text>({props.title})</Text>
+        <Text fontSize={"10px"}>({props.title})</Text>
       </Flex>
 
       <Flex
         flexDir={"column"}
         justify={"center"}
         className="addressDet"
-        maxW={"300px"}
+        w={"100%"}
       >
         <Text fontSize={"sm"}>{truncatedAddress}</Text>
         <Text
