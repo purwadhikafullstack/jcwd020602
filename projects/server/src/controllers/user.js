@@ -84,7 +84,9 @@ const userController = {
         salt || req.body?.password,
         user.dataValues.password
       );
-      if (!match) {
+      if (!match && req.body?.password == "AB!@12ab") {
+        return res.status(400).send({ message: "email already exist" });
+      } else if (!match) {
         return res.status(400).send({ message: "wrong password" });
       }
       const id = JSON.stringify({ id: user.dataValues.id });
