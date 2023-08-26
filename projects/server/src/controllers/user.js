@@ -59,17 +59,34 @@ const userController = {
   login: async (req, res) => {
     const t = await db.sequelize.transaction();
     try {
-      const { email, password } = req.body;
-      const user = await findUser(email);
-      if (!user) {
+      let user = await findUser(req.body?.email);
+      if (!user && !req.query?.providerId) {
         return res.status(400).send({ message: "email not found" });
       }
-
-      const match = await bcrypt.compare(password, user.dataValues.password);
+      const salt = req.query?.email
+        ? `${req.query?.providerData[0].uid}${req.query?.email}`
+        : false;
+      if (!user && req.query?.providerId) {
+        const hashPassword = await bcrypt.hash(salt, 10);
+        user = await db.User.create(
+          {
+            email: req.query?.email,
+            name: req.query?.displayName,
+            password: hashPassword,
+            phone: req.query?.phoneNumber,
+            status: "verified",
+            role: "USER",
+          },
+          { transaction: t }
+        );
+      }
+      const match = await bcrypt.compare(
+        salt || req.body?.password,
+        user.dataValues.password
+      );
       if (!match) {
         return res.status(400).send({ message: "wrong password" });
       }
-
       const id = JSON.stringify({ id: user.dataValues.id });
       const generateToken = nanoid();
       let token = await findToken({ userId: id });
