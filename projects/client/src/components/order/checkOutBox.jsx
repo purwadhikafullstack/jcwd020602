@@ -34,7 +34,11 @@ export default function CheckoutBox(props) {
           <Box>Rp. {props?.totalPriceSum?.toLocaleString("id-ID")}</Box>
         </Flex>
       </Box>
-      <Button id="button" onClick={() => nav("/checkout")}>
+      <Button
+        id="button"
+        onClick={() => nav("/checkout")}
+        isDisabled={props.sumItem ? false : true}
+      >
         CHECKOUT
       </Button>
     </Flex>

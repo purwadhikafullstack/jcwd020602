@@ -1,5 +1,6 @@
 import { Flex, Text, Center, Button, useToast } from "@chakra-ui/react";
 import { HStack, Box, Icon, useDisclosure } from "@chakra-ui/react";
+
 import { Select } from "@chakra-ui/react";
 import OrderSummary from "../components/order/orderSummary";
 import {
@@ -19,13 +20,15 @@ import AddressCard from "../components/order/addressCard";
 import jneImage from "../assets/checkOutPage/JNE.png";
 import tikiImage from "../assets/checkOutPage/TIKI.png";
 import posImage from "../assets/checkOutPage/POS_Indonesia.png";
-import AddAddressCheckOut from "../components/order/addAddressCheckOut";
+
 import { useFetchShipping } from "../hooks/useFetchCOShipping";
 import DeliveryServices from "../components/order/deliveryServiceCheckBox";
 import { GrFormPrevious, GrFormNext } from "react-icons/gr";
 import Payment from "../components/order/payment";
 import Navbar from "../components/website/navbar";
 import Footer from "../components/website/footer";
+import AddAddress from "../components/website/addAddress";
+import AccordionOrderSumary from "../components/order/accordionOrderSummary";
 
 export default function CheckOutPage() {
   const dispatch = useDispatch();
@@ -133,129 +136,159 @@ export default function CheckOutPage() {
   return (
     <Center flexDir={"column"}>
       <Navbar />
-      <Flex justify={"space-between"} w={"70vw"} h={"120vh"}>
-        <Flex flexDir={"column"} mt={"100px"} w={"55vw"} mr={"40px"}>
-          <Box w={"100%"} py={"20px"}>
-            <Text fontSize={"2xl"} fontWeight={"bold"} letterSpacing={"wide"}>
-              SHIPPING DETAILS
-            </Text>
-          </Box>
-          {address?.length > 0 ? (
-            <Flex flexDir={"column"} h={"270px"}>
-              <Flex justify={"space-between"}>
-                <Text fontWeight={"bold"}>Saved Address</Text>
-                <HStack>
-                  <GrFormPrevious
-                    onClick={() => handlePage(currentPage - 1)}
-                    disabled={currentPage === 1}
-                    cursor={"pointer"}
+      <Box
+        id="product-detail"
+        display={"flex"}
+        w={"100%"}
+        maxW={"1533px"}
+        p={"0rem 1rem"}
+        mt={"100px"}
+        mb={"20px"}
+        gap={2}
+        justifyContent={"space-between"}
+      >
+        <Flex flexDir={"column"} w={"100%"} gap={2}>
+          <AccordionOrderSumary
+            carts={carts}
+            totalPriceSum={totalPriceSum}
+            sumItem={sumItem}
+            weightTotal={weightTotal}
+            cost={cost}
+            totalOrder={totalOrder}
+          />
+          <Flex
+            flexDir={"column"}
+            gap={3}
+            w={"100%"}
+            // maxW={"1000px"}
+            border={"2px"}
+          >
+            <Box p={2}>
+              <Text fontSize={"2xl"} fontWeight={"bold"} letterSpacing={"wide"}>
+                SHIPPING DETAILS
+              </Text>
+            </Box>
+            {address?.length > 0 ? (
+              <Flex flexDir={"column"} p={2}>
+                <Flex justify={"space-between"}>
+                  <Text fontWeight={"bold"}>Saved Address</Text>
+                  <HStack>
+                    <GrFormPrevious
+                      onClick={() => handlePage(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      cursor={"pointer"}
+                    />
+                    <Text fontSize={"sm"} w={"10px"} align={"center"}>
+                      {currentPage}
+                    </Text>
+                    <GrFormNext
+                      onClick={() => handlePage(currentPage + 1)}
+                      disabled={currentPage >= totalPages}
+                      cursor={"pointer"}
+                    />
+                  </HStack>
+                </Flex>
+                <Box>
+                  {address?.map((val, idx) => (
+                    <AddressCard
+                      key={val.id}
+                      {...val}
+                      isSelected={selectedAddressId === val.id}
+                      onClick={() => {
+                        setSelectedAddressId(val.id);
+                        chooseAddress(val.id);
+                      }}
+                    />
+                  ))}
+                </Box>
+                <Center
+                  color={"gray.500"}
+                  gap={"10px"}
+                  cursor={"pointer"}
+                  onClick={addModal.onOpen}
+                  py={1}
+                >
+                  <Icon as={IoAddCircleOutline} w={7} h={7} /> Add new address
+                  <AddAddress
+                    isOpen={addModal.isOpen}
+                    onClose={addModal.onClose}
+                    fetch={fetch}
                   />
-                  <Text fontSize={"sm"} w={"10px"} align={"center"}>
-                    {currentPage}
-                  </Text>
-                  <GrFormNext
-                    onClick={() => handlePage(currentPage + 1)}
-                    disabled={currentPage >= totalPages}
-                    cursor={"pointer"}
-                  />
-                </HStack>
+                </Center>
               </Flex>
-              <Box h={"210px"}>
-                {address?.map((val, idx) => (
-                  <AddressCard
-                    key={val.id}
-                    {...val}
-                    isSelected={selectedAddressId === val.id}
-                    onClick={() => {
-                      setSelectedAddressId(val.id);
-                      chooseAddress(val.id);
-                    }}
-                  />
-                ))}
-              </Box>
+            ) : (
               <Center
+                pt={"10px"}
                 color={"gray.500"}
                 gap={"10px"}
                 cursor={"pointer"}
                 onClick={addModal.onOpen}
               >
                 <Icon as={IoAddCircleOutline} w={7} h={7} /> Add new address
-                <AddAddressCheckOut
+                <AddAddress
                   isOpen={addModal.isOpen}
                   onClose={addModal.onClose}
                   fetch={fetch}
                 />
               </Center>
-            </Flex>
-          ) : (
-            <Center
-              pt={"10px"}
-              color={"gray.500"}
-              gap={"10px"}
-              cursor={"pointer"}
-              onClick={addModal.onOpen}
-            >
-              <Icon as={IoAddCircleOutline} w={7} h={7} /> Add new address
-              <AddAddressCheckOut
-                isOpen={addModal.isOpen}
-                onClose={addModal.onClose}
-                fetch={fetch}
+            )}
+            <Box p={2}>
+              <Text fontSize={"2xl"} fontWeight={"bold"} letterSpacing={"wide"}>
+                SHIPPING METHOD
+              </Text>
+            </Box>
+            <Box className="courier" p={2}>
+              <DeliveryServices
+                imageUrl={jneImage}
+                value="jne"
+                isSelected={courier === "jne"}
+                onCheckboxChange={handleCheckboxChange}
               />
-            </Center>
-          )}
-          <Box w={"100%"} py={"20px"}>
-            <Text fontSize={"2xl"} fontWeight={"bold"} letterSpacing={"wide"}>
-              SHIPPING METHOD
-            </Text>
-          </Box>
-          <Flex justify={"space-around"} align={"center"}>
-            <DeliveryServices
-              imageUrl={jneImage}
-              value="jne"
-              isSelected={courier === "jne"}
-              onCheckboxChange={handleCheckboxChange}
-            />
-            <DeliveryServices
-              imageUrl={tikiImage}
-              value="tiki"
-              isSelected={courier === "tiki"}
-              onCheckboxChange={handleCheckboxChange}
-            />
-            <DeliveryServices
-              imageUrl={posImage}
-              value="pos"
-              isSelected={courier === "pos"}
-              onCheckboxChange={handleCheckboxChange}
-            />
+              <DeliveryServices
+                imageUrl={tikiImage}
+                value="tiki"
+                isSelected={courier === "tiki"}
+                onCheckboxChange={handleCheckboxChange}
+              />
+              <DeliveryServices
+                imageUrl={posImage}
+                value="pos"
+                isSelected={courier === "pos"}
+                onCheckboxChange={handleCheckboxChange}
+              />
+            </Box>
+            <Box p={2} id="courier-select" display={"none"}>
+              <Select
+                onChange={(e) => setCourier(e.target.value)}
+                placeholder="select courier..."
+              >
+                <option value="jne">JNE</option>
+                <option value="tiki">TIKI</option>
+                <option value="pos">POS INDONESIA</option>
+              </Select>
+            </Box>
+            <Box p={2}>
+              <Select placeholder="Select shipping" onChange={handleSelect}>
+                {shipping?.map((val) => (
+                  <option
+                    key={val.service}
+                    value={`${val.service},${val.description},${val.cost[0].value},${val.cost[0].etd}`}
+                  >
+                    {`${val.service} - ${val.description} - (${val.cost[0].etd} days) (${val.cost[0].value} IDR) `}
+                  </option>
+                ))}
+              </Select>
+              <Center>
+                {cost !== null && <p>Selected Cost: {cost} IDR</p>}
+              </Center>
+            </Box>
+            <Button id="button" onClick={() => handleOrder()} m={2}>
+              PROCEED THE ORDER
+            </Button>
+            <Payment isOpen={payModal.isOpen} onClose={payModal.onClose} />
           </Flex>
-          <Box p={4}>
-            <Select placeholder="Select shipping" onChange={handleSelect}>
-              {shipping?.map((val) => (
-                <option
-                  key={val.service}
-                  value={`${val.service},${val.description},${val.cost[0].value},${val.cost[0].etd}`}
-                >
-                  {`${val.service} - ${val.description} - (${val.cost[0].etd} days) (${val.cost[0].value} IDR) `}
-                </option>
-              ))}
-            </Select>
-            <Center>{cost !== null && <p>Selected Cost: {cost} IDR</p>}</Center>
-          </Box>
-          <Button
-            // w={"100%"} bg={"black"} textColor={"white"}
-            backgroundColor="black"
-            color="white"
-            boxShadow="0px 4px 0px 0px rgba(0, 0, 0, 0.2)"
-            _hover={{
-              boxShadow: "0px 6px 0px 0px rgba(0, 0, 0, 0.2)",
-            }}
-            onClick={() => handleOrder()}
-          >
-            {" "}
-            PROCEED THE ORDER
-          </Button>
-          <Payment isOpen={payModal.isOpen} onClose={payModal.onClose} />
         </Flex>
+
         <OrderSummary
           carts={carts}
           totalPriceSum={totalPriceSum}
@@ -264,7 +297,7 @@ export default function CheckOutPage() {
           cost={cost}
           totalOrder={totalOrder}
         />
-      </Flex>
+      </Box>
       <Footer />
     </Center>
   );

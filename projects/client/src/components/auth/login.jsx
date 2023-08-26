@@ -56,8 +56,8 @@ export default function Login() {
     } catch (error) {
       console.log(error);
       toast({
-        title: "login failed",
-        status: "success",
+        title: error.response.data.message,
+        status: "error",
       });
     }
   }

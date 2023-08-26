@@ -174,7 +174,6 @@ export default function CartPage() {
           </Flex>
         </Flex>
 
-        {/*  */}
         <CheckoutBox
           totalPriceSum={totalPriceSum}
           sumItem={sumItem}

@@ -13,7 +13,7 @@ import {
 import Footer from "../components/website/footer";
 import { Recommend } from "../components/website/carousel";
 import { useDispatch, useSelector } from "react-redux";
-import { addProduct } from "../redux/cart";
+import { addProduct, getCarts } from "../redux/cart";
 import Navbar from "../components/website/navbar";
 
 export default function ProductDetailPage() {
@@ -55,15 +55,9 @@ export default function ProductDetailPage() {
       addProduct({
         name,
         size,
-      }),
-      toast({
-        title: "Successfully add shoe to cart",
-        status: "success",
-        position: "top",
-        duration: 5000,
-        isClosable: true,
       })
     );
+    dispatch(getCarts());
   };
 
   return (
