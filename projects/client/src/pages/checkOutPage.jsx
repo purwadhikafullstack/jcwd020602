@@ -133,8 +133,24 @@ export default function CheckOutPage() {
   return (
     <Center flexDir={"column"}>
       <Navbar />
-      <Flex justify={"space-between"} w={"70vw"} h={"120vh"}>
-        <Flex flexDir={"column"} mt={"100px"} w={"55vw"} mr={"40px"}>
+      <Box
+        id="product-detail"
+        display={"flex"}
+        w={"100%"}
+        maxW={"1533px"}
+        p={"0rem 1rem"}
+        mt={"100px"}
+        mb={"20px"}
+        gap={2}
+        justifyContent={"space-between"}
+      >
+        <Flex
+          flexDir={"column"}
+          gap={3}
+          w={"100%"}
+          maxW={"1000px"}
+          border={"2px"}
+        >
           <Box w={"100%"} py={"20px"}>
             <Text fontSize={"2xl"} fontWeight={"bold"} letterSpacing={"wide"}>
               SHIPPING DETAILS
@@ -264,7 +280,7 @@ export default function CheckOutPage() {
           cost={cost}
           totalOrder={totalOrder}
         />
-      </Flex>
+      </Box>
       <Footer />
     </Center>
   );
