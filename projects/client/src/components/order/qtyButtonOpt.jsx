@@ -31,11 +31,18 @@ const QtyOption = ({ cartItem, onQuantityChange }) => {
   return (
     // <Flex>
     <ButtonGroup isAttached size={"sm"}>
-      <Button {...dec} h={"30px"} border={"1px"}>
+      <Button {...dec} border={"1px"}>
         -
       </Button>
-      <Input {...input} size={"sm"} h={"30px"} w={"35px"} borderBlock={"1px"} />
-      <Button {...inc} h={"30px"} border={"1px"}>
+      <Input
+        {...input}
+        textAlign={"center"}
+        size={"sm"}
+        // h={"30px"}
+        w={"40px"}
+        borderBlock={"1px"}
+      />
+      <Button {...inc} border={"1px"}>
         +
       </Button>
     </ButtonGroup>
