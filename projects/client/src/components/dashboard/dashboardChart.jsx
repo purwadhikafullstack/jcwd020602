@@ -85,17 +85,6 @@ export default function DashboardChart(props) {
     ],
     options,
   });
-  const [bestData, setBestData] = useState({
-    labels: [],
-    datasets: [
-      {
-        label: "Best Seller",
-        data: [],
-        ...style,
-      },
-    ],
-    options,
-  });
   function dataTotalPrc() {
     const priceData = salesData?.reduce((prev, curr) => {
       const date = moment(curr.createdAt?.split("T")[0]).format("DD-MM-YYYY");

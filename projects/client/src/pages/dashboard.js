@@ -1,21 +1,12 @@
-import {
-  Box,
-  Flex,
-  Icon,
-  Input,
-  InputGroup,
-  InputRightAddon,
-  Select,
-} from "@chakra-ui/react";
+import { Box, Flex } from "@chakra-ui/react";
 import { useSelector } from "react-redux";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { api } from "../api/api";
 import { useFetchSalesReport } from "../hooks/useFetchOrder";
 import ReportCard from "../components/dashboard/reportCard";
 import DashboardChart from "../components/dashboard/dashboardChart";
 import moment from "moment";
 import NavbarDashboard from "../components/dashboard/navbarDashboard";
-
 export default function Dashboard() {
   const userSelector = useSelector((state) => state.auth);
   const [filter, setFilter] = useState({

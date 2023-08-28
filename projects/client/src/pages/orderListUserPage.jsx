@@ -306,7 +306,6 @@ export default function OrderListUser() {
                 {val?.status === "PAYMENT" ? (
                   <CancelOrderAlert id={val.id} cancelOrder={cancelOrder} />
                 ) : null}
-
                 <Text
                   cursor={"pointer"}
                   fontSize={"sm"}

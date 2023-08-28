@@ -33,7 +33,7 @@ const include = [
 module.exports = {
   countAndSum: async (body) => {
     try {
-      const timeFrom = body?.timeFrom || moment().startOf("week").format();
+      const timeFrom = body?.timeFrom || moment().startOf("W").format();
       const timeTo = body?.timeTo || moment().format();
       const whereClause = {
         [Op.and]: [
