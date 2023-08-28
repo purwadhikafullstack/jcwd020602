@@ -114,8 +114,9 @@ const stockMutationController = {
         search: req.query?.search || "",
         brand_id: req.query?.brand_id,
         page: req.query?.page || 1,
-        time: req.query?.time,
-        limit: 2,
+        timeFrom: req.query?.timeFrom,
+        timeTo: req.query?.timeTo,
+        limit: 8,
       });
       return res
         .status(200)

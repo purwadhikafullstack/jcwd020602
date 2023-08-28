@@ -298,7 +298,7 @@ const orderController = {
         status: req.query?.status,
         timeFrom: req.query?.timeFrom,
         timeTo: req.query?.timeTo,
-        limit: 2,
+        limit: 3,
       });
       return res
         .status(200)

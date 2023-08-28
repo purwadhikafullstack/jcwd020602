@@ -46,7 +46,8 @@ module.exports = {
   },
   findAndCountAllMutation: async (body) => {
     try {
-      const time = body?.time || moment().format();
+      const timeFrom = body?.timeFrom || moment().startOf("M").format();
+      const timeTo = body?.timeTo || moment().format();
       const whereClause = {
         [Op.and]: [
           {
@@ -65,12 +66,12 @@ module.exports = {
           },
           {
             createdAt: {
-              [Op.gte]: moment(time).startOf("month").format(),
+              [Op.gte]: moment(timeFrom).startOf("date").format(),
             },
           },
           {
             createdAt: {
-              [Op.lte]: moment(time).endOf("month").format(),
+              [Op.lte]: moment(timeTo).endOf("date").format(),
             },
           },
         ],

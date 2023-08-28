@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { api } from "../../api/api";
 import { Select } from "@chakra-ui/react";
 
-export default function WarehouseSelect({ filter, setFilter, setShown }) {
+export default function WarehouseSelect(props) {
   const userSelector = useSelector((state) => state.auth);
   const { provinces } = useFetchWareProv();
   const [province, setprovince] = useState(0);
@@ -20,8 +20,9 @@ export default function WarehouseSelect({ filter, setFilter, setShown }) {
   }, []);
   async function warehouseAdmin(token) {
     const warehouse = await api().get("/warehouses/fetchDefault");
-    setFilter({
-      ...filter,
+    props.setWareAdmin && props.setWareAdmin(warehouse?.data?.warehouse);
+    props.setFilter({
+      ...props.filter,
       warehouse_id: warehouse?.data[0]?.id,
     });
   }
@@ -48,12 +49,15 @@ export default function WarehouseSelect({ filter, setFilter, setShown }) {
           </Select>
           <Select
             onChange={(e) => {
-              setShown({ page: 1 });
-              setFilter({ ...filter, warehouse_id: e.target.value });
+              props.setShown({ page: 1 });
+              props.setFilter({
+                ...props.filter,
+                warehouse_id: e.target.value,
+              });
             }}
             id="warehouse_id"
             size={"sm"}
-            value={filter.warehouse_id}
+            value={props.filter.warehouse_id}
           >
             <option key={""} value={""}>
               choose city..

@@ -1,22 +1,10 @@
-import {
-  Box,
-  Center,
-  Flex,
-  Table,
-  TableContainer,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
-  Button,
-} from "@chakra-ui/react";
+import { Box, Center, Flex, Table, Thead, Button } from "@chakra-ui/react";
+import { TableContainer, Tbody, Td, Th, Tr } from "@chakra-ui/react";
 import moment from "moment";
 import { useEffect, useState } from "react";
 import { Chart as ChartJS } from "chart.js/auto"; // tolong jangan dihapus
 import { Bar } from "react-chartjs-2";
 import { useFetchExcelReport } from "../../hooks/useFetchOrder";
-
 export default function BarChart(props) {
   const [isLoading, setIsLoading] = useState(false);
   const { excel, setExcel } = useFetchExcelReport(setIsLoading);
@@ -65,7 +53,7 @@ export default function BarChart(props) {
     ],
     options,
   });
-  async function dataTotalPrc() {
+  async function dataProcessor() {
     const priceData = salesData?.reduce((prev, curr) => {
       const date = moment(curr.createdAt?.split("T")[0]).format("DD-MM-YYYY");
       if (prev[date]) {
@@ -85,8 +73,6 @@ export default function BarChart(props) {
         },
       ],
     }));
-  }
-  async function dataTotalSho() {
     const shoeData = salesData?.reduce((prev, curr) => {
       const date = moment(curr.createdAt?.split("T")[0]).format("DD-MM-YYYY");
       if (prev[date]) {
@@ -106,8 +92,6 @@ export default function BarChart(props) {
         },
       ],
     }));
-  }
-  async function dataTotalTra() {
     const processedOrders = [];
     const traData = salesData?.reduce((prev, curr) => {
       const order = curr.order.transaction_code;
@@ -134,9 +118,7 @@ export default function BarChart(props) {
     }));
   }
   useEffect(() => {
-    dataTotalPrc();
-    dataTotalSho();
-    dataTotalTra();
+    dataProcessor();
   }, [salesData]);
   useEffect(() => {
     setMapData([priceData, traData, shoeData]);

@@ -1,4 +1,4 @@
-import { Box, Flex, Select, useDisclosure } from "@chakra-ui/react";
+import { Box, Flex, Select } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useFetchOrderList } from "../hooks/useFetchOrder";
 import NavbarDashboard from "../components/dashboard/navbarDashboard";
@@ -50,8 +50,9 @@ export default function OrderListPage() {
           </Flex>
           <SearchFilter
             filter={filter}
-            setFilter={setFilter}
             setShown={setShown}
+            setFilter={setFilter}
+            placeholder={"search.. (transaction code, customer name)"}
             onClick={() => {
               setSelected(0);
               setShown({ page: 1 });
@@ -67,6 +68,15 @@ export default function OrderListPage() {
               });
             }}
           />
+          <Flex my={"10px"} justify={"center"}>
+            <StatusCard
+              selected={selected}
+              setSelected={setSelected}
+              filter={filter}
+              setFilter={setFilter}
+              setShown={setShown}
+            />
+          </Flex>
           <Box className="orderlist-filter">
             <WarehouseSelect
               filter={filter}
@@ -113,15 +123,6 @@ export default function OrderListPage() {
               </option>
             </Select>
           </Box>
-          <Flex my={"10px"} w={"95%"} justify={"center"}>
-            <StatusCard
-              selected={selected}
-              setSelected={setSelected}
-              filter={filter}
-              setFilter={setFilter}
-              setShown={setShown}
-            />
-          </Flex>
           {/* card */}
           <Flex flexDir={"column"} py={1}>
             <OrderListAdmin filter={filter} />

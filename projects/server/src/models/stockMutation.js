@@ -35,7 +35,7 @@ module.exports = (sequelize, Sequelize) => {
             instance.id
           }${moment().format("HHmmss")}`;
           await instance.update(
-            { mutation_code: JSON.stringify(mutation_code) },
+            { mutation_code: mutation_code },
             { transaction: options.transaction }
           );
         },

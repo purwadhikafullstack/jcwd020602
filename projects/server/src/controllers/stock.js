@@ -15,7 +15,7 @@ const { getWarehouse } = require("../service/warehouse.service");
 const stockController = {
   getStock: async (req, res) => {
     try {
-      const limit = 1;
+      const limit = 8;
       const page = req?.query?.page || 1;
       const offset = (parseInt(page) - 1) * limit;
       let sort = req?.query?.sort || "id";
@@ -145,7 +145,8 @@ const stockController = {
     try {
       const stock = await deleteStock({ id: req.params.id, t });
       const addHistory = await addStockHistory({
-        stock_before: req?.stock?.dataValues?.stock,
+        stock_before:
+          req?.stock?.dataValues?.stock + req?.stock?.dataValues?.booked_stock,
         stock_after: 0,
         stock_id: req?.params?.id,
         reference: "manual",
