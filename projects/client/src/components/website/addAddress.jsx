@@ -81,12 +81,13 @@ export default function AddAddress(props) {
 
   return (
     <Modal
+      scrollBehavior="inside"
       closeOnOverlayClick={false}
       isOpen={props.isOpen}
       onClose={clearData}
     >
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent mx={2}>
         <ModalHeader>ADD ADDRESS</ModalHeader>
         <ModalCloseButton />
         <ModalBody display={"flex"} flexDir={"column"} gap={5}>

@@ -1,7 +1,5 @@
 import { Flex, Text, Center, Button, useToast } from "@chakra-ui/react";
-import { HStack, Box, Icon, useDisclosure } from "@chakra-ui/react";
-
-import { Select } from "@chakra-ui/react";
+import { HStack, Box, Icon, useDisclosure, Select } from "@chakra-ui/react";
 import OrderSummary from "../components/order/orderSummary";
 import {
   cartSelector,
@@ -15,12 +13,12 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useFetchAddress } from "../hooks/useFetchCheckOutAddress";
 import { IoAddCircleOutline } from "react-icons/io5";
+import { BsArrowBarDown } from "react-icons/bs";
 import { api } from "../api/api";
 import AddressCard from "../components/order/addressCard";
 import jneImage from "../assets/checkOutPage/JNE.png";
 import tikiImage from "../assets/checkOutPage/TIKI.png";
 import posImage from "../assets/checkOutPage/POS_Indonesia.png";
-
 import { useFetchShipping } from "../hooks/useFetchCOShipping";
 import DeliveryServices from "../components/order/deliveryServiceCheckBox";
 import { GrFormPrevious, GrFormNext } from "react-icons/gr";
@@ -73,7 +71,7 @@ export default function CheckOutPage() {
       await api().patch(`/checkOuts`, { id });
       fetch();
     } catch (error) {
-      console.log(error.response?.data);
+      console.log(error?.response?.data);
     }
   }
 
@@ -206,7 +204,7 @@ export default function CheckOutPage() {
                   gap={"10px"}
                   cursor={"pointer"}
                   onClick={addModal.onOpen}
-                  py={1}
+                  p={1}
                 >
                   <Icon as={IoAddCircleOutline} w={7} h={7} /> Add new address
                   <AddAddress
@@ -217,20 +215,26 @@ export default function CheckOutPage() {
                 </Center>
               </Flex>
             ) : (
-              <Center
-                pt={"10px"}
-                color={"gray.500"}
-                gap={"10px"}
-                cursor={"pointer"}
-                onClick={addModal.onOpen}
-              >
-                <Icon as={IoAddCircleOutline} w={7} h={7} /> Add new address
-                <AddAddress
-                  isOpen={addModal.isOpen}
-                  onClose={addModal.onClose}
-                  fetch={fetch}
-                />
-              </Center>
+              <>
+                <Center flexDir={"column"}>
+                  <Box>CLICK</Box>
+                  <Icon as={BsArrowBarDown} />
+                </Center>
+                <Center
+                  p={1}
+                  color={"gray.500"}
+                  gap={"10px"}
+                  cursor={"pointer"}
+                  onClick={addModal.onOpen}
+                >
+                  <Icon as={IoAddCircleOutline} w={7} h={7} /> Add new address
+                  <AddAddress
+                    isOpen={addModal.isOpen}
+                    onClose={addModal.onClose}
+                    fetch={fetch}
+                  />
+                </Center>
+              </>
             )}
             <Box p={2}>
               <Text fontSize={"2xl"} fontWeight={"bold"} letterSpacing={"wide"}>
@@ -282,7 +286,12 @@ export default function CheckOutPage() {
                 {cost !== null && <p>Selected Cost: {cost} IDR</p>}
               </Center>
             </Box>
-            <Button id="button" onClick={() => handleOrder()} m={2}>
+            <Button
+              id="button"
+              onClick={() => handleOrder()}
+              m={2}
+              isDisabled={!selectedAddressId}
+            >
               PROCEED THE ORDER
             </Button>
             <Payment isOpen={payModal.isOpen} onClose={payModal.onClose} />

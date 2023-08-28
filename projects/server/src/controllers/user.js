@@ -14,6 +14,7 @@ const {
   mailerEmail,
 } = require("../service/user.service");
 
+// --------------------- CLEAR -FAHMI
 const userController = {
   register: async (req, res) => {
     const t = await db.sequelize.transaction();
@@ -49,6 +50,7 @@ const userController = {
         { valid: 0 },
         { where: { userId: id }, transaction: t }
       );
+
       t.commit();
       return res.status(201).send({ message: "Success create account" });
     } catch (err) {
@@ -161,9 +163,8 @@ const userController = {
     const t = await db.sequelize.transaction();
     try {
       let token = req.headers.authorization.split(" ")[1];
-      const { id } = req.user;
-
-      await updateUser(req.body, id, t); //req.body: pass
+      const { email } = req.user;
+      await editPassword({ newPassword: req.body.password, email }, t);
       await db.Token.update({ valid: 0 }, { where: { token }, transaction: t });
       await t.commit();
       return res.status(200).send({ message: "success change passowrd" });
@@ -216,7 +217,7 @@ const userController = {
       if (!match) {
         return res.status(400).send({ message: "Password not match" });
       }
-      await editPassword(req.body, check, t);
+      await editPassword(req.body, t);
       await t.commit();
       return res.status(200).send({ message: "success change password" });
     } catch (err) {
@@ -229,8 +230,7 @@ const userController = {
     const t = await db.sequelize.transaction();
     const { filename } = req?.file;
     try {
-      const { email } = req.body;
-      const check = await findUser(email);
+      const check = await findUser(req?.body?.email);
 
       if (check) {
         if (filename) {
@@ -268,9 +268,9 @@ const userController = {
     const t = await db.sequelize.transaction();
     try {
       const id = req.params.id;
-      await db.Admin.destroy({ where: { user_id: id } }, { transaction: t });
-
       const check = await findUser(id);
+      await db.Admin.destroy({ where: { user_id: id } }, { transaction: t });
+      await db.User.destroy({ where: { id } }, { transaction: t });
       if (check?.dataValues?.avatar_url) {
         fs.unlinkSync(
           `${__dirname}/../public/avatar/${
@@ -278,8 +278,6 @@ const userController = {
           }`
         );
       }
-
-      await db.User.destroy({ where: { id } }, { transaction: t });
       await t.commit();
       return res.status(200).send({ message: "success delete admin" });
     } catch (err) {

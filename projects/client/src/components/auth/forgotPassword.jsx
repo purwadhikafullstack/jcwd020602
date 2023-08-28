@@ -71,6 +71,7 @@ export default function ForgotPassword() {
           textAlign={"center"}
           border={"2px"}
           m={2}
+          boxShadow={"5px 5px 1px black"}
         >
           <Box fontSize={"25px"}>Forgot Pasword</Box>
           <Box color={"gray"} fontSize={"10px"}>

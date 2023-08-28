@@ -40,7 +40,9 @@ export default function Payment(props) {
           </ModalBody>
 
           <ModalFooter>
-            <Button onClick={() => navigate("/orderListUser")}>confirm</Button>
+            <Button onClick={() => navigate("/my-account/order-list")}>
+              confirm
+            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>

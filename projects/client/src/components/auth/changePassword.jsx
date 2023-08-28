@@ -103,6 +103,7 @@ export default function ChangePassword() {
               border={"2px"}
               w={"100%"}
               maxW={"500px"}
+              boxShadow={"5px 5px 1px black"}
             >
               <Center fontSize={"25px"} mb={2}>
                 Change Password

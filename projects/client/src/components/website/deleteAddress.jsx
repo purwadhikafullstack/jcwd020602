@@ -49,7 +49,7 @@ export default function DeleteAddress(props) {
         isCentered
       >
         <AlertDialogOverlay />
-        <AlertDialogContent>
+        <AlertDialogContent mx={2}>
           <AlertDialogHeader>
             <AlertDialogCloseButton />
           </AlertDialogHeader>

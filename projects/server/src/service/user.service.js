@@ -5,7 +5,9 @@ const bcrypt = require("bcrypt");
 const moment = require("moment");
 const fs = require("fs");
 const handlebars = require("handlebars");
+const path = require("path");
 
+// -------------------------- CLEAR -FAHMI
 module.exports = {
   findUser: async (user) => {
     try {
@@ -127,7 +129,7 @@ module.exports = {
           email: body.email,
           phone: body.phone,
           password: hashPassword,
-          avatar_url: "avatar/" + filename,
+          avatar_url: filename ? "avatar/" + filename : null,
           role: "ADMIN",
           status: "verified",
         },
@@ -153,7 +155,7 @@ module.exports = {
       return err;
     }
   },
-  editPassword: async (body, check, t) => {
+  editPassword: async (body, t) => {
     try {
       const { newPassword, email } = body;
       const hashPassword = await bcrypt.hash(newPassword, 10);
@@ -174,7 +176,10 @@ module.exports = {
       switch (data) {
         case "register":
           subject = "email verification link";
-          template = fs.readFileSync("./src/template/register.html", "utf-8");
+          template = fs.readFileSync(
+            path.join(__dirname, "../template/register.html"),
+            "utf-8"
+          );
           compiledTemplate = handlebars.compile(template);
           html = compiledTemplate({
             registrationLink: `${process.env.URL}/verify/${generateToken}`,
@@ -184,7 +189,7 @@ module.exports = {
         case "forgotPassword":
           subject = "RESET PASSWORD";
           template = fs.readFileSync(
-            "./src/template/forgotPassword.html",
+            path.join(__dirname, "../template/forgotPassword.html"),
             "utf-8"
           );
           compiledTemplate = handlebars.compile(template);
