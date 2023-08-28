@@ -101,9 +101,13 @@ const stockController = {
       }
       if (stock > 0) {
         const addHistory = await addStockHistory({
-          stock_before: findExisting?.dataValues?.stock || 0,
+          stock_before:
+            Number(findExisting?.dataValues?.stock) +
+              Number(findExisting?.dataValues?.booked_stock) || 0,
           stock_after: findExisting
-            ? Number(findExisting?.dataValues?.stock) + Number(stock)
+            ? Number(findExisting?.dataValues?.stock) +
+              Number(findExisting?.dataValues?.booked_stock) +
+              Number(stock)
             : stock,
           stock_id: findExisting?.dataValues?.id || add?.dataValues?.id,
           reference: "manual",
@@ -126,8 +130,10 @@ const stockController = {
         req?.stock?.dataValues?.stock != req?.body?.stock
       ) {
         const addHistory = await addStockHistory({
-          stock_before: req?.stock?.dataValues?.stock,
-          stock_after: req?.body?.stock,
+          stock_before:
+            req?.stock?.dataValues?.stock +
+            req?.stock?.dataValues?.booked_stock,
+          stock_after: req?.body?.stock + req?.stock?.dataValues?.booked_stock,
           stock_id: req?.params?.id,
           reference: "manual",
           t,

@@ -17,6 +17,7 @@ module.exports = {
             include: [{ model: db.City, attributes: ["city_id", "city_name"] }],
           },
         ],
+        distinct: true,
         limit,
         offset,
         order: [[...sort, order]],
@@ -102,14 +103,17 @@ module.exports = {
       const update = {};
       if (body?.id) whereClause.id = body?.id;
       if (body?.warehouse_id && body?.shoe_id && body?.shoe_size_id) {
-        whereClause.warehouse_id = body?.warehouse_id;
         whereClause.shoe_id = body?.shoe_id;
         whereClause.shoe_size_id = body?.shoe_size_id;
+        whereClause.warehouse_id = body?.warehouse_id;
       }
-      if (body?.stock) {
-        update.stock = body?.stock;
-        if (body.booked_stock) update.booked_stock = body.booked_stock;
-      }
+      if (body?.stock) update.stock = body?.stock;
+      if (body?.booked_stock) update.booked_stock = body?.booked_stock;
+      console.log(
+        "INI UPDATE HUAHHHHAAAHHHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        update,
+        whereClause
+      );
       return await db.Stock.update(update, {
         where: whereClause,
         transaction: body?.t,

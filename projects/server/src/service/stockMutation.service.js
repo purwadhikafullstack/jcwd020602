@@ -23,13 +23,14 @@ module.exports = {
   },
   confirmMutation: async (body) => {
     try {
-      return await db.StockMutation.update(
-        { res_admin_id: body?.res_admin_id, status: body?.status },
-        {
-          where: { id: body?.id },
-          transaction: body?.t,
-        }
-      );
+      const update = { status: body?.status };
+      if (body?.res_admin_id) {
+        update.res_admin_id = body?.res_admin_id;
+      }
+      return await db.StockMutation.update(update, {
+        where: { id: body?.id },
+        transaction: body?.t,
+      });
     } catch (error) {
       return error;
     }
@@ -138,6 +139,7 @@ module.exports = {
             as: "respondedBy",
           },
         ],
+        distinct: true,
         where: whereClause,
         limit: body?.limit,
         offset: (parseInt(body?.page) - 1) * body?.limit,
