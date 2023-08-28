@@ -1,10 +1,10 @@
-import { Box, Center, Divider, Flex, Image, Text } from "@chakra-ui/react";
+import { Box, Center, Flex } from "@chakra-ui/react";
 import moment from "moment";
 import { useEffect, useState } from "react";
 import { Chart as ChartJS } from "chart.js/auto"; // tolong jangan dihapus
 import { Bar, Doughnut } from "react-chartjs-2";
-import { api } from "../../api/api";
-
+import BestSellerShoe from "./bestSellerShoe";
+import { styleDoughnut } from "../../utils/functions";
 export default function DashboardChart(props) {
   const { salesData } = props;
   const [barData, setBarData] = useState([]);
@@ -18,29 +18,6 @@ export default function DashboardChart(props) {
     borderColor: "rgba(0,0,0,1)",
     borderWidth: 2,
   };
-  function generateRandomRGBAColor(length) {
-    const colors1 = [];
-    const colors2 = [];
-    for (let i = 0; i < length; i++) {
-      const r = Math.floor(Math.random() * 255);
-      const g = Math.floor(Math.random() * 255);
-      const b = Math.floor(Math.random() * 255);
-      colors1.push(`rgba(${r}, ${g}, ${b}, 1)`);
-      colors2.push(`rgba(${r}, ${g}, ${b}, 0.6)`);
-    }
-    return { colors1, colors2 };
-  }
-  function styleDoughnut(length) {
-    const { colors1, colors2 } = generateRandomRGBAColor(length);
-    const style = {
-      hoverBackgroundColor: colors1,
-      backgroundColor: colors2,
-      hoverBorderColor: colors2,
-      borderColor: colors1,
-      borderWidth: 2,
-    };
-    return style;
-  }
   const [priceData, setPriceData] = useState({
     labels: [],
     datasets: [
@@ -80,23 +57,11 @@ export default function DashboardChart(props) {
       {
         label: "Brand Sold",
         data: [],
-        ...style,
       },
     ],
     options,
   });
-  const [bestData, setBestData] = useState({
-    labels: [],
-    datasets: [
-      {
-        label: "Best Seller",
-        data: [],
-        ...style,
-      },
-    ],
-    options,
-  });
-  function dataTotalPrc() {
+  async function dataProcessor() {
     const priceData = salesData?.reduce((prev, curr) => {
       const date = moment(curr.createdAt?.split("T")[0]).format("DD-MM-YYYY");
       if (prev[date]) {
@@ -116,8 +81,6 @@ export default function DashboardChart(props) {
         },
       ],
     }));
-  }
-  function dataTotalSho() {
     const shoeData = salesData?.reduce((prev, curr) => {
       const date = moment(curr.createdAt?.split("T")[0]).format("DD-MM-YYYY");
       if (prev[date]) {
@@ -137,8 +100,6 @@ export default function DashboardChart(props) {
         },
       ],
     }));
-  }
-  function dataTotalTra() {
     const processedOrders = [];
     const traData = salesData?.reduce((prev, curr) => {
       const order = curr.order.transaction_code;
@@ -163,8 +124,6 @@ export default function DashboardChart(props) {
         },
       ],
     }));
-  }
-  function dataBrandSold() {
     const brData = salesData?.reduce((prev, curr) => {
       const brand = curr.stock.Sho.brand.name;
       if (prev[brand]) {
@@ -179,53 +138,14 @@ export default function DashboardChart(props) {
       labels: Object.keys(brData),
       datasets: [
         {
-          ...prevData.datasets[0],
           data: Object.values(brData),
           ...styleDoughnut(Object.keys(brData).length),
         },
       ],
     }));
   }
-  const [bestShoes, setBestShoes] = useState([]);
-  async function dataBestSeller() {
-    const bS = salesData.reduce((prev, curr) => {
-      const shoe = curr.stock.Sho.name;
-      if (prev[shoe]) {
-        prev[shoe].qty += curr?.qty;
-      } else {
-        prev[shoe] = curr;
-      }
-      return prev;
-    }, {});
-    const bestSeller = [];
-    Object.keys(bS).map((val) => {
-      if (bestSeller.length < 5) {
-        bestSeller.push(bS[val]);
-      } else {
-        if (bS[val].qty > bestSeller[1].qty) {
-          bestSeller.splice(0, 1, bS[val]);
-        } else if (bS[val] > bestSeller[2].qty) {
-          bestSeller.splice(1, 1, bS[val]);
-        } else if (bS[val] > bestSeller[3].qty) {
-          bestSeller.splice(2, 1, bS[val]);
-        } else if (bS[val] > bestSeller[4].qty) {
-          bestSeller.splice(3, 1, bS[val]);
-        } else if (bS[val] > bestSeller[5].qty) {
-          bestSeller.splice(4, 1, bS[val]);
-        }
-      }
-      setBestShoes(bestSeller);
-    });
-    const res = await api().patch("/shoes/bestSeller", {
-      shoe_ids: bestSeller.map((val) => val.stock.shoe_id),
-    });
-  }
   useEffect(() => {
-    dataTotalPrc();
-    dataTotalSho();
-    dataTotalTra();
-    dataBrandSold();
-    dataBestSeller();
+    dataProcessor();
   }, [salesData]);
   useEffect(() => {
     setBarData([priceData, traData, shoeData]);
@@ -274,48 +194,7 @@ export default function DashboardChart(props) {
           </Flex>
         </Center>
       </Box>
-      <Flex p={5}>
-        {bestShoes.map((val, idx) => (
-          <Flex
-            flexDir={"column"}
-            p={1}
-            border={"1px"}
-            maxW={"500px"}
-            w={"90%"}
-          >
-            <Box
-              className="shoe-list"
-              _hover={{ bg: "black", color: "white" }}
-              pos={"relative"}
-              maxW={"500px"}
-              w={"100%"}
-              h={"500px"}
-              border={"1px solid black"}
-            >
-              <Image
-                src={`${process.env.REACT_APP_API_BASE_URL}/${val.stock?.Sho?.ShoeImages[0]?.shoe_img}`}
-              />
-              <Flex flexDir={"column"} p={2}>
-                <Text fontWeight={"bold"}>{val.stock?.Sho?.name}</Text>
-                <Divider />
-                <Text>{val.stock?.Sho?.brand?.name}</Text>
-                <Divider />
-                <Text fontSize={13} color={"gray"}>
-                  {val.stock?.Sho?.Category?.name}{" "}
-                  {val.stock?.Sho?.subcategory?.name}
-                </Text>
-                <Divider />
-                <Text>
-                  {val.stock?.Sho?.price.toLocaleString("id-ID", {
-                    style: "currency",
-                    currency: "IDR",
-                  })}
-                </Text>
-              </Flex>
-            </Box>
-          </Flex>
-        ))}
-      </Flex>
+      <BestSellerShoe salesData={salesData} />
     </>
   );
 }

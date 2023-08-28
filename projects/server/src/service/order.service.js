@@ -4,7 +4,7 @@ const moment = require("moment");
 module.exports = {
   findAndCountAllOrder: async (body) => {
     try {
-      const timeFrom = body?.timeFrom || moment().startOf("week").format();
+      const timeFrom = body?.timeFrom || moment().startOf("W").format();
       const timeTo = body?.timeTo || moment().format();
       const whereClause = {
         [Op.and]: [
@@ -30,7 +30,9 @@ module.exports = {
         ],
       };
       if (body?.status) {
-        whereClause[Op.and].push({ status: body?.status });
+        whereClause[Op.and].push({
+          [Op.or]: body?.status.map((val) => ({ status: val })),
+        });
       }
       let sort = body?.sort;
       switch (sort) {
