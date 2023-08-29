@@ -142,6 +142,9 @@ const orderController = {
       const user_id = JSON.parse(req.user.id);
       const { id } = req.body;
       const { filename } = req.file;
+      if (req.order?.payment_proof) {
+        fs.unlinkSync(`${__dirname}../public/${req.order.payment_proof}`);
+      }
       await db.Order.update(
         {
           payment_proof: "paymentProof/" + filename,
@@ -166,17 +169,6 @@ const orderController = {
       await updateOrder({ t, status: "CANCELED", id: req.order?.id });
       await t.commit();
       return res.status(200).send({ message: `Order successfully canceled` });
-    } catch (err) {
-      await t.rollback();
-      errorResponse(res, err, CustomError);
-    }
-  },
-  doneOrderUser: async (req, res) => {
-    const t = await db.sequelize.transaction();
-    try {
-      await updateOrder({ t, status: "DONE", id: req?.order?.id });
-      await t.commit();
-      return res.status(200).send({ message: `Order Completed` });
     } catch (err) {
       await t.rollback();
       errorResponse(res, err, CustomError);
@@ -251,6 +243,9 @@ const orderController = {
           order_id: req.order?.id,
         });
         for (const val of orderDetail) {
+          const toStock = await findStockBy({
+            id: val.stock.id,
+          });
           if (val.stock.stock < val.qty) {
             const warehouses = await checkWarehouseSupply({
               shoe_id: val.stock.shoe_id,
@@ -303,40 +298,29 @@ const orderController = {
                 t,
               });
             }
-            const toStock = await findStockBy({
-              id: val.stock.id,
-            });
+
             toStock.stock += val.qty - val.stock.stock;
             await toStock.save({ transaction: t });
             if (toStock.stock - val.qty != toStock.stock) {
               await addStockHistory({
                 stock_before: toStock.stock + toStock.booked_stock - val.qty,
                 stock_after: toStock.stock + toStock.booked_stock,
-                stock_id: toStock.id,
+                stock_id: val.stock.id,
                 reference: mutation.mutation_code,
                 t,
               });
             }
           }
-          const addBooked = await updateStock({
-            booked_stock: val.stock.booked_stock + val.qty,
-            stock: val.stock.stock - val.qty,
-            shoe_id: val.stock.shoe_id,
-            shoe_size_id: val.stock.shoe_size_id,
-            warehouse_id: val.stock.warehouse_id,
-            t,
-          });
+          toStock.stock -= val.qty;
+          toStock.booked_stock += val.qty;
+          await toStock.save({ transaction: t });
           // Decrease booked_stock in the Product table
-          const deliverBooked = await updateStock({
-            id: val.stock.id,
-            booked_stock: val.stock.booked_stock - val?.qty,
-            t,
-          });
+          toStock.booked_stock -= val.qty;
+          await toStock.save({ transaction: t });
           if (val.stock?.stock - val.qty != val.stock?.stock) {
             await addStockHistory({
-              stock_before: val.stock?.stock + val?.stock?.booked_stock,
-              stock_after:
-                val.stock?.stock + val?.stock?.booked_stock - val.qty,
+              stock_before: toStock.stock + toStock.booked_stock,
+              stock_after: toStock?.stock + toStock?.booked_stock - val.qty,
               stock_id: val.stock?.id,
               reference: req.order?.transaction_code,
               t,
@@ -381,16 +365,14 @@ const orderController = {
     }
   },
   doneOrderUser: async (req, res) => {
+    const t = await db.sequelize.transaction();
     try {
-      await db.Order.update(
-        {
-          status: "DONE",
-        },
-        { where: { id: req.order?.id } }
-      );
-      return res.status(200).send({ message: "Order Done" });
+      await updateOrder({ t, status: "DONE", id: req?.order?.id });
+      await t.commit();
+      return res.status(200).send({ message: `Order Completed` });
     } catch (err) {
-      return errorResponse(res, err, CustomError);
+      await t.rollback();
+      errorResponse(res, err, CustomError);
     }
   },
 };

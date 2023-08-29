@@ -23,20 +23,15 @@ router.patch(
   orderController.cancelPaymentUser
 );
 router.patch(
-  "/doneOrderUser/:id",
-  orderController.getOrderById,
-  orderController.doneOrderUser
-);
-router.patch(
-  "/paymentProof",
-  userTokenDecoder.checkUser,
-  fileUploader({ destinationFolder: "paymentProof" }).single("payment_proof"),
-  orderController.paymentProof
-);
-router.patch(
   "/doneOrder/:id",
   orderController.getOrderById,
   orderController.doneOrderUser
+);
+router.patch(
+  "/paymentProof/:id",
+  userTokenDecoder.checkUser,
+  fileUploader({ destinationFolder: "paymentProof" }).single("payment_proof"),
+  orderController.paymentProof
 );
 router.get(
   "/admin",
@@ -56,7 +51,6 @@ router.patch(
 );
 router.get(
   "/admin/:id",
-  userTokenDecoder.checkAdmin,
   orderController.getOrderById,
   orderController.getOrderId
 );

@@ -21,7 +21,6 @@ import OrderDetailsModal from "../components/order/orderDetailsModal";
 import { FaSearch } from "react-icons/fa";
 import Navbar from "../components/website/navbar";
 import Footer from "../components/website/footer";
-import DoneOrderAlert from "../components/order/doneOrderAlert";
 import Pagination from "../components/order/paginationOrder";
 import StatusCard from "../components/order/statusCardOrder";
 import OrderListCard from "../components/order/orderListCard";
@@ -227,6 +226,7 @@ export default function OrderListUser() {
           ))}
           <OrderDetailsModal
             val={selectedVal}
+            setVal={setSelectedVal}
             isOpen={detailsModal.isOpen}
             onClose={detailsModal.onClose}
             fetchOrders={fetchOrders}

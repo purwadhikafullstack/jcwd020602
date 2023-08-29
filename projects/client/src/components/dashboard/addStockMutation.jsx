@@ -212,7 +212,7 @@ export default function AddStockMutation(props) {
                   ) : (
                     <>
                       {warehouses &&
-                        warehouses.map(
+                        warehouses?.map(
                           (val, idx) =>
                             val?.id != formik.values.from_warehouse_id && (
                               <option key={val.id} value={val.id}>
@@ -229,7 +229,6 @@ export default function AddStockMutation(props) {
               </FormControl>
             </form>
           </ModalBody>
-
           <ModalFooter>
             <Flex gap={5}>
               <Button onClick={clearData}>Cancel</Button>

@@ -37,14 +37,24 @@ export default function OrderDetailsModal(props) {
     console.log(event.target.files[0]);
   };
 
+  const fetchVal = async () => {
+    try {
+      const fetch = await api().get("/orders/admin/" + props.val.id);
+      console.log(fetch.data);
+      props.setVal(fetch.data.order);
+      alert("successfully fetch val");
+    } catch (err) {
+      console.log(err.response?.data);
+    }
+  };
+
   const paymentProof = async () => {
     try {
       const formData = new FormData();
       formData.append("payment_proof", SelectedFile);
       formData.append("id", props.val.id);
-      await api().patch("/orders/paymentProof", formData);
-      props.fetchOrders();
-
+      await api().patch("/orders/paymentProof/" + props.val.id, formData);
+      fetchVal();
       alert("successfully upload payment proof");
     } catch (err) {
       console.log(err.response?.data);
@@ -274,33 +284,38 @@ export default function OrderDetailsModal(props) {
           <Flex w={"100%"} flexDir={"column"} mt={"10px"}>
             <Text fontWeight={"bold"}>Payment Details</Text>
             <Flex flexDir={"column"} w={"100%"} gap={2}>
-              <Flex  mt={"10px"} justify={"space-between"}>
+              <Flex mt={"10px"} justify={"space-between"}>
                 <Text fontSize={"sm"} color={"gray.500"}>
                   Payment Methode
                 </Text>
                 <Flex flexDir={"column"} pl={"10px"}>
-                  <Text fontSize={"sm"}>
-                    Transfer
-                  </Text>
+                  <Text fontSize={"sm"}>Transfer</Text>
                 </Flex>
               </Flex>
               <Flex justify={"space-between"}>
                 <Text fontSize={"sm"} color={"gray.500"}>
                   Total Price
                 </Text>
-                  <Text fontSize={"sm"}>Rp. {(props.val?.total_price-props.val?.shipping_cost).toLocaleString("id-ID")} </Text>
+                <Text fontSize={"sm"}>
+                  Rp.{" "}
+                  {(
+                    props.val?.total_price - props.val?.shipping_cost
+                  ).toLocaleString("id-ID")}{" "}
+                </Text>
               </Flex>
               <Flex justify={"space-between"}>
                 <Text fontSize={"sm"} color={"gray.500"}>
                   Shipping cost
                 </Text>
-                  <Text fontSize={"sm"}>Rp. {props.val?.shipping_cost.toLocaleString("id-ID")} </Text>
+                <Text fontSize={"sm"}>
+                  Rp. {props.val?.shipping_cost.toLocaleString("id-ID")}{" "}
+                </Text>
               </Flex>
               <Flex justify={"space-between"}>
+                <Text fontWeight={"bold"}>Total Order</Text>
                 <Text fontWeight={"bold"}>
-                  Total Order
+                  Rp. {props.val?.total_price.toLocaleString("id-ID")}{" "}
                 </Text>
-                  <Text fontWeight={"bold"}>Rp. {props.val?.total_price.toLocaleString("id-ID")} </Text>
               </Flex>
             </Flex>
           </Flex>
