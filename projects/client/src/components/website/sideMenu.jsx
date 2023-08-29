@@ -1,26 +1,14 @@
-import {
-  Drawer,
-  DrawerBody,
-  DrawerHeader,
-  DrawerOverlay,
-  DrawerContent,
-  DrawerCloseButton,
-  Image,
-  Accordion,
-  AccordionItem,
-  AccordionButton,
-  AccordionPanel,
-  AccordionIcon,
-  Box,
-  Avatar,
-  Flex,
-} from "@chakra-ui/react";
+import { Drawer, DrawerBody, DrawerHeader } from "@chakra-ui/react";
+import { DrawerOverlay, AccordionItem } from "@chakra-ui/react";
+import { AccordionButton, AccordionPanel, Image } from "@chakra-ui/react";
+import { AccordionIcon, Box, Avatar, Accordion } from "@chakra-ui/react";
+import { DrawerContent, DrawerCloseButton, Flex } from "@chakra-ui/react";
 import logo from "../../assets/newlogo.png";
 import { useFetchCategory } from "../../hooks/useFetchCategory";
 import { useFetchBrand } from "../../hooks/useFetchBrand";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-
+//  ---------------------------------------------------- CLEAR -FAHMI
 export default function SideMenu(props) {
   const { categories } = useFetchCategory();
   const { brands } = useFetchBrand();

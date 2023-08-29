@@ -94,15 +94,14 @@ export default function ChangePassword() {
       <Navbar />
       {user.email ? (
         <Center flexDir={"column"}>
-          <Center h={"100vh"} maxH={"800px"} maxW={"1531px"} w={"100%"}>
+          <Center h={"100vh"} maxH={"800px"} w={"100%"} maxW={"450px"}>
             <Flex
               flexDir={"column"}
               gap={5}
               p={2}
-              m={2}
+              m={3}
               border={"2px"}
               w={"100%"}
-              maxW={"500px"}
               boxShadow={"5px 5px 1px black"}
             >
               <Center fontSize={"25px"} mb={2}>

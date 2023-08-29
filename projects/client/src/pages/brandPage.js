@@ -1,9 +1,4 @@
-import {
-  InputRightAddon,
-  InputGroup,
-  ButtonGroup,
-  InputRightElement,
-} from "@chakra-ui/react";
+import { InputRightAddon, InputGroup, ButtonGroup } from "@chakra-ui/react";
 import { useDisclosure, TableContainer, MenuButton } from "@chakra-ui/react";
 import { Select, Menu, MenuList, MenuItem, Image } from "@chakra-ui/react";
 import { Box, Button, Divider, Flex, Icon, Input } from "@chakra-ui/react";
@@ -19,7 +14,7 @@ import { AddBrand } from "../components/dashboard/addCategory";
 import { DeleteBrand } from "../components/dashboard/deleteCategory";
 import Pagination from "../components/dashboard/pagination";
 import NavbarDashboard from "../components/dashboard/navbarDashboard";
-
+// ----------------------------------------------- CLEAR -FAHMI
 export default function BrandPage() {
   const { isOpen, onClose, onOpen } = useDisclosure();
   const addModal = useDisclosure();
@@ -36,7 +31,6 @@ export default function BrandPage() {
     search: "",
   });
   const { brandsFilter, fetch } = useFetchBrand(filter);
-
   // -------------------------- pagination
   const [pages, setPages] = useState([]);
   const [shown, setShown] = useState({ page: 1 });
@@ -279,15 +273,13 @@ export default function BrandPage() {
                       </Td>
                     </Tr>
                   ))}
+                <DeleteBrand
+                  id={brandId}
+                  isOpen={deleteModal.isOpen}
+                  onClose={deleteModal.onClose}
+                  fetch={fetch}
+                />
               </Tbody>
-
-              <DeleteBrand
-                id={brandId}
-                isOpen={deleteModal.isOpen}
-                onClose={deleteModal.onClose}
-                fetch={fetch}
-              />
-              <ImageModal isOpen={isOpen} onClose={onClose} image={img} />
             </Table>
           </TableContainer>
         </Box>
@@ -300,6 +292,8 @@ export default function BrandPage() {
           />
         </Flex>
       </Box>
+
+      <ImageModal isOpen={isOpen} onClose={onClose} image={img} />
     </>
   );
 }

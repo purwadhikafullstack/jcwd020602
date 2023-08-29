@@ -27,8 +27,8 @@ export const addProduct = createAsyncThunk(
         { name, size },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      alert("Successfully add shoe to cart");
-      return response?.data?.data;
+      alert(response.data.message);
+      // return response?.data?.data;
     } catch (err) {
       alert(err.response.data.message);
     }

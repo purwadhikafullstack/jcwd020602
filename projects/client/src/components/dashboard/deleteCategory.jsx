@@ -42,7 +42,7 @@ export function DeleteCategory(props) {
         isCentered
       >
         <AlertDialogOverlay />
-        <AlertDialogContent>
+        <AlertDialogContent mx={2}>
           <AlertDialogHeader>
             <AlertDialogCloseButton />
           </AlertDialogHeader>
@@ -102,7 +102,7 @@ export function DeleteSubcategory(props) {
         isCentered
       >
         <AlertDialogOverlay />
-        <AlertDialogContent>
+        <AlertDialogContent mx={2}>
           <AlertDialogHeader>
             <AlertDialogCloseButton />
           </AlertDialogHeader>
@@ -162,7 +162,7 @@ export function DeleteBrand(props) {
         isCentered
       >
         <AlertDialogOverlay />
-        <AlertDialogContent>
+        <AlertDialogContent mx={2}>
           <AlertDialogHeader>
             <AlertDialogCloseButton />
           </AlertDialogHeader>

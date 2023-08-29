@@ -1,4 +1,4 @@
-import { Box, Flex, Icon, IconButton, Image, Text } from "@chakra-ui/react";
+import { Box, Flex, Image, Text } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -9,7 +9,7 @@ import { EffectCoverflow, Pagination, Navigation } from "swiper";
 import "../../css/bestSeller.css";
 import { useFetchShoe } from "../../hooks/useFetchShoe";
 import { useEffect, useState } from "react";
-
+// ------------------------------------------------------ CLEAR -FAHMI
 export function Recommend(props) {
   const [filter, setFilter] = useState({ limit: 50 });
   const { shoes, fetch } = useFetchShoe(props?.category, "", filter);

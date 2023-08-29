@@ -55,6 +55,7 @@ const brandController = {
         include: [db.Shoe],
         where: { name: { [Op.like]: `%${search}%` } },
         distinct: true,
+        limit,
         offset,
         order: [[sort, order]],
       });

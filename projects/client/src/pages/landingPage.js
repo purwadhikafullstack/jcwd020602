@@ -16,7 +16,6 @@ export default function LandingPage() {
   return (
     <Center flexDir={"column"}>
       <Navbar />
-
       <Box
         w={"100%"}
         maxW={"1530px"}

@@ -191,7 +191,6 @@ export default function EditAddress({ data, fetch, isOpen, onClose }) {
               setTimeout(() => {
                 setIsLoading(false);
                 formik.handleSubmit();
-                // editAddress();
               }, 2000);
             }}
           >

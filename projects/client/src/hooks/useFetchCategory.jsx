@@ -21,13 +21,15 @@ export const useFetchCategory = (filter) => {
   return { categories, categoriesFilter, fetch };
 };
 
-export const useFetchSubcategory = () => {
+export const useFetchSubcategory = (filter) => {
   const [sub, setSub] = useState([]);
+  const [subFilter, setSubFilter] = useState({ rows: [] });
 
   const fetch = async () => {
     try {
-      const res = await api().get("/subcategories");
-      setSub(res.data);
+      const res = await api().get("/subcategories", { params: filter });
+      setSub(res.data.rows);
+      setSubFilter(res.data);
     } catch (err) {
       console.log(err?.response?.data);
     }
@@ -37,7 +39,7 @@ export const useFetchSubcategory = () => {
     fetch();
   }, []);
 
-  return { sub, fetch };
+  return { sub, subFilter, fetch };
 };
 
 export const useFetchSelectCategory = () => {
