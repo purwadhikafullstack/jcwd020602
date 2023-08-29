@@ -141,36 +141,47 @@ export default function CartPage() {
             ) : (
               <Center h={"400px"}>Your cart is empty.</Center>
             )}
-            <Flex p={1} justify="center" align={"center"} mt="4" gap={"10px"}>
-              <GrFormPrevious
-                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                disabled={currentPage === 1}
-                mr="2"
-                cursor={"pointer"}
-              />
-              <Box
-                borderRadius={5}
-                textAlign={"center"}
-                bg={"black"}
-                w={"23px"}
-                color={"white"}
-              >
-                {currentPage}
-              </Box>
-              <GrFormNext
-                cursor={"pointer"}
-                onClick={() =>
-                  setCurrentPage(
-                    Math.min(
-                      Math.ceil(carts.length / itemsPerPage),
-                      currentPage + 1
-                    )
-                  )
-                }
-                disabled={currentPage >= Math.ceil(carts.length / itemsPerPage)}
-                ml="2"
-              />
-            </Flex>
+           <Flex p={1} justify="center" align="center" mt="4" gap="10px">
+  <GrFormPrevious
+    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+    disabled={currentPage === 1}
+    mr="2"
+    cursor="pointer"
+  />
+
+  {Array.from({ length: 3 }).map((_, index) => {
+    const pageNumber = currentPage - 1 + index;
+    if (pageNumber >= 1 && pageNumber <= Math.ceil(carts.length / itemsPerPage)) {
+      return (
+        <Box
+          key={pageNumber}
+          borderRadius={5}
+          textAlign="center"
+          bg={pageNumber === currentPage ? "black" : "gray.300"}
+          w="23px"
+          color="white"
+        >
+          {pageNumber}
+        </Box>
+      );
+    }
+    return null;
+  })}
+
+  <GrFormNext
+    cursor="pointer"
+    onClick={() =>
+      setCurrentPage(
+        Math.min(
+          Math.ceil(carts.length / itemsPerPage),
+          currentPage + 1
+        )
+      )
+    }
+    disabled={currentPage >= Math.ceil(carts.length / itemsPerPage)}
+    ml="2"
+  />
+</Flex>
           </Flex>
         </Flex>
 
