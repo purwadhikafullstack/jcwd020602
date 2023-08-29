@@ -4,7 +4,7 @@ const axios = require("axios");
 const { openCage } = require("../service/opencage.service");
 
 const { getWarehouse } = require("../service/warehouse.service");
-
+const { Op } = require("sequelize");
 
 const warehouseControllers = {
   addWarehouse: async (req, res) => {
@@ -44,16 +44,50 @@ const warehouseControllers = {
   },
   getAll: async (req, res) => {
     try {
-      const warehouses = await db.Warehouse.findAll({
+      const search = req?.query?.search || "";
+      let sort = req?.query?.sort || "name";
+      const order = req?.query?.order || "ASC";
+      const category = req?.query?.category || "";
+      const limit = req?.query?.limit || 8;
+      const page = req?.query?.page || 1;
+      const offset = (parseInt(page) - 1) * limit;
+
+      switch (sort) {
+        case "city":
+          sort = [{ model: db.City }, "city_name"];
+          break;
+        case "province":
+          sort = [{ model: db.City }, "province"];
+        default:
+          sort = [sort];
+      }
+
+      const warehouses = await db.Warehouse.findAndCountAll({
         include: [
           {
             model: db.Admin,
             attributes: ["user_id"],
             include: [db.User],
           },
+          { model: db.City },
         ],
+        // where: {
+        //   [Op.or]: [
+        //     { name: { [Op.like]: `%${search}%` } },
+        //     { "$city.city_name$": { [Op.like]: `%${search}%` } },
+        //     { "$city.province$": { [Op.like]: `%${search}%` } },
+        //     { address: { [Op.like]: `%${search}%` } },
+        //   ],
+        // },
+        limit,
+        distinct: true,
+        offset,
+        order: [[...sort, order]],
       });
-      return res.status(200).send(warehouses);
+      return res.status(200).send({
+        ...warehouses,
+        totalPages: Math.ceil(warehouses.count / limit),
+      });
     } catch (err) {
       return res.status(500).send(err.message);
     }

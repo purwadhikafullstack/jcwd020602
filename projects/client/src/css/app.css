@@ -63,6 +63,9 @@
 }
 .categorymenu {
   transform: translateY(25px);
+  background: white;
+  position: absolute;
+  border: 2px solid;
 }
 .burger,
 .search {

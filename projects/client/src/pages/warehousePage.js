@@ -21,7 +21,8 @@ export default function WarehousePage() {
   const userSelector = useSelector((state) => state.auth);
   const inputFileRef = useRef(null);
   const [search, setSearch] = useState();
-  const { warehouses, fetch } = useFetchWarehouse();
+  const { warehouseFilter, warehouses, fetch } = useFetchWarehouse();
+  console.log(warehouses);
   const [warehouseId, setWarehouseId] = useState();
 
   return (
@@ -88,8 +89,8 @@ export default function WarehousePage() {
           {/* tampilan mobile card */}
           <Box id="card-content" display={"none"}>
             <Flex flexDir={"column"} py={1}>
-              {warehouses &&
-                warehouses?.map((warehouse, idx) => (
+              {warehouseFilter &&
+                warehouseFilter?.rows?.map((warehouse, idx) => (
                   <Flex
                     p={1}
                     m={1}
@@ -166,8 +167,8 @@ export default function WarehousePage() {
                 </Tr>
               </Thead>
               <Tbody>
-                {warehouses &&
-                  warehouses?.map((warehouse, idx) => (
+                {warehouseFilter &&
+                  warehouseFilter?.rows?.map((warehouse, idx) => (
                     <Tr>
                       <Td w={"5%"}>{idx + 1}</Td>
 

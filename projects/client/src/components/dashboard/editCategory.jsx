@@ -70,20 +70,26 @@ export function EditCategory(props) {
   };
   return (
     <>
-      <Modal isOpen={props.isOpen} onClose={clearS} closeOnOverlayClick={false}>
+      <Modal
+        isOpen={props.isOpen}
+        onClose={clearS}
+        closeOnOverlayClick={false}
+        scrollBehavior="inside"
+      >
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent mx={2}>
           <ModalHeader p={2}>Edit Category</ModalHeader>
           <ModalCloseButton />
           <ModalBody display={"flex"} flexDir={"column"} gap={2}>
-            <Box>
-              name:{" "}
+            <Box
+              className={`inputbox ${category?.name ? "input-has-value" : ""}`}
+            >
               <Input
                 id="name"
-                type="text"
-                onChange={inputhandler}
                 defaultValue={category?.name}
+                onChange={inputhandler}
               />
+              <label>Name</label>
             </Box>
             <Box>
               Image:
@@ -93,7 +99,13 @@ export function EditCategory(props) {
                 paddingTop={"4px"}
                 onChange={handleFile}
               />
-              <Image src={image} />
+              <Image
+                src={
+                  selectedFile
+                    ? image
+                    : `${process.env.REACT_APP_API_BASE_URL}/${image}`
+                }
+              />
             </Box>
           </ModalBody>
           <ModalFooter>
@@ -161,20 +173,20 @@ export function EditSubcategory(props) {
           clearS();
         }}
         closeOnOverlayClick={false}
+        isCentered
       >
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent mx={2}>
           <ModalHeader p={2}>Edit Subcategory</ModalHeader>
           <ModalCloseButton />
           <ModalBody display={"flex"} flexDir={"column"} gap={2}>
-            <Box>
-              name:{" "}
+            <Box className={`inputbox ${name ? "input-has-value" : ""}`}>
               <Input
                 id="name"
-                type="text"
-                onChange={(e) => setName(e.target.value)}
                 defaultValue={name}
+                onChange={(e) => setName(e.target.value)}
               />
+              <label>Name</label>
             </Box>
           </ModalBody>
           <ModalFooter>

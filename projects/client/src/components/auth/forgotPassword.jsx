@@ -70,7 +70,7 @@ export default function ForgotPassword() {
           p={2}
           textAlign={"center"}
           border={"2px"}
-          m={2}
+          m={3}
           boxShadow={"5px 5px 1px black"}
         >
           <Box fontSize={"25px"}>Forgot Pasword</Box>

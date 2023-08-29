@@ -18,7 +18,7 @@ import { DeleteCategory } from "../components/dashboard/deleteCategory";
 import ImageModal from "../components/dashboard/imageModal";
 import NavbarDashboard from "../components/dashboard/navbarDashboard";
 import Pagination from "../components/dashboard/pagination";
-
+// ------------------------------------------------------------------------- CLEAR -FAHMI
 export default function CategoryPage() {
   const { isOpen, onClose, onOpen } = useDisclosure();
   const addModal = useDisclosure();
@@ -28,7 +28,6 @@ export default function CategoryPage() {
   const userSelector = useSelector((state) => state.auth);
   const [img, setImg] = useState();
   const inputFileRef = useRef(null);
-  const [search, setSearch] = useState();
   const [categoyId, setCategoryId] = useState();
   const [filter, setFilter] = useState({
     page: 1,
@@ -68,7 +67,9 @@ export default function CategoryPage() {
       <Box id="content" pt={"52px"}>
         <Box mx={2} my={3}>
           <Flex justify={"space-between"} flexWrap={"wrap"}>
-            <Box fontSize={"30px"}>Category</Box>
+            <Box fontSize={"30px"} fontWeight={"bold"}>
+              Category
+            </Box>
             {userSelector.role == "SUPERADMIN" ? (
               <ButtonGroup
                 onClick={addModal.onOpen}

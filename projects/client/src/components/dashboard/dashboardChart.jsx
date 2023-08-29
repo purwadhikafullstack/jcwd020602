@@ -151,7 +151,7 @@ export default function DashboardChart(props) {
     setBarData([priceData, traData, shoeData]);
   }, [priceData, traData, shoeData]);
   return (
-    <>
+    <Flex flexDir={"column"} gap={2}>
       <Box className="barChart">
         {barData
           ? barData?.map((val) => (
@@ -195,6 +195,6 @@ export default function DashboardChart(props) {
         </Center>
       </Box>
       <BestSellerShoe salesData={salesData} />
-    </>
+    </Flex>
   );
 }

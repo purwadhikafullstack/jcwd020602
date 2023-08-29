@@ -33,9 +33,7 @@ export default function Dashboard() {
       <NavbarDashboard />
       <Box id="content" pt={"52px"}>
         <Box mx={2} my={3}>
-          <Flex justify={"space-between"} flexWrap={"wrap"}>
-            <Box fontSize={"30px"}>Dashboard</Box>
-          </Flex>
+          <Box fontSize={"30px"}>Dashboard</Box>
           <ReportCard salesData={salesData} />
           <DashboardChart salesData={salesData} />
         </Box>
