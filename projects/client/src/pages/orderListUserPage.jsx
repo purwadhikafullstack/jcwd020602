@@ -183,8 +183,10 @@ export default function OrderListUser() {
             </Center>
           </Flex>
           {orders?.data?.map((val) => (
+
             <OrderListCard val={val} openDetailsModal={openDetailsModal} cancelOrder={cancelOrder}
             filter={filter} doneOrder={doneOrder}/>
+
           ))}
           <OrderDetailsModal
             val={selectedVal}
