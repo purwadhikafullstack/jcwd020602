@@ -24,12 +24,18 @@ export default function StatusCard({
   };
   return (
     <>
-      <Flex align={"center"} justify={"center"}>
-        <Box w={"100px"}>Statuses</Box>
-        <Flex ml="20px" align="center">
+      <Flex
+        align={"center"}
+        maxW={"700px"}
+        w={"100vw"}
+        overflowX={"auto"}
+        py={2}
+      >
+        <Flex justify={"center"} maxW={"700px"} w={"100vw"} align="center">
           {statusOptions.map((option, idx) => {
             return (
               <Box
+                fontSize={"10px"}
                 as="button"
                 px={2}
                 py={1}
@@ -39,6 +45,7 @@ export default function StatusCard({
                 color={selected === idx ? "white" : "black"}
                 onClick={() => handleStatusChange(option, idx)}
                 fontWeight={selected === idx ? "bold" : "normal"}
+                whiteSpace={"nowrap"}
               >
                 {option}
               </Box>

@@ -8,7 +8,13 @@ import {
 } from "@chakra-ui/react";
 import { FaSearch } from "react-icons/fa";
 import { useRef, useState } from "react";
-export default function SearchFilter({ filter, setFilter, setShown, onClick }) {
+export default function SearchFilter({
+  filter,
+  setFilter,
+  setShown,
+  onClick,
+  placeholder,
+}) {
   const [search, setSearch] = useState("");
   const inputSearchRef = useRef(null);
   return (
@@ -17,7 +23,7 @@ export default function SearchFilter({ filter, setFilter, setShown, onClick }) {
         <Input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search..."
+          placeholder={placeholder}
           ref={inputSearchRef}
         />
         <InputRightAddon

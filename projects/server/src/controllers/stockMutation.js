@@ -75,8 +75,9 @@ const stockMutationController = {
         await toStock.save({ transaction: t });
         if (fromStock.stock + stockMutation.qty != fromStock.stock) {
           await addStockHistory({
-            stock_before: fromStock.stock + stockMutation.qty,
-            stock_after: fromStock.stock,
+            stock_before:
+              fromStock.stock + fromStock.booked_stock + stockMutation.qty,
+            stock_after: fromStock.stock + fromStock.booked_stock,
             stock_id: fromStock.id,
             reference: stockMutation.mutation_code,
             t,
@@ -84,8 +85,9 @@ const stockMutationController = {
         }
         if (toStock.stock - stockMutation.qty != toStock.stock) {
           await addStockHistory({
-            stock_before: toStock.stock - stockMutation.qty,
-            stock_after: toStock.stock,
+            stock_before:
+              toStock.stock + toStock.booked_stock - stockMutation.qty,
+            stock_after: toStock.stock + toStock.booked_stock,
             stock_id: toStock.id,
             reference: stockMutation.mutation_code,
             t,
@@ -114,12 +116,13 @@ const stockMutationController = {
         search: req.query?.search || "",
         brand_id: req.query?.brand_id,
         page: req.query?.page || 1,
-        time: req.query?.time,
-        limit: 2,
+        timeFrom: req.query?.timeFrom,
+        timeTo: req.query?.timeTo,
+        limit: 8,
       });
       return res
         .status(200)
-        .send({ ...result, totalPages: Math.ceil(result?.count / 2) });
+        .send({ ...result, totalPages: Math.ceil(result?.count / 8) });
     } catch (err) {
       return errorResponse(res, err, CustomError);
     }

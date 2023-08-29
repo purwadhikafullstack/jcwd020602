@@ -78,6 +78,7 @@ const userController = {
             phone: req.query?.phoneNumber,
             status: "verified",
             role: "USER",
+            providerId: req.query?.providerData[0].providerId,
           },
           { transaction: t }
         );

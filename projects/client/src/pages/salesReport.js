@@ -40,8 +40,9 @@ export default function SalesReportPage() {
           </Flex>
           <SearchFilter
             filter={filter}
-            setFilter={setFilter}
             setShown={(a) => a}
+            setFilter={setFilter}
+            placeholder={"search.. (transaction code, customer name)"}
             onClick={() => {
               setFilter({
                 ...filter,

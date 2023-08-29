@@ -46,6 +46,7 @@ module.exports = {
             ],
           },
         ],
+        distinct: true,
         limit,
         offset,
         order: [[...sort, order]],

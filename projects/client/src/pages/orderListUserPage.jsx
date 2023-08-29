@@ -1,5 +1,19 @@
-import {Center,Flex,Text,HStack,Box,Input,Select} from "@chakra-ui/react";
-import {useDisclosure,Image,InputGroup,InputRightAddon,Icon} from "@chakra-ui/react";
+import {
+  Center,
+  Flex,
+  Text,
+  HStack,
+  Box,
+  Input,
+  Select,
+} from "@chakra-ui/react";
+import {
+  useDisclosure,
+  Image,
+  InputGroup,
+  InputRightAddon,
+  Icon,
+} from "@chakra-ui/react";
 import { useFetchOrder } from "../hooks/useFetchOrder";
 import { useEffect, useRef, useState } from "react";
 import { api } from "../api/api";
@@ -7,6 +21,7 @@ import OrderDetailsModal from "../components/order/orderDetailsModal";
 import { FaSearch } from "react-icons/fa";
 import Navbar from "../components/website/navbar";
 import Footer from "../components/website/footer";
+import DoneOrderAlert from "../components/order/doneOrderAlert";
 import Pagination from "../components/order/paginationOrder";
 import StatusCard from "../components/order/statusCardOrder";
 import OrderListCard from "../components/order/orderListCard";
@@ -86,21 +101,27 @@ export default function OrderListUser() {
       console.log(err.response?.data);
     }
   };
-
   const handleDateChange = (from, to) => {
     setCurrentPage(1);
     setFilter({
-      ...filter, fromDate: from, toDate: to,
+      ...filter,
+      fromDate: from,
+      toDate: to,
     });
   };
   return (
     <Center flexDir={"column"}>
       <Navbar />
       <Flex
-        my={{ base: "50px", md: "100px" }} w={{ base: "90%", md: "70vw" }} h={"auto"} flexDir={"column"}
+        my={{ base: "50px", md: "100px" }}
+        w={{ base: "90%", md: "70vw" }}
+        h={"auto"}
+        flexDir={"column"}
       >
         <Text
-          fontSize={{ base: "xl", md: "2xl" }} fontWeight={"bold"} my={"10px"}
+          fontSize={{ base: "xl", md: "2xl" }}
+          fontWeight={"bold"}
+          my={"10px"}
         >
           Order List
         </Text>
@@ -118,7 +139,9 @@ export default function OrderListUser() {
                 <Icon as={FaSearch} color={"black"} />
               </InputRightAddon>
             </InputGroup>
-            <Select w={"250px"} size={"sm"}
+            <Select
+              w={"250px"}
+              size={"sm"}
               onChange={(e) => {
                 setCurrentPage(1);
                 setFilter({
@@ -152,11 +175,17 @@ export default function OrderListUser() {
             </InputGroup>
           </Flex>
           <Flex
-            my={"10px"} w={"95%"} align={"center"} justify={"space-between"} gap={2}
+            my={"10px"}
+            w={"95%"}
+            align={"center"}
+            justify={"space-between"}
+            gap={2}
           >
             <Box w={"100px"}>Statuses</Box>
             <Flex
-              ml="20px" align="center" overflowX="auto"
+              ml="20px"
+              align="center"
+              overflowX="auto"
               css={{
                 "&::-webkit-scrollbar": {
                   height: "6px",
@@ -169,13 +198,18 @@ export default function OrderListUser() {
             >
               {statusOptions.map((option) => (
                 <StatusCard
-                  key={option} title={option} selected={status === option} onClick={() => handleStatusChange(option)}
+                  key={option}
+                  title={option}
+                  selected={status === option}
+                  onClick={() => handleStatusChange(option)}
                 />
               ))}
             </Flex>
             <Center>
               <Text
-                fontWeight={"bold"} color={"#383F6A"} cursor={"pointer"}
+                fontWeight={"bold"}
+                color={"#383F6A"}
+                cursor={"pointer"}
                 onClick={() => setFilter({ page: 1 })}
               >
                 Reset Filter
@@ -183,10 +217,13 @@ export default function OrderListUser() {
             </Center>
           </Flex>
           {orders?.data?.map((val) => (
-
-            <OrderListCard val={val} openDetailsModal={openDetailsModal} cancelOrder={cancelOrder}
-            filter={filter} doneOrder={doneOrder}/>
-
+            <OrderListCard
+              val={val}
+              openDetailsModal={openDetailsModal}
+              cancelOrder={cancelOrder}
+              filter={filter}
+              doneOrder={doneOrder}
+            />
           ))}
           <OrderDetailsModal
             val={selectedVal}

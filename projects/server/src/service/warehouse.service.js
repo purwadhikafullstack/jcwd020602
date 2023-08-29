@@ -3,7 +3,7 @@ const { Op } = require("sequelize");
 module.exports = {
   addWarehouse: async (t, { name, telephone_number }, response) => {
     try {
-      return await db.warehouses.create(
+      return await db.Warehouse.create(
         {
           name,
           address: response.data.results[0].formatted,
@@ -30,7 +30,7 @@ module.exports = {
     }
   },
   updateWarehouse: async (t, { name, telephone_number }, response) => {
-    return await db.warehouses.update(
+    return await db.Warehouse.update(
       {
         name: name ? name : checkWarehouse.name,
         address: response.data.results[0].formatted,
@@ -57,7 +57,7 @@ module.exports = {
   },
   validWarehouse: async (id) => {
     try {
-      return await db.warehouses.findOne({
+      return await db.Warehouse.findOne({
         where: { id },
         raw: true,
       });
@@ -67,7 +67,7 @@ module.exports = {
   },
   getAllWarehouse: async ({ limit, offset, sort, order, keyword }) => {
     try {
-      return await db.warehousesfindAndCountAll({
+      return await db.Warehouse.findAndCountAll({
         limit,
         offset,
         order: [[sort, order]],

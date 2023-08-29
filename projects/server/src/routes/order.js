@@ -5,7 +5,6 @@ const salesReportController = require("../controllers/salesReport");
 const userTokenDecoder = require("../middlewares/roleDecoder");
 const { fileUploader } = require("../middlewares/multer");
 const findWarehouse = require("../middlewares/findWarehouse");
-
 router.post(
   "/",
   userTokenDecoder.checkUser,
@@ -24,15 +23,15 @@ router.patch(
   orderController.cancelPaymentUser
 );
 router.patch(
+  "/doneOrderUser/:id",
+  orderController.getOrderById,
+  orderController.doneOrderUser
+);
+router.patch(
   "/paymentProof",
   userTokenDecoder.checkUser,
   fileUploader({ destinationFolder: "paymentProof" }).single("payment_proof"),
   orderController.paymentProof
-);
-router.patch(
-  "/rejectPayment/:id",
-  orderController.getOrderById,
-  orderController.rejectPaymentProof
 );
 router.patch(
   "/doneOrder/:id",

@@ -57,7 +57,6 @@ export default function ConfirmStockMutation(props) {
       });
     }
   };
-
   return (
     <>
       <AlertDialog
@@ -76,11 +75,10 @@ export default function ConfirmStockMutation(props) {
 
           <AlertDialogBody>
             {`${userSelector.role == "SUPERADMIN" ? "Super Admin" : "Admin"}
-            ${userSelector.name} want to confirm stock MUT/
-            ${
-              stockMutation.mutation_code &&
-              JSON.parse(stockMutation.mutation_code).MUT
-            } status as ${props.status}. is this true?`}
+            ${userSelector.name} want to confirm stock 
+            ${stockMutation.mutation_code} status as ${
+              props.status
+            }. is this true?`}
           </AlertDialogBody>
           <AlertDialogFooter>
             <Button ref={cancelRef} onClick={clearData}>

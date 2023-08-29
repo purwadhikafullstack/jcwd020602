@@ -70,10 +70,7 @@ export default function DeleteStockMutation(props) {
           </AlertDialogHeader>
 
           <AlertDialogBody>
-            Are you sure you want to delete stock MUT/
-            {stockMutation.mutation_code &&
-              JSON.parse(stockMutation.mutation_code).MUT}
-            ?
+            {`Are you sure you want to delete stock ${stockMutation.mutation_code}?`}
           </AlertDialogBody>
           <AlertDialogFooter>
             <Button ref={cancelRef} onClick={clearData}>
