@@ -1,4 +1,5 @@
-import { Box, Button, ButtonGroup, useDisclosure } from "@chakra-ui/react";
+import { Box, Button, ButtonGroup } from "@chakra-ui/react";
+import { Center, Spinner, useDisclosure } from "@chakra-ui/react";
 import { Flex, IconButton, Select } from "@chakra-ui/react";
 import { AiOutlinePlus } from "react-icons/ai";
 import { useEffect, useState } from "react";
@@ -38,7 +39,7 @@ export default function StockMutationPage() {
   //pagination ------------------------------------------------------
   const [pages, setPages] = useState([]);
   const [shown, setShown] = useState({ page: 1 });
-  const { stockMutations, fetch } = useFetchStockMutation(filter);
+  const { stockMutations, fetch, isLoading } = useFetchStockMutation(filter);
   function pageHandler() {
     const output = [];
     for (let i = 1; i <= stockMutations.totalPages; i++) {
@@ -113,6 +114,7 @@ export default function StockMutationPage() {
             />
             <Select
               onChange={(e) => {
+                setShown({ page: 1 });
                 setFilter({
                   ...filter,
                   brand_id: e.target.value,
@@ -125,7 +127,7 @@ export default function StockMutationPage() {
               <option key={""} value={""}>
                 choose brand..
               </option>
-              {brands &&
+              {brands?.length &&
                 brands?.map((val, idx) => (
                   <option key={val?.id} value={val?.id}>
                     {val?.name}
@@ -168,48 +170,56 @@ export default function StockMutationPage() {
               </option>
             </Select>
           </Box>
-          <CardMutation
-            filter={filter}
-            stockMutations={stockMutations}
-            deleteSM={deleteSM}
-            editSM={editSM}
-            confirmSM={confirmSM}
-            setStatus={setStatus}
-            setStockMutId={setStockMutId}
+          {isLoading ? (
+            <Center border={"1px"} h={"550px"}>
+              <Spinner />
+            </Center>
+          ) : (
+            <>
+              <CardMutation
+                filter={filter}
+                stockMutations={stockMutations}
+                deleteSM={deleteSM}
+                editSM={editSM}
+                confirmSM={confirmSM}
+                setStatus={setStatus}
+                setStockMutId={setStockMutId}
+              />
+              <TableMutation
+                filter={filter}
+                stockMutations={stockMutations}
+                deleteSM={deleteSM}
+                editSM={editSM}
+                confirmSM={confirmSM}
+                setStatus={setStatus}
+                setStockMutId={setStockMutId}
+              />
+            </>
+          )}
+          <EditStockMutation
+            id={stockMutId}
+            isOpen={editSM.isOpen}
+            onClose={editSM.onClose}
+            fetch={fetch}
+            setId={setStockMutId}
           />
-          <TableMutation
-            filter={filter}
-            stockMutations={stockMutations}
-            deleteSM={deleteSM}
-            editSM={editSM}
-            confirmSM={confirmSM}
+          <DeleteStockMutation
+            id={stockMutId}
+            setShown={setShown}
+            isOpen={deleteSM.isOpen}
+            onClose={deleteSM.onClose}
+            setId={setStockMutId}
+          />
+          <ConfirmStockMutation
+            id={stockMutId}
+            status={status}
             setStatus={setStatus}
-            setStockMutId={setStockMutId}
+            isOpen={confirmSM.isOpen}
+            onClose={confirmSM.onClose}
+            fetch={fetch}
+            setId={setStockMutId}
           />
           <Flex p={2} m={2} justify={"center"} border={"2px"}>
-            <EditStockMutation
-              id={stockMutId}
-              isOpen={editSM.isOpen}
-              onClose={editSM.onClose}
-              fetch={fetch}
-              setId={setStockMutId}
-            />
-            <DeleteStockMutation
-              id={stockMutId}
-              setShown={setShown}
-              isOpen={deleteSM.isOpen}
-              onClose={deleteSM.onClose}
-              setId={setStockMutId}
-            />
-            <ConfirmStockMutation
-              id={stockMutId}
-              status={status}
-              setStatus={setStatus}
-              isOpen={confirmSM.isOpen}
-              onClose={confirmSM.onClose}
-              fetch={fetch}
-              setId={setStockMutId}
-            />
             <Pagination
               shown={shown}
               setShown={setShown}

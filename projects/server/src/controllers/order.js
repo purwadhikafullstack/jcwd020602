@@ -298,7 +298,6 @@ const orderController = {
                 t,
               });
             }
-
             toStock.stock += val.qty - val.stock.stock;
             await toStock.save({ transaction: t });
             if (toStock.stock - val.qty != toStock.stock) {
@@ -331,7 +330,7 @@ const orderController = {
       } else if (req?.body?.status == "PAYMENT") {
         await updateOrder({
           t,
-          last_payment_date: moment(req.order?.last_payment_date).add(1, "day"),
+          last_payment_date: moment().add(1, "day"),
           payment_proof: null,
           id: req.order?.id,
         });

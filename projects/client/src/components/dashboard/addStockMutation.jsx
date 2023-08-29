@@ -65,6 +65,7 @@ export default function AddStockMutation(props) {
           status: "success",
           position: "top",
         });
+        setIsLoading(false);
         props.fetch();
         clearData();
       } catch (err) {
@@ -236,10 +237,7 @@ export default function AddStockMutation(props) {
                 isLoading={isLoading}
                 onClick={() => {
                   setIsLoading(true);
-                  setTimeout(() => {
-                    setIsLoading(false);
-                    formik.handleSubmit();
-                  }, 2000);
+                  formik.handleSubmit();
                 }}
               >
                 confirm

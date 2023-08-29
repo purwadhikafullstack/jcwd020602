@@ -3,6 +3,7 @@ const {
   CustomError,
   ConflictError,
   ValidationError,
+  NotFoundError,
 } = require("../utils/customErrors");
 const { addStockHistory } = require("../service/stockHistory.service");
 const { errorResponse } = require("../utils/function");
@@ -120,6 +121,9 @@ const stockMutationController = {
         timeTo: req.query?.timeTo,
         limit: 8,
       });
+      if (!result.rows.length) {
+        throw new NotFoundError("Data not found");
+      }
       return res
         .status(200)
         .send({ ...result, totalPages: Math.ceil(result?.count / 8) });

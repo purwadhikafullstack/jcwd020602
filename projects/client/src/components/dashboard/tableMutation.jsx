@@ -1,4 +1,4 @@
-import { Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
+import { Menu, MenuButton, MenuList, MenuItem, Center } from "@chakra-ui/react";
 import { Tr, Th, Td, TableContainer } from "@chakra-ui/react";
 import { Tbody, useDisclosure, Table } from "@chakra-ui/react";
 import { Box, Button, ButtonGroup, Divider } from "@chakra-ui/react";
@@ -18,25 +18,29 @@ export default function TableMutation({
   return (
     <>
       {/* tampilan desktop table */}
-      <TableContainer id="table-content">
-        <Table size="sm">
-          <Thead>
-            <Tr>
-              <Th>#</Th>
-              <Th>Mutation Code</Th>
-              <Th>Requester</Th>
-              <Th>Responder</Th>
-              <Th>From-To</Th>
-              <Th>Shoe</Th>
-              <Th>Stock</Th>
-              <Th>Status</Th>
-              <Th>Date Time</Th>
-              <Th>Action</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {stockMutations?.rows &&
-              stockMutations?.rows.map((stockMutation, idx) => (
+      {stockMutations?.rows?.length ? (
+        <Center border={"1px"} h={"550px"} w={"100%"}>
+          Product not found
+        </Center>
+      ) : (
+        <TableContainer id="table-content">
+          <Table size="sm">
+            <Thead>
+              <Tr>
+                <Th>#</Th>
+                <Th>Mutation Code</Th>
+                <Th>Requester</Th>
+                <Th>Responder</Th>
+                <Th>From-To</Th>
+                <Th>Shoe</Th>
+                <Th>Stock</Th>
+                <Th>Status</Th>
+                <Th>Date Time</Th>
+                <Th>Action</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {stockMutations?.rows?.map((stockMutation, idx) => (
                 <Tr>
                   <Td w={"5%"}>{idx + 1}</Td>
                   <Td>{stockMutation?.mutation_code}</Td>
@@ -125,9 +129,10 @@ export default function TableMutation({
                   </Td>
                 </Tr>
               ))}
-          </Tbody>
-        </Table>
-      </TableContainer>
+            </Tbody>
+          </Table>
+        </TableContainer>
+      )}
     </>
   );
 }

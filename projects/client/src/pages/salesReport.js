@@ -82,7 +82,7 @@ export default function SalesReportPage() {
               <option key={""} value={""}>
                 choose brand..
               </option>
-              {brands &&
+              {brands?.length &&
                 brands?.map((val, idx) => (
                   <option key={val?.id} value={val?.id}>
                     {val?.name}
@@ -105,7 +105,7 @@ export default function SalesReportPage() {
               <option key={""} value={""}>
                 choose category..
               </option>
-              {categories &&
+              {categories?.length &&
                 categories?.map((val, idx) => (
                   <option key={val?.id} value={val?.id}>
                     {val?.name}
@@ -127,7 +127,7 @@ export default function SalesReportPage() {
               <option key={""} value={""}>
                 choose subcategory..
               </option>
-              {sub &&
+              {sub?.length &&
                 sub?.map((val, idx) => (
                   <option key={val?.id} value={val?.id}>
                     {val?.name}
@@ -148,7 +148,7 @@ export default function SalesReportPage() {
               <option key={""} value={""}>
                 choose shoe..
               </option>
-              {shoes &&
+              {shoes?.length &&
                 shoes?.map((val, idx) => (
                   <option key={val?.id} value={val?.id}>
                     {val?.name}
