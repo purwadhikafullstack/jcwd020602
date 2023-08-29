@@ -171,25 +171,6 @@ const orderController = {
       errorResponse(res, err, CustomError);
     }
   },
-  cancelOrderAutomatically: async () => {
-    const t = await db.sequelize.transaction();
-    try {
-      const currTime = moment().utc();
-      const order = db.Order.findOne({
-        where: { status: "PAYMENT", last_payment_date: { [Op.lte]: currTime } },
-      });
-      if (order) {
-        await updateOrder({ t, status: "CANCELED", id: order?.id });
-        console.log("order canceled");
-      } else {
-        console.log("no order canceled");
-      }
-      await t.commit();
-    } catch (err) {
-      await t.rollback();
-      console.log(err);
-    }
-  },
   doneOrderUser: async (req, res) => {
     const t = await db.sequelize.transaction();
     try {
@@ -201,26 +182,41 @@ const orderController = {
       errorResponse(res, err, CustomError);
     }
   },
+  cancelOrderAutomatically: async () => {
+    const t = await db.sequelize.transaction();
+    try {
+      const currTime = moment().utc();
+      const orders = await db.Order.findAll({
+        where: { status: "PAYMENT", last_payment_date: { [Op.lte]: currTime } },
+      });
+      if (orders) {
+        for (const order of orders) {
+          await updateOrder({ t, status: "CANCELED", id: order?.id });
+        }
+      }
+      await t.commit();
+    } catch (err) {
+      await t.rollback();
+    }
+  },
   doneOrderAutomatically: async () => {
     const t = await db.sequelize.transaction();
     try {
       const currTime = moment().utc().add(-5, "minute");
-      const order = db.Order.findOne({
+      const orders = await db.Order.findAll({
         where: {
           status: "DELIVERY",
           updatedAt: { [Op.lte]: currTime },
         },
       });
-      if (order) {
-        await updateOrder({ t, status: "DONE", id: order?.id });
-        console.log("order completed");
-      } else {
-        console.log("no order complete");
+      if (orders) {
+        for (const order of orders) {
+          await updateOrder({ t, status: "DONE", id: order?.id });
+        }
       }
       await t.commit();
     } catch (err) {
       await t.rollback();
-      console.log(err);
     }
   },
   getOrderAdmin: async (req, res) => {
@@ -322,7 +318,10 @@ const orderController = {
               });
             }
           }
-          await updateStock({
+          console.log(val.stock.stock);
+          console.log(val.qty);
+          console.log(val.stock.stock - val.qty);
+          const addBooked = await updateStock({
             booked_stock: val.stock.booked_stock + val.qty,
             stock: val.stock.stock - val.qty,
             shoe_id: val.stock.shoe_id,
@@ -330,12 +329,20 @@ const orderController = {
             warehouse_id: val.stock.warehouse_id,
             t,
           });
+          console.log(
+            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+            addBooked
+          );
           // Decrease booked_stock in the Product table
-          await updateStock({
+          const deliverBooked = await updateStock({
             id: val.stock.id,
             booked_stock: val.stock.booked_stock - val?.qty,
             t,
           });
+          console.log(
+            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+            deliverBooked
+          );
           if (val.stock?.stock - val.qty != val.stock?.stock) {
             await addStockHistory({
               stock_before: val.stock?.stock + val?.stock?.booked_stock,
@@ -357,7 +364,7 @@ const orderController = {
         });
         fs.unlinkSync(`${__dirname}/../public/${req.order?.payment_proof}`);
       }
-      await t.commit();
+      // await t.commit();
       return res
         .status(200)
         .send({ message: `Order is in ${req.body?.status}` });

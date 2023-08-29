@@ -22,6 +22,7 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import CancelOrderAlert from "../components/order/cancelOrderAlert";
 import Navbar from "../components/website/navbar";
 import Footer from "../components/website/footer";
+import DoneOrderAlert from "../components/order/doneOrderAlert";
 
 export default function OrderListUser() {
   const detailsModal = useDisclosure();
@@ -86,6 +87,15 @@ export default function OrderListUser() {
       fetchOrders();
 
       alert("Order successfully canceled");
+    } catch (err) {
+      console.log(err.response?.data);
+    }
+  };
+  const doneOrder = async (id) => {
+    try {
+      await api().patch(`/orders/doneOrderUser/${id}`);
+      fetchOrders();
+      alert("Order successfully done");
     } catch (err) {
       console.log(err.response?.data);
     }
@@ -299,13 +309,21 @@ export default function OrderListUser() {
               </Flex>
               <Flex
                 h={"50px"}
-                justify={val?.status === "PAYMENT" ? "space-between" : "right"}
+                justify={
+                  val?.status === "PAYMENT" || val?.status === "DELIVERY"
+                    ? "space-between"
+                    : "right"
+                }
                 px={"20px"}
                 align={"center"}
               >
+                {val?.status === "DELIVERY" ? (
+                  <DoneOrderAlert id={val.id} doneOrder={doneOrder} />
+                ) : null}
                 {val?.status === "PAYMENT" ? (
                   <CancelOrderAlert id={val.id} cancelOrder={cancelOrder} />
                 ) : null}
+
                 <Text
                   cursor={"pointer"}
                   fontSize={"sm"}

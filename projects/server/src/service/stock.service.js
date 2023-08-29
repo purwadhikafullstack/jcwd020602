@@ -107,8 +107,8 @@ module.exports = {
         whereClause.shoe_size_id = body?.shoe_size_id;
         whereClause.warehouse_id = body?.warehouse_id;
       }
-      if (body?.stock) update.stock = body?.stock;
-      if (body?.booked_stock) update.booked_stock = body?.booked_stock;
+      if (body?.stock >= 0) update.stock = body?.stock;
+      if (body?.booked_stock >= 0) update.booked_stock = body?.booked_stock;
       console.log(
         "INI UPDATE HUAHHHHAAAHHHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
         update,
