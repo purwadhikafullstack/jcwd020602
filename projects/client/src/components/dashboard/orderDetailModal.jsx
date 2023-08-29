@@ -1,40 +1,24 @@
-import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalBody,
-  ModalCloseButton,
-  ModalFooter,
-  Button,
-  ModalHeader,
-  useToast,
-  Box,
-  Divider,
-  Flex,
-  Image,
-  useDisclosure,
-  Center,
-} from "@chakra-ui/react";
-import { api } from "../../api/api";
-import { useEffect, useState } from "react";
-import moment from "moment";
+import { ModalFooter, ModalBody, useToast, Button } from "@chakra-ui/react";
+import { ModalOverlay, ModalContent, ModalHeader } from "@chakra-ui/react";
+import { Center, Image, Modal, Flex, Box } from "@chakra-ui/react";
+import { ModalCloseButton, useDisclosure } from "@chakra-ui/react";
 import PaymentProofModal from "../order/paymentProofModal";
-
+import { useEffect, useState } from "react";
+import { api } from "../../api/api";
+import moment from "moment";
 export default function OrderDetailModal(props) {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const paymentProofModal = useDisclosure();
   const [showAllProducts, setShowAllProducts] = useState(false);
   const [order, setOrder] = useState({ orderDetails: [] });
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const paymentProofModal = useDisclosure();
   const toast = useToast();
   async function getOrder() {
     try {
       const res = await api().get(`/orders/admin/${props.order}`);
-      console.log(res.data?.order);
       setOrder(res.data?.order);
     } catch (error) {
-      console.log(error);
       toast({
-        title: error.response?.data.message,
+        title: error.response?.data?.message,
         status: "error",
         isClosable: true,
         duration: 3000,
@@ -118,14 +102,13 @@ export default function OrderDetailModal(props) {
                   >
                     Batas Akhir Pembayaran
                   </Box>
-
                   <Box
-                    key={order.id}
+                    key={order?.id}
                     fontSize={"sm"}
                     color={"white"}
                     pb={"10px"}
                   >
-                    {moment(order.last_payment_date).format(
+                    {moment(order?.last_payment_date).format(
                       "dddd, MMMM Do YYYY"
                     )}
                   </Box>
@@ -152,7 +135,7 @@ export default function OrderDetailModal(props) {
                   ?.slice(0, showAllProducts ? undefined : 1)
                   ?.map((val) => (
                     <Flex
-                      key={val.id}
+                      key={val?.id}
                       mt={"10px"}
                       h={"70px"}
                       w={"100%"}
@@ -219,8 +202,8 @@ export default function OrderDetailModal(props) {
                   <Box fontSize={"sm"}>:</Box>
                   <Flex flexDir={"column"} pl={"10px"}>
                     <Box fontSize={"sm"}>
-                      {order?.courier.toUpperCase()} {order?.shipping_service} -{" "}
-                      {order?.shipping_method}
+                      {order?.courier?.toUpperCase()} {order?.shipping_service}{" "}
+                      - {order?.shipping_method}
                     </Box>
                     <Box fontSize={"sm"} fontWeight={"bold"}>
                       (Estimate arrived in {order?.shipping_duration})
@@ -233,19 +216,19 @@ export default function OrderDetailModal(props) {
                   </Box>
                   <Box fontSize={"sm"}>:</Box>
                   <Flex flexDir={"column"} pl={"10px"} w={"310px"}>
-                    <Box fontSize={"sm"}>{order?.address.name} </Box>
+                    <Box fontSize={"sm"}>{order.address?.name} </Box>
                     <Box fontSize={"sm"} fontWeight={"bold"}>
-                      {order?.address.phone}
+                      {order?.address?.phone}
                     </Box>
                     <Box fontSize={"sm"}>
-                      {order?.address.address},{order?.address.address_details},
-                      {order?.address.postcode}
+                      {order?.address?.address},
+                      {order?.address?.address_details},
+                      {order?.address?.postcode}
                     </Box>
                   </Flex>
                 </Flex>
               </Flex>
             </Flex>
-
             <Flex w={"100%"} flexDir={"column"} mt={"10px"}>
               <Box as="b">Payment Details</Box>
               <Flex flexDir={"column"} w={"100%"}>
@@ -271,7 +254,7 @@ export default function OrderDetailModal(props) {
                   <Flex flexDir={"column"} pl={"10px"} w={"310px"}>
                     <Box fontSize={"sm"}>
                       {(
-                        order.total_price - order.shipping_cost
+                        order?.total_price - order?.shipping_cost
                       )?.toLocaleString("id-ID", {
                         style: "currency",
                         currency: "IDR",
@@ -299,7 +282,6 @@ export default function OrderDetailModal(props) {
               </Flex>
             </Flex>
           </ModalBody>
-
           <ModalFooter>
             <Button onClick={props.onClose}>Close</Button>
           </ModalFooter>
