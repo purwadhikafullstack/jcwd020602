@@ -237,6 +237,7 @@ module.exports = {
           { model: db.Address },
         ],
         where: whereClause,
+        distinct:true,
         order: [[...sort, body?.order]],
       });
       return {

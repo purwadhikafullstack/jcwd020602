@@ -11,16 +11,16 @@ function AddressCard(props) {
       : props.address;
   return (
     <Flex
+      gap={2}
       bg={props.isSelected || props.is_primary ? "#EEEEEE" : "white"}
       borderBottom={"1px"}
       borderTop={"1px"}
       borderColor={"gray.300"}
-      pl={"10px"}
       onClick={handleCardClick}
       cursor={"pointer"}
     >
       {props.is_primary ? (
-        <Flex w={"30px"} align={"center"}>
+        <Flex w={"30px"} align={"center"} justify={"center"}>
           <BsCheck2 />
         </Flex>
       ) : (

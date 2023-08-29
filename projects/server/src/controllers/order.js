@@ -283,7 +283,6 @@ const orderController = {
       errorResponse(res, err, CustomError);
     }
   },
-
   getOrderAdmin: async (req, res) => {
     try {
       const warehouse = await getWarehouse({
@@ -386,5 +385,15 @@ const orderController = {
       return errorResponse(res, err, CustomError);
     }
   },
+  doneOrderUser: async (req,res) => {
+    try {
+      await db.Order.update({
+        status:"DONE",
+      },{where:{id:req.order?.id}})
+      return res.status(200).send({message:"Order Done"})
+    } catch (err) {
+      return errorResponse(res, err, CustomError);
+    }
+  }
 };
 module.exports = orderController;

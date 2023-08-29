@@ -286,12 +286,7 @@ export default function CheckOutPage() {
                 {cost !== null && <p>Selected Cost: {cost} IDR</p>}
               </Center>
             </Box>
-            <Button
-              id="button"
-              onClick={() => handleOrder()}
-              m={2}
-              isDisabled={!selectedAddressId}
-            >
+            <Button id="button" onClick={() => handleOrder()} m={2}>
               PROCEED THE ORDER
             </Button>
             <Payment isOpen={payModal.isOpen} onClose={payModal.onClose} />
