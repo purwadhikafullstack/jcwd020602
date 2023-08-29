@@ -237,7 +237,7 @@ const orderController = {
       });
       return res
         .status(200)
-        .send({ ...result, totalPages: Math.ceil(result?.count / 2) });
+        .send({ ...result, totalPages: Math.ceil(result?.count / 3) });
     } catch (err) {
       errorResponse(res, err, CustomError);
     }
@@ -318,9 +318,6 @@ const orderController = {
               });
             }
           }
-          console.log(val.stock.stock);
-          console.log(val.qty);
-          console.log(val.stock.stock - val.qty);
           const addBooked = await updateStock({
             booked_stock: val.stock.booked_stock + val.qty,
             stock: val.stock.stock - val.qty,
@@ -329,20 +326,12 @@ const orderController = {
             warehouse_id: val.stock.warehouse_id,
             t,
           });
-          console.log(
-            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-            addBooked
-          );
           // Decrease booked_stock in the Product table
           const deliverBooked = await updateStock({
             id: val.stock.id,
             booked_stock: val.stock.booked_stock - val?.qty,
             t,
           });
-          console.log(
-            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-            deliverBooked
-          );
           if (val.stock?.stock - val.qty != val.stock?.stock) {
             await addStockHistory({
               stock_before: val.stock?.stock + val?.stock?.booked_stock,
@@ -364,7 +353,7 @@ const orderController = {
         });
         fs.unlinkSync(`${__dirname}/../public/${req.order?.payment_proof}`);
       }
-      // await t.commit();
+      await t.commit();
       return res
         .status(200)
         .send({ message: `Order is in ${req.body?.status}` });

@@ -109,11 +109,6 @@ module.exports = {
       }
       if (body?.stock >= 0) update.stock = body?.stock;
       if (body?.booked_stock >= 0) update.booked_stock = body?.booked_stock;
-      console.log(
-        "INI UPDATE HUAHHHHAAAHHHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-        update,
-        whereClause
-      );
       return await db.Stock.update(update, {
         where: whereClause,
         transaction: body?.t,
