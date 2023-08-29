@@ -55,12 +55,13 @@ const categoryController = {
       const limit = req?.query?.limit || 8;
       const page = req?.query?.page || 1;
       const offset = (parseInt(page) - 1) * limit;
-
+      console.log(req.query);
       const categories = await db.Category.findAndCountAll({
         include: [{ model: db.SubCategory, include: [db.Shoe] }],
         where: { name: { [Op.like]: `%${search}%` } },
         distinct: true,
         offset,
+        limit,
         order: [[sort, order]],
       });
       return res.status(200).send({
@@ -73,10 +74,40 @@ const categoryController = {
   },
   getAllSub: async (req, res) => {
     try {
-      const subcategories = await db.SubCategory.findAll({
+      const search = req?.query?.search || "";
+      const sort = req?.query?.sort || "name";
+      const order = req?.query?.order || "ASC";
+      const category = req?.query?.category || "";
+      const limit = req?.query?.limit || 8;
+      const page = req?.query?.page || 1;
+      const offset = (parseInt(page) - 1) * limit;
+      const whereClause = { [Op.and]: [] };
+
+      if (category) {
+        whereClause[Op.and].push({
+          "$Category.name$": { [Op.like]: `${category}%` },
+        });
+      } else if (search) {
+        whereClause[Op.and].push({
+          [Op.or]: [
+            { name: { [Op.like]: `%${search}%` } },
+            { "$Category.name$": { [Op.like]: `${search}%` } },
+          ],
+        });
+      }
+
+      const subcategories = await db.SubCategory.findAndCountAll({
         include: { model: db.Category },
+        where: whereClause,
+        limit,
+        distinct: true,
+        offset,
+        order: [[sort, order]],
       });
-      return res.status(200).send(subcategories);
+      return res.status(200).send({
+        ...subcategories,
+        totalPages: Math.ceil(subcategories.count / limit),
+      });
     } catch (err) {
       return res.status(500).send(err.message);
     }

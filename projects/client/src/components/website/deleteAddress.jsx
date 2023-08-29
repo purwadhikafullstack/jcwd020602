@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { api } from "../../api/api";
-
+// ------------------------------------------------------ CLEAR -FAHMI
 export default function DeleteAddress(props) {
   const [isLoading, setIsLoading] = useState(false);
   const cancelRef = React.useRef();
@@ -49,7 +49,7 @@ export default function DeleteAddress(props) {
         isCentered
       >
         <AlertDialogOverlay />
-        <AlertDialogContent>
+        <AlertDialogContent mx={2}>
           <AlertDialogHeader>
             <AlertDialogCloseButton />
           </AlertDialogHeader>

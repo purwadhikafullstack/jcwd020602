@@ -24,7 +24,7 @@ export default function EditAddress({ data, fetch, isOpen, onClose }) {
       title: Yup.string().required("Required"),
       name: Yup.string().required("Required"),
       phone: Yup.string()
-        .min(12, "min 12 digits")
+        .min(10, "min 10 digits")
         .max(12, "max 12 digits")
         .required("Required"),
       city_id: Yup.number().required("Required"),
@@ -48,8 +48,6 @@ export default function EditAddress({ data, fetch, isOpen, onClose }) {
       }
     },
   });
-
-  const editAddress = async () => {};
 
   useEffect(() => {
     if (data) {
@@ -76,9 +74,14 @@ export default function EditAddress({ data, fetch, isOpen, onClose }) {
     { id: "address_details", type: "text" },
   ];
   return (
-    <Modal closeOnOverlayClick={false} isOpen={isOpen} onClose={onClose}>
+    <Modal
+      scrollBehavior="inside"
+      closeOnOverlayClick={false}
+      isOpen={isOpen}
+      onClose={onClose}
+    >
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent mx={2}>
         <ModalHeader>EDIT ADDRESS</ModalHeader>
         <ModalCloseButton />
         <ModalBody display={"flex"} flexDir={"column"} gap={5}>
@@ -188,7 +191,6 @@ export default function EditAddress({ data, fetch, isOpen, onClose }) {
               setTimeout(() => {
                 setIsLoading(false);
                 formik.handleSubmit();
-                // editAddress();
               }, 2000);
             }}
           >

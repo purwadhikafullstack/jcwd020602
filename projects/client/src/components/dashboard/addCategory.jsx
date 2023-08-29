@@ -24,7 +24,7 @@ export function AddCategory(props) {
         position: "top",
       });
       props.fetch();
-      props.onClose();
+      clearData();
     } catch (err) {
       toast({
         title: err?.response?.data,
@@ -36,17 +36,22 @@ export function AddCategory(props) {
   const handleFile = (event) => {
     setSelectedFile(event.target.files[0]);
   };
+  const clearData = () => {
+    setName("");
+    setSelectedFile(null);
+    props.onClose();
+  };
   return (
     <>
-      <Modal isOpen={props.isOpen} onClose={props.onClose}>
+      <Modal isOpen={props.isOpen} onClose={clearData}>
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent mx={2}>
           <ModalHeader>Add Category</ModalHeader>
           <ModalCloseButton />
           <ModalBody display={"flex"} gap={2} flexDir={"column"}>
-            <Box>
-              Name:
+            <Box className={`inputbox ${name ? "input-has-value" : ""}`}>
               <Input id="name" onChange={(e) => setName(e.target.value)} />
+              <label>Name</label>
             </Box>
 
             <input accept="image" onChange={handleFile} type="file" />
@@ -54,9 +59,9 @@ export function AddCategory(props) {
 
           <ModalFooter>
             <Button
+              id="button"
+              isDisabled={!(name && selectedFile)}
               isLoading={isLoading}
-              colorScheme="blue"
-              mr={3}
               onClick={() => {
                 setIsLoading(true);
                 setTimeout(() => {
@@ -105,21 +110,20 @@ export function AddSubCategory(props) {
     <>
       <Modal isOpen={props.isOpen} onClose={props.onClose}>
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent mx={2}>
           <ModalHeader>Add Subcategory</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Box>
-              Name:
+            <Box className={`inputbox ${name ? "input-has-value" : ""}`}>
               <Input id="name" onChange={(e) => setName(e.target.value)} />
+              <label>Name</label>
             </Box>
           </ModalBody>
 
           <ModalFooter>
             <Button
+              id="button"
               isLoading={isLoading}
-              colorScheme="blue"
-              mr={3}
               onClick={() => {
                 setIsLoading(true);
                 setTimeout(() => {
@@ -180,19 +184,26 @@ export function AddBrand(props) {
   };
   return (
     <>
-      <Modal isOpen={props.isOpen} onClose={clearB}>
+      <Modal
+        isOpen={props.isOpen}
+        onClose={clearB}
+        isCentered
+        closeOnOverlayClick={false}
+      >
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Add Category</ModalHeader>
+          <ModalHeader>Add Brand</ModalHeader>
           <ModalCloseButton />
           <ModalBody display={"flex"} gap={2} flexDir={"column"}>
-            <Box>
-              Name:
+            <Box className={`inputbox ${name ? "input-has-value" : ""}`}>
               <Input id="name" onChange={(e) => setName(e.target.value)} />
+              <label>Name</label>
             </Box>
-            <Box>
-              Logo:
-              <br />
+
+            <Box border={"1px"}>
+              <Box bg={"black"} color={"white"}>
+                Logo:
+              </Box>
               <input
                 accept="image"
                 onChange={handleFile}
@@ -200,23 +211,26 @@ export function AddBrand(props) {
                 name="logo_img"
               />
             </Box>
-            <Box>
-              Image:
-              <br />
+            <Box border={"1px"}>
+              <Box bg={"black"} color={"white"}>
+                Image:
+              </Box>
               <input
                 accept="image"
                 onChange={handleFile}
                 type="file"
-                name="brnad_img"
+                name="brand_img"
               />
             </Box>
           </ModalBody>
 
           <ModalFooter>
             <Button
+              id="button"
+              isDisabled={
+                !(name && selectedFiles[0] && selectedFiles[1]) ? true : false
+              }
               isLoading={isLoading}
-              colorScheme="blue"
-              mr={3}
               onClick={() => {
                 setIsLoading(true);
                 setTimeout(() => {

@@ -41,27 +41,30 @@ export default function BestSellerShoe(props) {
     dataProcessor();
   }, [salesData]);
   return (
-    <>
-      <Flex p={5}>
+    <Flex flexDir={"column"} p={1}>
+      <Box fontWeight={"bold"} fontSize={"30px"}>
+        BEST SELLER
+      </Box>
+      <Flex
+        border={"2px"}
+        w={"100%"}
+        flexWrap={"wrap"}
+        justify={"center"}
+        gap={2}
+        p={2}
+      >
         {bestShoes.map((val, idx) => (
-          <Flex
-            flexDir={"column"}
-            p={1}
-            border={"1px"}
-            maxW={"500px"}
-            w={"90%"}
-          >
+          <Flex flexDir={"column"} p={1} border={"1px"} w={"220px"}>
             <Box
               className="shoe-list"
               _hover={{ bg: "black", color: "white" }}
-              pos={"relative"}
-              maxW={"500px"}
-              w={"100%"}
-              h={"500px"}
-              border={"1px solid black"}
+              // maxW={"500px"}
+              // w={"100%"}
             >
               <Image
                 src={`${process.env.REACT_APP_API_BASE_URL}/${val.stock?.Sho?.ShoeImages[0]?.shoe_img}`}
+                w={"100%"}
+                maxH={"250px"}
               />
               <Flex flexDir={"column"} p={2}>
                 <Text fontWeight={"bold"}>{val.stock?.Sho?.name}</Text>
@@ -84,6 +87,6 @@ export default function BestSellerShoe(props) {
           </Flex>
         ))}
       </Flex>
-    </>
+    </Flex>
   );
 }

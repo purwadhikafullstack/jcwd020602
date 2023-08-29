@@ -117,6 +117,16 @@ export default function ProfilePage() {
     setImage(URL.createObjectURL(event.target.files[0]));
   };
 
+  const inputan = [
+    { id: "name", type: "text" },
+    { id: "email", type: "text" },
+  ];
+
+  const inputPass = [
+    { id: "oldPassword", type: show, handle: handleClick },
+    { id: "newPassword", type: show1, handle: handleClick1 },
+  ];
+
   return (
     <Center flexDir={"column"}>
       <Navbar />
@@ -146,53 +156,41 @@ export default function ProfilePage() {
             />
           </Center>
           <Box className="form-profile">
-            {/* name */}
-            <FormControl isInvalid={formField === "name" && formik.errors.name}>
-              <Box
-                className={`inputbox ${
-                  formik.values.name ? "input-has-value" : ""
-                }`}
+            {inputan.map((val) => (
+              <FormControl
+                key={val.id}
+                isInvalid={formField === val.id && formik.errors[val.id]}
               >
-                <InputGroup size="md">
-                  <Input
-                    id="name"
-                    value={formik.values.name}
-                    onChange={inputHandler}
-                  />
-                  <label>Name</label>
-                </InputGroup>
-                <Box>
-                  <FormErrorMessage>
-                    <Icon as={TbAlertCircleFilled} w="16px" h="16px" />
-                    <Text fontSize={10}>{formik.errors.name}</Text>
-                  </FormErrorMessage>
+                <Box
+                  className={`inputbox ${
+                    formik.values[val.id] ? "input-has-value" : ""
+                  }`}
+                >
+                  <InputGroup size="md">
+                    <Input
+                      id={val.id}
+                      name={val.id}
+                      value={formik.values[val.id]}
+                      onChange={inputHandler}
+                      type={val.type}
+                      isDisabled={val.id == "email" ? true : false}
+                    />
+                    <label htmlFor={val.id}>{val.id}</label>
+                    {val.id == "email" ? (
+                      <InputRightElement width="4rem">
+                        <Icon as={EmailIcon} />
+                      </InputRightElement>
+                    ) : null}
+                  </InputGroup>
+                  <Box>
+                    <FormErrorMessage>
+                      <Icon as={TbAlertCircleFilled} w="16px" h="16px" />
+                      <Text fontSize={10}>{formik.errors[val.id]}</Text>
+                    </FormErrorMessage>
+                  </Box>
                 </Box>
-              </Box>
-            </FormControl>
-            {/* email */}
-            <FormControl
-              isInvalid={formField === "email" && formik.errors.email}
-            >
-              <Box
-                className={`inputbox ${
-                  formik.values.email ? "input-has-value" : ""
-                }`}
-              >
-                <InputGroup size="md">
-                  <Input
-                    id="email"
-                    value={formik.values.email}
-                    onChange={inputHandler}
-                    isDisabled
-                  />
-                  <label>Email</label>
-                  <InputRightElement width="4rem">
-                    <Icon as={EmailIcon} />
-                  </InputRightElement>
-                </InputGroup>
-              </Box>
-            </FormControl>
-            {/* phone */}
+              </FormControl>
+            ))}
           </Box>
           <Box className="form-profile">
             <FormControl
@@ -250,76 +248,42 @@ export default function ProfilePage() {
             </Box>
             <Box display={boxPass ? "flex" : "none"} flexDir={"column"} gap={5}>
               <Box className="form-profile">
-                {/* old password */}
-                <FormControl
-                  isInvalid={
-                    formField === "oldPassword" && formik2.errors.oldPassword
-                  }
-                >
-                  <Box
-                    className={`inputbox ${
-                      formik2.values.oldPassword ? "input-has-value" : ""
-                    }`}
+                {inputPass.map((val) => (
+                  <FormControl
+                    key={val.id}
+                    isInvalid={formField === val.id && formik2.errors[val.id]}
                   >
-                    <InputGroup size="md">
-                      <Input
-                        id="oldPassword"
-                        value={formik2.values.oldPassword}
-                        onChange={inputHandler2}
-                        type={show ? "text" : "password"}
-                        border={"2px"}
-                        borderRadius={0}
-                      />
-                      <label>oldPassword</label>
-                      <InputRightElement width="4rem">
-                        <Button h="1.75rem" size="sm" onClick={handleClick}>
-                          {show ? <ViewOffIcon /> : <ViewIcon />}
-                        </Button>
-                      </InputRightElement>
-                    </InputGroup>
-                    <Box>
-                      <FormErrorMessage>
-                        <Icon as={TbAlertCircleFilled} w="16px" h="16px" />
-                        <Text fontSize={10}>{formik2.errors.oldPassword}</Text>
-                      </FormErrorMessage>
+                    <Box
+                      className={`inputbox ${
+                        formik2.values[val.id] ? "input-has-value" : ""
+                      }`}
+                    >
+                      <InputGroup size="md">
+                        <Input
+                          id={val.id}
+                          name={val.id}
+                          value={formik2.values[val.id]}
+                          onChange={inputHandler2}
+                          type={val.type ? "text" : "password"}
+                          border={"2px"}
+                          borderRadius={0}
+                        />
+                        <label>{val.id}</label>
+                        <InputRightElement width="4rem">
+                          <Button h="1.75rem" size="sm" onClick={val.handle}>
+                            {val.type ? <ViewOffIcon /> : <ViewIcon />}
+                          </Button>
+                        </InputRightElement>
+                      </InputGroup>
+                      <Box>
+                        <FormErrorMessage>
+                          <Icon as={TbAlertCircleFilled} w="16px" h="16px" />
+                          <Text fontSize={10}>{formik2.errors[val.id]}</Text>
+                        </FormErrorMessage>
+                      </Box>
                     </Box>
-                  </Box>
-                </FormControl>
-                {/* new password */}
-                <FormControl
-                  isInvalid={
-                    formField === "newPassword" && formik2.errors.newPassword
-                  }
-                >
-                  <Box
-                    className={`inputbox ${
-                      formik2.values.newPassword ? "input-has-value" : ""
-                    }`}
-                  >
-                    <InputGroup size="md">
-                      <Input
-                        id="newPassword"
-                        value={formik2.values.newPassword}
-                        onChange={inputHandler2}
-                        type={show1 ? "text" : "password"}
-                        border={"2px"}
-                        borderRadius={0}
-                      />
-                      <label>New Password</label>
-                      <InputRightElement width="4rem">
-                        <Button h="1.75rem" size="sm" onClick={handleClick1}>
-                          {show1 ? <ViewOffIcon /> : <ViewIcon />}
-                        </Button>
-                      </InputRightElement>
-                    </InputGroup>
-                    <Box>
-                      <FormErrorMessage>
-                        <Icon as={TbAlertCircleFilled} w="16px" h="16px" />
-                        <Text fontSize={10}>{formik2.errors.newPassword}</Text>
-                      </FormErrorMessage>
-                    </Box>
-                  </Box>
-                </FormControl>
+                  </FormControl>
+                ))}
               </Box>
               <Button
                 id="button"

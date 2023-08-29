@@ -1,7 +1,7 @@
 import { Box, Flex, Text, Image, Center } from "@chakra-ui/react";
 import { useFetchCategory } from "../../hooks/useFetchCategory";
 import { Link } from "react-router-dom";
-
+// ------------------------------------------------------ CLEAR -FAHMI
 export default function Category() {
   const { categories } = useFetchCategory();
 

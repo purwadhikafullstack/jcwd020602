@@ -14,7 +14,7 @@ import React from "react";
 export default function DoneOrderAlert(props) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const doneRef = React.useRef();
+  const cancelRef = React.useRef();
 
   return (
     <>
@@ -24,11 +24,11 @@ export default function DoneOrderAlert(props) {
         style={{ fontSize: "14px" }}
       >
         {" "}
-        Done Order{" "}
+        Done{" "}
       </button>
 
       <AlertDialog
-        leastDestructiveRef={doneRef}
+        leastDestructiveRef={cancelRef}
         onClose={onClose}
         isOpen={isOpen}
         isCentered
@@ -36,13 +36,13 @@ export default function DoneOrderAlert(props) {
         <AlertDialogOverlay />
 
         <AlertDialogContent>
-          <AlertDialogHeader>Done Order?</AlertDialogHeader>
+          <AlertDialogHeader>Order Done?</AlertDialogHeader>
           <AlertDialogCloseButton />
           <AlertDialogBody>
-            Are you sure you want to complete this order?
+            Are you sure you already got the order?
           </AlertDialogBody>
           <AlertDialogFooter>
-            <Button ref={doneRef} onClick={onClose}>
+            <Button ref={cancelRef} onClick={onClose}>
               Close
             </Button>
             <Button
@@ -50,11 +50,11 @@ export default function DoneOrderAlert(props) {
                 props.doneOrder(props.id);
                 onClose();
               }}
-              colorScheme="red"
+              colorScheme="green"
               bgColor={"black"}
               ml={3}
             >
-              Order Done
+              Yes
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>

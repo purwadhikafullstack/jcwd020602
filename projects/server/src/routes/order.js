@@ -33,6 +33,11 @@ router.patch(
   fileUploader({ destinationFolder: "paymentProof" }).single("payment_proof"),
   orderController.paymentProof
 );
+router.patch(
+  "/doneOrder/:id",
+  orderController.getOrderById,
+  orderController.doneOrderUser
+);
 router.get(
   "/admin",
   userTokenDecoder.checkAdmin,

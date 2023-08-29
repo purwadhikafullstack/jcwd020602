@@ -5,10 +5,11 @@ import { AccordionButton, AccordionPanel, Drawer } from "@chakra-ui/react";
 import { AccordionIcon, Box, Flex, Image } from "@chakra-ui/react";
 import { Link, useLocation } from "react-router-dom";
 import logo from "../../assets/newlogo.png";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function Sidebar(props) {
   const dispatch = useDispatch();
+  const userSelector = useSelector((state) => state.auth);
   return (
     <>
       <Drawer isOpen={props.isOpen} placement={"left"} onClose={props.onClose}>
@@ -143,13 +144,17 @@ export default function Sidebar(props) {
                 </AccordionPanel>
               </AccordionItem>
 
-              <Link to="/usersettings">
-                <AccordionItem className="accordion-item">
-                  <AccordionButton _expanded={{ bg: "black", color: "white" }}>
-                    <Box fontWeight={"bold"}>User Settings</Box>
-                  </AccordionButton>
-                </AccordionItem>
-              </Link>
+              {userSelector.role === "SUPERADMIN" ? (
+                <Link to="/usersettings">
+                  <AccordionItem className="accordion-item">
+                    <AccordionButton
+                      _expanded={{ bg: "black", color: "white" }}
+                    >
+                      <Box fontWeight={"bold"}>User Settings</Box>
+                    </AccordionButton>
+                  </AccordionItem>
+                </Link>
+              ) : null}
 
               <AccordionItem
                 className="accordion-item"

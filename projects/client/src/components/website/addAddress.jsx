@@ -9,7 +9,7 @@ import { TbAlertCircleFilled } from "react-icons/tb";
 import * as Yup from "yup";
 import { useState } from "react";
 import { api } from "../../api/api";
-
+// ------------------------------------------------------ CLEAR -FAHMI
 export default function AddAddress(props) {
   const toast = useToast({ duration: 3000, isClosable: true, position: "top" });
   const { provinces } = useFetchProv();
@@ -81,12 +81,13 @@ export default function AddAddress(props) {
 
   return (
     <Modal
+      scrollBehavior="inside"
       closeOnOverlayClick={false}
       isOpen={props.isOpen}
       onClose={clearData}
     >
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent mx={2}>
         <ModalHeader>ADD ADDRESS</ModalHeader>
         <ModalCloseButton />
         <ModalBody display={"flex"} flexDir={"column"} gap={5}>

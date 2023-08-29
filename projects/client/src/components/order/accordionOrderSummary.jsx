@@ -15,7 +15,7 @@ export default function AccordionOrderSumary(props) {
   return (
     <Accordion allowToggle id="accordion-summary" display={"none"}>
       <AccordionItem border={"2px"}>
-        <AccordionButton>
+        <AccordionButton p={2}>
           <Box
             as="span"
             flex="1"
@@ -25,6 +25,7 @@ export default function AccordionOrderSumary(props) {
           >
             SUMMARY
           </Box>
+          Rp. {props.totalOrder.toLocaleString("id-ID")}
           <AccordionIcon />
         </AccordionButton>
         <AccordionPanel px={1}>

@@ -9,12 +9,15 @@ import {
   Text,
   Button,
   useToast,
+  Skeleton,
 } from "@chakra-ui/react";
 import Footer from "../components/website/footer";
 import { Recommend } from "../components/website/carousel";
 import { useDispatch, useSelector } from "react-redux";
 import { addProduct, getCarts } from "../redux/cart";
 import Navbar from "../components/website/navbar";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import "react-lazy-load-image-component/src/effects/blur.css";
 
 export default function ProductDetailPage() {
   const loc = useLocation();
@@ -30,7 +33,6 @@ export default function ProductDetailPage() {
   const [category, setCategory] = useState();
   const [shoeId, setShoeId] = useState();
   const [sizeAndStock, setSizeAndStock] = useState();
-
   useEffect(() => {
     getShoe();
   }, [name]);
@@ -57,7 +59,6 @@ export default function ProductDetailPage() {
         size,
       })
     );
-    dispatch(getCarts());
   };
 
   return (
@@ -85,6 +86,7 @@ export default function ProductDetailPage() {
             objectFit={"cover"}
             w={"100%"}
           />
+
           <Flex pos={"absolute"} gap={2} mt={2}>
             {shoe?.ShoeImages?.map((val, idx) => (
               <Box
@@ -143,7 +145,7 @@ export default function ProductDetailPage() {
                     </Button>
                   ) : (
                     <Button
-                      isActive={size === val.size}
+                      isActive={size == val.size}
                       _active={{ bg: "black", color: "white" }}
                       variant={"outline"}
                       border={"1px"}
