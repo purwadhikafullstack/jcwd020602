@@ -23,7 +23,6 @@ export default function OrderDetailsModal(props) {
   const inputFileRef = useRef(null);
   const [SelectedFile, setSelectedFile] = useState(null);
   const paymentProofModal = useDisclosure();
-
   const formatDate = (isoDate) => {
     const options = {
       weekday: "long",
@@ -51,7 +50,6 @@ export default function OrderDetailsModal(props) {
       console.log(err.response?.data);
     }
   };
-
   return (
     <Modal
       scrollBehavior="inside"
@@ -121,7 +119,6 @@ export default function OrderDetailsModal(props) {
                 >
                   Batas Akhir Pembayaran
                 </Text>
-
                 <Text
                   key={props.val.id}
                   fontSize={"sm"}
@@ -130,7 +127,6 @@ export default function OrderDetailsModal(props) {
                 >
                   {formatDate(props.val.last_payment_date)}
                 </Text>
-
                 <Flex
                   w={"85%"}
                   h={"50px"}
@@ -175,7 +171,6 @@ export default function OrderDetailsModal(props) {
               onClose={paymentProofModal.onClose}
             />
           </Center>
-
           <Flex w={"100%"} flexDir={"column"} mt={"10px"}>
             <Text fontWeight={"bold"}>Detail Produk</Text>
             {props.val?.orderDetails

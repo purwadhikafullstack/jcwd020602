@@ -13,6 +13,7 @@ const cartController = {
       const pageSize = req.query.pageSize || 10;
       const cartsData = await db.Cart.findAndCountAll({
         where: { user_id },
+        distinct:true,
         include: [
           {
             model: db.Shoe,
@@ -136,6 +137,7 @@ const cartController = {
       }
       const cartsData = await db.Cart.findAndCountAll({
         where: { user_id },
+        distinct:true,
         include: [
           {
             model: db.Shoe,
@@ -188,6 +190,7 @@ const cartController = {
 
       const cartsData = await db.Cart.findAndCountAll({
         where: { user_id },
+        distinct:true,
         include: [
           {
             model: db.Shoe,

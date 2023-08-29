@@ -34,6 +34,11 @@ router.patch(
   orderController.getOrderById,
   orderController.rejectPaymentProof
 );
+router.patch(
+  "/doneOrder/:id",
+  orderController.getOrderById,
+  orderController.doneOrderUser
+);
 router.get(
   "/admin",
   userTokenDecoder.checkAdmin,
