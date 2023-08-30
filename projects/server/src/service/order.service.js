@@ -52,34 +52,40 @@ module.exports = {
             include: [
               {
                 model: db.Stock,
+                paranoid: false,
                 attributes: {
                   exclude: ["createdAt", "updatedAt", "deletedAt"],
                 },
                 include: [
                   {
                     model: db.Shoe,
+                    paranoid: false,
                     attributes: ["id", "name", "price"],
                     include: {
                       model: db.ShoeImage,
+                      paranoid: false,
                       attributes: ["shoe_img"],
                       limit: 1,
                     },
                   },
                   {
                     model: db.ShoeSize,
+                    paranoid: false,
                     attributes: ["size"],
                   },
                 ],
               },
             ],
           },
-          { model: db.User, attributes: ["name"] },
+          { model: db.User, attributes: ["name"], paranoid: false },
           {
             model: db.Address,
+            paranoid: false,
             attributes: { exclude: ["createdAt", "updatedAt", "deletedAt"] },
             include: [
               {
                 model: db.City,
+                paranoid: false,
                 attributes: ["type", "city_name", "province", "postal_code"],
               },
             ],
@@ -128,34 +134,40 @@ module.exports = {
             include: [
               {
                 model: db.Stock,
+                paranoid: false,
                 attributes: {
                   exclude: ["createdAt", "updatedAt", "deletedAt"],
                 },
                 include: [
                   {
                     model: db.Shoe,
+                    paranoid: false,
                     attributes: ["id", "name", "price", "weight"],
                     include: {
                       model: db.ShoeImage,
+                      paranoid: false,
                       attributes: ["shoe_img"],
                       limit: 1,
                     },
                   },
                   {
                     model: db.ShoeSize,
+                    paranoid: false,
                     attributes: ["size"],
                   },
                 ],
               },
             ],
           },
-          { model: db.User, attributes: ["name"] },
+          { model: db.User, attributes: ["name"], paranoid: false },
           {
             model: db.Address,
+            paranoid: false,
             attributes: { exclude: ["createdAt", "updatedAt", "deletedAt"] },
             include: [
               {
                 model: db.City,
+                paranoid: false,
                 attributes: ["type", "city_name", "province", "postal_code"],
               },
             ],
@@ -215,29 +227,35 @@ module.exports = {
             include: [
               {
                 model: db.Stock,
+                paranoid: false,
                 include: [
                   {
                     model: db.Shoe,
+                    paranoid: false,
                     attributes: ["id", "name"],
-                    // as: "Shoes",
                     include: [
                       {
                         model: db.ShoeImage,
+                        paranoid: false,
                         attributes: ["id", "shoe_img"],
                         limit: 1,
                       },
                     ],
                   },
-                  { model: db.ShoeSize, attributes: ["id", "size"] },
+                  {
+                    model: db.ShoeSize,
+                    attributes: ["id", "size"],
+                    paranoid: false,
+                  },
                 ],
               },
             ],
           },
-          { model: db.User, attributes: ["id", "name"] },
-          { model: db.Address },
+          { model: db.User, attributes: ["id", "name"], paranoid: false },
+          { model: db.Address, paranoid: false },
         ],
         where: whereClause,
-        distinct:true,
+        distinct: true,
         order: [[...sort, body?.order]],
       });
       return {

@@ -4,6 +4,7 @@ const moment = require("moment");
 const include = [
   {
     model: db.Stock,
+    paranoid: false,
     attributes: {
       exclude: [
         "payment_proof",
@@ -18,16 +19,23 @@ const include = [
     include: [
       {
         model: db.Shoe,
+        paranoid: false,
         include: [
-          { model: db.Brand, attributes: ["name"] },
-          { model: db.ShoeImage, attributes: ["shoe_img"], limit: 1 },
+          { model: db.Brand, attributes: ["name"], paranoid: false },
+          {
+            model: db.ShoeImage,
+            attributes: ["shoe_img"],
+            limit: 1,
+            paranoid: false,
+          },
         ],
       },
     ],
   },
   {
     model: db.Order,
-    include: [{ model: db.User, attributes: ["name"] }],
+    paranoid: false,
+    include: [{ model: db.User, attributes: ["name"], paranoid: false }],
   },
 ];
 module.exports = {

@@ -28,18 +28,22 @@ module.exports = {
         include: [
           {
             model: db.Stock,
+            paranoid: false,
             include: [
               {
                 model: db.Shoe,
-                include: [{ model: db.Brand }],
+                paranoid: false,
+                include: [{ model: db.Brand, paranoid: false }],
               },
-              { model: db.ShoeSize },
+              { model: db.ShoeSize, paranoid: false },
               {
                 model: db.Warehouse,
+                paranoid: false,
                 include: [
                   {
                     model: db.City,
                     attributes: ["city_id", "city_name", "type"],
+                    paranoid: false,
                   },
                 ],
               },

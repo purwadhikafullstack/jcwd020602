@@ -138,9 +138,6 @@ export default function Sidebar(props) {
                   <Link to="/salesReport">
                     <Box id="asyu">Sales Report</Box>
                   </Link>
-                  <Link to="/">
-                    <Box id="asyu">blabla</Box>
-                  </Link>
                 </AccordionPanel>
               </AccordionItem>
 

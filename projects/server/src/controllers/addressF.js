@@ -60,7 +60,7 @@ const addressFControllers = {
     try {
       const user_id = req.user.id;
       const address = await db.Address.findAll({
-        include: [db.City],
+        include: [{ model: db.City, paranoid: false }],
         where: { user_id },
       });
       return res.status(200).send(address);

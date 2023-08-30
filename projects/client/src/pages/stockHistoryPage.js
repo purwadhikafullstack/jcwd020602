@@ -1,4 +1,4 @@
-import { Box, Flex, Select } from "@chakra-ui/react";
+import { Box, Center, Flex, Select, Spinner } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import Pagination from "../components/dashboard/pagination";
 import { useFetchStockHistory } from "../hooks/useFetchStockHistory";
@@ -25,7 +25,7 @@ export default function StockHistoryPage() {
   //pagination ------------------------------------------------------
   const [pages, setPages] = useState([]);
   const [shown, setShown] = useState({ page: 1 });
-  const { stockHistories } = useFetchStockHistory(filter);
+  const { stockHistories, isLoading } = useFetchStockHistory(filter);
   function pageHandler() {
     const output = [];
     for (let i = 1; i <= stockHistories.totalPages; i++) {
@@ -83,6 +83,7 @@ export default function StockHistoryPage() {
             />
             <Select
               onChange={(e) => {
+                setShown({ page: 1 });
                 setFilter({
                   ...filter,
                   brand_id: e.target.value,
@@ -95,7 +96,7 @@ export default function StockHistoryPage() {
               <option key={""} value={""}>
                 choose brand..
               </option>
-              {brands &&
+              {brands?.length &&
                 brands?.map((val, idx) => (
                   <option key={val?.id} value={val?.id}>
                     {val?.name}
@@ -138,10 +139,18 @@ export default function StockHistoryPage() {
               </option>
             </Select>
           </Box>
-          {/* tampilan mobile card */}
-          <CardHistory stockHistories={stockHistories} />
-          {/* tampilan desktop table */}
-          <TableHistory stockHistories={stockHistories} />
+          {isLoading ? (
+            <Center border={"1px"} h={"550px"}>
+              <Spinner />
+            </Center>
+          ) : (
+            <>
+              {/* tampilan mobile card */}
+              <CardHistory stockHistories={stockHistories} />
+              {/* tampilan desktop table */}
+              <TableHistory stockHistories={stockHistories} />
+            </>
+          )}
           <Flex p={2} m={2} justify={"center"} border={"2px"}>
             <Pagination
               shown={shown}

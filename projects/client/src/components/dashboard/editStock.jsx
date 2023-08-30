@@ -1,4 +1,10 @@
-import { ModalOverlay, ModalContent, ModalHeader } from "@chakra-ui/react";
+import {
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  Spinner,
+  Center,
+} from "@chakra-ui/react";
 import { ModalFooter, ModalBody, ModalCloseButton } from "@chakra-ui/react";
 import { Button, Input, Select, useToast, Box, Modal } from "@chakra-ui/react";
 import { FormControl, FormLabel, NumberInput } from "@chakra-ui/react";
@@ -9,9 +15,9 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { useFetchStockId } from "../../hooks/useFetchStock";
 export default function EditStock(props) {
+  const [isLoadingButton, setIsLoadingButton] = useState(false);
   const toast = useToast();
-  const [isLoading, setIsLoading] = useState(false);
-  const { stock, setStock } = useFetchStockId(props.id);
+  const { stock, setStock, isLoading } = useFetchStockId(props.id);
   const formik = useFormik({
     initialValues: {
       stock: 1,
@@ -32,7 +38,6 @@ export default function EditStock(props) {
           position: "top",
         });
         props.fetch();
-        clearData();
       } catch (err) {
         toast({
           title: `${err?.response?.status} ${
@@ -42,6 +47,9 @@ export default function EditStock(props) {
           duration: 9000,
           isClosable: true,
         });
+      } finally {
+        setIsLoadingButton(false);
+        clearData();
       }
     },
   });
@@ -67,90 +75,93 @@ export default function EditStock(props) {
         <ModalContent>
           <ModalHeader p={2}>Edit Stock</ModalHeader>
           <ModalCloseButton />
-          <ModalBody display={"flex"} flexDir={"column"} gap={2}>
-            <form onSubmit={formik.handleSubmit}>
-              <FormControl
-                mb={2}
-                id="stock"
-                value={formik.values.stock}
-                onChange={inputHandler}
-                isInvalid={formik.touched.stock && formik.errors.stock}
-              >
-                <FormLabel>Stock:</FormLabel>
-                <NumberInput min={1} value={formik.values.stock}>
-                  <NumberInputField />
-                </NumberInput>
-                <FormErrorMessage>{formik.errors.stock}</FormErrorMessage>
-              </FormControl>
-              <FormControl mb={2} id="shoe_id" value={formik.values.shoe_id}>
-                <FormLabel>Shoe:</FormLabel>
-                <Select
-                  key={formik.values.shoe_id}
-                  defaultValue={formik.values.shoe_id}
-                  disabled
+          {isLoading ? (
+            <Center w={"100%"} h={"100%"}>
+              <Spinner />
+            </Center>
+          ) : (
+            <ModalBody display={"flex"} flexDir={"column"} gap={2}>
+              <form onSubmit={formik.handleSubmit}>
+                <FormControl
+                  mb={2}
+                  id="stock"
+                  value={formik.values.stock}
+                  onChange={inputHandler}
+                  isInvalid={formik.touched.stock && formik.errors.stock}
                 >
-                  <option
-                    key={formik.values?.Sho?.id}
-                    value={formik.values?.Sho?.id}
-                    selected
+                  <FormLabel>Stock:</FormLabel>
+                  <NumberInput min={1} value={formik.values.stock}>
+                    <NumberInputField />
+                  </NumberInput>
+                  <FormErrorMessage>{formik.errors.stock}</FormErrorMessage>
+                </FormControl>
+                <FormControl mb={2} id="shoe_id" value={formik.values.shoe_id}>
+                  <FormLabel>Shoe:</FormLabel>
+                  <Select
+                    key={formik.values.shoe_id}
+                    defaultValue={formik.values.shoe_id}
+                    disabled
                   >
-                    {formik.values?.Sho?.name}
-                  </option>
-                </Select>
-              </FormControl>
-              <FormControl
-                mb={2}
-                id="shoe_size_id"
-                value={formik.values.shoe_size_id}
-              >
-                <FormLabel>Shoe Size:</FormLabel>
-                <Select
-                  key={formik.values.shoe_size_id}
-                  defaultValue={formik.values.shoe_size_id}
-                  disabled
+                    <option
+                      key={formik.values?.Sho?.id}
+                      value={formik.values?.Sho?.id}
+                      selected
+                    >
+                      {formik.values?.Sho?.name}
+                    </option>
+                  </Select>
+                </FormControl>
+                <FormControl
+                  mb={2}
+                  id="shoe_size_id"
+                  value={formik.values.shoe_size_id}
                 >
-                  <option
-                    key={formik.values?.shoeSize?.id}
-                    value={formik.values?.shoeSize?.id}
-                    selected
+                  <FormLabel>Shoe Size:</FormLabel>
+                  <Select
+                    key={formik.values.shoe_size_id}
+                    defaultValue={formik.values.shoe_size_id}
+                    disabled
                   >
-                    {formik.values?.shoeSize?.size}
-                  </option>
-                </Select>
-              </FormControl>
-              <FormControl
-                mb={2}
-                id="warehouse_id"
-                value={formik.values.warehouse_id}
-              >
-                <FormLabel>Warehouse Name:</FormLabel>
-                <Select
-                  key={formik.values.warehouse_id}
-                  defaultValue={formik.values.warehouse_id}
+                    <option
+                      key={formik.values?.shoeSize?.id}
+                      value={formik.values?.shoeSize?.id}
+                      selected
+                    >
+                      {formik.values?.shoeSize?.size}
+                    </option>
+                  </Select>
+                </FormControl>
+                <FormControl
+                  mb={2}
+                  id="warehouse_id"
                   value={formik.values.warehouse_id}
-                  disabled
                 >
-                  <option
-                    key={formik.values?.warehouse?.id}
-                    value={formik.values?.warehouse?.id}
-                    selected
+                  <FormLabel>Warehouse Name:</FormLabel>
+                  <Select
+                    key={formik.values.warehouse_id}
+                    defaultValue={formik.values.warehouse_id}
+                    value={formik.values.warehouse_id}
+                    disabled
                   >
-                    {formik.values?.warehouse?.name}
-                  </option>
-                </Select>
-              </FormControl>
-            </form>
-          </ModalBody>
+                    <option
+                      key={formik.values?.warehouse?.id}
+                      value={formik.values?.warehouse?.id}
+                      selected
+                    >
+                      {formik.values?.warehouse?.name}
+                    </option>
+                  </Select>
+                </FormControl>
+              </form>
+            </ModalBody>
+          )}
           <ModalFooter>
             <Button onClick={clearData}>Cancel</Button>
             <Button
-              isLoading={isLoading}
+              isLoading={isLoadingButton}
               onClick={() => {
-                setIsLoading(true);
-                setTimeout(() => {
-                  setIsLoading(false);
-                  formik.handleSubmit();
-                }, 2000);
+                setIsLoadingButton(true);
+                formik.handleSubmit();
               }}
             >
               confirm

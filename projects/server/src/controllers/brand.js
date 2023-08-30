@@ -52,7 +52,7 @@ const brandController = {
       const offset = (parseInt(page) - 1) * limit;
 
       const brand = await db.Brand.findAndCountAll({
-        include: [db.Shoe],
+        include: [{ model: db.Shoe, paranoid: false }],
         where: { name: { [Op.like]: `%${search}%` } },
         distinct: true,
         limit,

@@ -24,7 +24,7 @@ export default function OrderListPage() {
   //pagination ------------------------------------------------------
   const [pages, setPages] = useState([]);
   const [shown, setShown] = useState({ page: 1 });
-  const { orders, fetchOrdersList } = useFetchOrderList(filter);
+  const { orders } = useFetchOrderList(filter);
   function pageHandler() {
     const output = [];
     for (let i = 1; i <= orders.totalPages; i++) {

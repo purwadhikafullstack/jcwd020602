@@ -1,8 +1,7 @@
-import { Box, Button, ButtonGroup, IconButton } from "@chakra-ui/react";
-import { Flex, Select, useDisclosure } from "@chakra-ui/react";
+import { ButtonGroup, Center, IconButton, Spinner } from "@chakra-ui/react";
+import { Box, Button, Flex, Select, useDisclosure } from "@chakra-ui/react";
 import { AiOutlinePlus } from "react-icons/ai";
 import AddStock from "../components/dashboard/addStock";
-import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { useFetchStock } from "../hooks/useFetchStock";
 import Pagination from "../components/dashboard/pagination";
@@ -18,7 +17,6 @@ export default function InventoryPage() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const deleteS = useDisclosure();
   const editS = useDisclosure();
-  const userSelector = useSelector((state) => state.auth);
   const { brands } = useFetchSelectBrand();
   const [stockId, setStockId] = useState();
   const [wareAdmin, setWareAdmin] = useState({});
@@ -33,7 +31,7 @@ export default function InventoryPage() {
   //pagination ------------------------------------------------------
   const [pages, setPages] = useState([]);
   const [shown, setShown] = useState({ page: 1 });
-  const { stocks, fetch } = useFetchStock(filter);
+  const { stocks, fetch, isLoading } = useFetchStock(filter);
   function pageHandler() {
     const output = [];
     for (let i = 1; i <= stocks?.totalPages; i++) {
@@ -99,6 +97,7 @@ export default function InventoryPage() {
             />
             <Select
               onChange={(e) => {
+                setShown({ page: 1 });
                 setFilter({
                   ...filter,
                   brand_id: e.target.value,
@@ -111,7 +110,7 @@ export default function InventoryPage() {
               <option key={""} value={""}>
                 choose brand..
               </option>
-              {brands &&
+              {brands?.length &&
                 brands?.map((val, idx) => (
                   <option key={val?.id} value={val?.id}>
                     {val?.name}
@@ -149,20 +148,26 @@ export default function InventoryPage() {
               <option value={"DESC"}>DESC</option>
             </Select>
           </Box>
-          {/* tampilan mobile card */}
-          <CardStock
-            stocks={stocks}
-            setStockId={setStockId}
-            editS={editS}
-            deleteS={deleteS}
-          />
-          {/* tampilan desktop table */}
-          <TableStock
-            stocks={stocks}
-            setStockId={setStockId}
-            editS={editS}
-            deleteS={deleteS}
-          />
+          {isLoading ? (
+            <Center border={"1px"} h={"550px"}>
+              <Spinner />
+            </Center>
+          ) : (
+            <>
+              <CardStock
+                stocks={stocks}
+                setStockId={setStockId}
+                editS={editS}
+                deleteS={deleteS}
+              />
+              <TableStock
+                stocks={stocks}
+                setStockId={setStockId}
+                editS={editS}
+                deleteS={deleteS}
+              />
+            </>
+          )}
           <Flex p={2} m={2} justify={"center"} border={"2px"}>
             <EditStock
               id={stockId}

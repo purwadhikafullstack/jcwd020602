@@ -3,17 +3,18 @@ import { api } from "../api/api";
 import { useSelector } from "react-redux";
 
 export const useFetchStockMutation = (filter) => {
+  const [isLoading, setIsLoading] = useState(false);
   const userSelector = useSelector((state) => state.auth);
   const [stockMutations, setStockMutations] = useState({ rows: [] });
   const fetch = async () => {
+    setIsLoading(true);
     try {
-      await api()
-        .get("/stockMutations", { params: filter })
-        .then((res) => {
-          setStockMutations(res.data);
-        });
+      const resMutation = await api().get("/stockMutations", {
+        params: filter,
+      });
+      setStockMutations(resMutation.data);
     } catch (err) {
-      return err;
+      setStockMutations({ rows: [] });
     }
   };
   useEffect(() => {
@@ -21,5 +22,8 @@ export const useFetchStockMutation = (filter) => {
       fetch();
     }
   }, [filter]);
-  return { stockMutations, fetch };
+  useEffect(() => {
+    setIsLoading(false);
+  }, [stockMutations]);
+  return { stockMutations, fetch, isLoading };
 };

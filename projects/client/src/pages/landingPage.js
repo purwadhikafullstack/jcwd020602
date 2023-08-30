@@ -36,7 +36,6 @@ export default function LandingPage() {
           transform={"rotate(-40deg)"}
           zIndex={0}
         />
-
         <Image
           src={converse}
           pos={"fixed"}
