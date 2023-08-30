@@ -182,7 +182,7 @@ module.exports = {
           );
           compiledTemplate = handlebars.compile(template);
           html = compiledTemplate({
-            registrationLink: `${process.env.URL}/verify/${generateToken}`,
+            registrationLink: `${process.env.URL}verify/${generateToken}`,
             email,
           });
           break;
@@ -194,7 +194,7 @@ module.exports = {
           );
           compiledTemplate = handlebars.compile(template);
           html = compiledTemplate({
-            registrationLink: `${process.env.URL}/forgot-password/${generateToken}`,
+            registrationLink: `${process.env.URL}forgot-password/${generateToken}`,
           });
           break;
       }
