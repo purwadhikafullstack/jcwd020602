@@ -26,7 +26,7 @@ export default function ProtectedPage({
       !(
         userSelector.role == "ADMIN" ||
         userSelector.role == "SUPERADMIN" ||
-        userSelector.role == "" ||
+        !userSelector.role ||
         userSelector.role == "USER"
       )
     ) {

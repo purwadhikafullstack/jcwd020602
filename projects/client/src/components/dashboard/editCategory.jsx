@@ -6,7 +6,7 @@ import { api } from "../../api/api";
 
 export function EditCategory(props) {
   const [isLoading, setIsLoading] = useState(false);
-  const toast = useToast();
+  const toast = useToast({ position: "top", duration: 3000, isClosable: true });
   const [category, setCategory] = useState();
   const [selectedFile, setSelectedFile] = useState();
   const [image, setImage] = useState();
@@ -34,12 +34,14 @@ export function EditCategory(props) {
       toast({
         title: res.data.message,
         status: "success",
-        position: "top",
       });
       props.fetch();
       clearS();
     } catch (err) {
-      console.log(err.response.data);
+      toast({
+        title: err?.response?.data?.message,
+        status: "error",
+      });
     }
   };
 

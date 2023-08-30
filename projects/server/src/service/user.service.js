@@ -119,11 +119,10 @@ module.exports = {
       return err;
     }
   },
-  addAdmin: async (body, file, t) => {
+  addAdmin: async (body, filename, t) => {
     try {
-      const { filename } = file;
       const hashPassword = await bcrypt.hash(body.password, 10);
-      return await db.User.create(
+      const admin = await db.User.create(
         {
           name: body.name,
           email: body.email,
@@ -135,6 +134,7 @@ module.exports = {
         },
         { transaction: t }
       );
+      return admin;
     } catch (err) {
       return err;
     }

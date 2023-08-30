@@ -283,11 +283,11 @@ const shoeController = {
         where: { shoe_id: req.params.id },
       });
       const checkName = await db.Shoe.findOne({
-        where: { name: req?.body?.name },
+        where: { name: req?.body?.name, id: { [Op.not]: req.params.id } },
       });
 
       if (checkName) {
-        if (req.files) {
+        if (req.files.length) {
           try {
             for (const file of req.files) {
               const { filename } = file;
@@ -326,30 +326,19 @@ const shoeController = {
           transaction: t,
         });
         await db.ShoeImage.bulkCreate(imageArr, { transaction: t });
-      }
 
-      if (check?.length > 1) {
-        const images = check.map((image) => image.shoe_img);
-        for (img of images) {
-          try {
-            fs.unlinkSync(
-              path.join(__dirname, `../public/shoe/${img.split("/")[1]}`)
-            );
-            console.log(`berhasil delete sepatu ${img}`);
-          } catch (err) {
-            console.log(err.message);
+        if (check?.length) {
+          const images = check.map((image) => image.shoe_img);
+          for (img of images) {
+            try {
+              fs.unlinkSync(
+                path.join(__dirname, `../public/shoe/${img.split("/")[1]}`)
+              );
+              console.log(`berhasil delete sepatu ${img}`);
+            } catch (err) {
+              console.log(err);
+            }
           }
-        }
-      } else if (check?.length) {
-        try {
-          fs.unlinkSync(
-            path.join(
-              __dirname,
-              `../public/shoe/${check.shoe_img.split("/")[1]}`
-            )
-          );
-        } catch (err) {
-          console.log(err.message);
         }
       }
 

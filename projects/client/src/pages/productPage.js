@@ -330,9 +330,11 @@ export default function ProductPage() {
                 <EditProduct
                   id={shoeId}
                   isOpen={editModal.isOpen}
-                  onClose={editModal.onClose}
+                  onClose={() => {
+                    editModal.onClose();
+                    setShoeId(null);
+                  }}
                   fetch={fetch}
-                  setId={setShoeId}
                 />
               </Table>
             </TableContainer>

@@ -167,8 +167,11 @@ const categoryController = {
     try {
       const { name } = req.body;
       const check = await db.Category.findOne({ where: { id: req.params.id } });
+      const checkName = await db.Category.findOne({
+        where: { name, id: { [Op.not]: req.params.id } },
+      });
 
-      if (check) {
+      if (checkName) {
         if (filename) {
           try {
             fs.unlinkSync(

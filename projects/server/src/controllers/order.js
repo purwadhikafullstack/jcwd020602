@@ -149,12 +149,7 @@ const orderController = {
         if (req?.order?.payment_proof) {
           try {
             fs.unlinkSync(
-              path.join(
-                __dirname,
-                `../public/paymentProof/${
-                  req?.order?.payment_proof.split("/")[1]
-                }`
-              )
+              path.join(__dirname, `../public/${req?.order?.payment_proof}`)
             );
           } catch (err) {
             console.log(err);
@@ -362,10 +357,7 @@ const orderController = {
         });
         try {
           fs.unlinkSync(
-            path.join(
-              __dirname,
-              `../public/paymentProof/${req.order?.payment_proof}`
-            )
+            path.join(__dirname, `../public/${req.order?.payment_proof}`)
           );
         } catch (err) {
           console.log(err);
