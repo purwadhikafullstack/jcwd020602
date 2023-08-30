@@ -173,6 +173,10 @@
   border: 1px solid;
   padding: 5px;
 }
+/* .sepatu-detail {
+  height: 650px;
+  object-fit: cover;
+} */
 
 /*---------------------- cart ----------------------*/
 .cart-card {
@@ -367,6 +371,9 @@
   #accordion-summary {
     display: block;
   }
+  /* .sepatu-detail {
+    height: auto;
+  } */
 }
 
 @media (max-width: 630px) {

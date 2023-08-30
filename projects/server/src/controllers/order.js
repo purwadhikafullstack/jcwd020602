@@ -29,6 +29,7 @@ const {
 } = require("../service/stock.service");
 const { addStockHistory } = require("../service/stockHistory.service");
 const { Op } = require("sequelize");
+const path = require("path");
 
 const generateTransactionCode = () =>
   `ORD${moment().format("YYYYMMDDHHmmss")}${Math.floor(Math.random() * 10000)}`;
@@ -138,13 +139,29 @@ const orderController = {
   },
   paymentProof: async (req, res) => {
     const t = await db.sequelize.transaction();
+    const { filename } = req.file;
+
     try {
       const user_id = JSON.parse(req.user.id);
-      const { id } = req.body;
-      const { filename } = req.file;
-      if (req.order?.payment_proof) {
-        fs.unlinkSync(`${__dirname}../public/${req.order.payment_proof}`);
+      const { id } = req.params;
+
+      if (filename) {
+        if (req?.order?.payment_proof) {
+          try {
+            fs.unlinkSync(
+              path.join(
+                __dirname,
+                `../public/paymentProof/${
+                  req?.order?.payment_proof.split("/")[1]
+                }`
+              )
+            );
+          } catch (err) {
+            console.log(err);
+          }
+        }
       }
+
       await db.Order.update(
         {
           payment_proof: "paymentProof/" + filename,
@@ -157,6 +174,15 @@ const orderController = {
         .status(200)
         .send({ message: "succesfully upload payment proof" });
     } catch (err) {
+      if (filename) {
+        try {
+          fs.unlinkSync(
+            path.join(__dirname, `../public/paymentProof/${filename}`)
+          );
+        } catch (err) {
+          console.log(err);
+        }
+      }
       await t.rollback();
       res.status(500).send({
         message: err.message,
@@ -334,7 +360,16 @@ const orderController = {
           payment_proof: null,
           id: req.order?.id,
         });
-        fs.unlinkSync(`${__dirname}/../public/${req.order?.payment_proof}`);
+        try {
+          fs.unlinkSync(
+            path.join(
+              __dirname,
+              `../public/paymentProof/${req.order?.payment_proof}`
+            )
+          );
+        } catch (err) {
+          console.log(err);
+        }
       }
       await t.commit();
       return res

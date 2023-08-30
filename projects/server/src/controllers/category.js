@@ -3,6 +3,7 @@ const fs = require("fs");
 const { errorResponse } = require("../utils/function");
 const { CustomError } = require("../utils/customErrors");
 const { Op } = require("sequelize");
+const path = require("path");
 
 //-------------------------------------------------- DONE CLEAN CODE! -FAHMI
 const categoryController = {
@@ -15,7 +16,13 @@ const categoryController = {
 
       if (check) {
         if (filename) {
-          fs.unlinkSync(`${__dirname}/../public/category/${filename}`);
+          try {
+            fs.unlinkSync(
+              path.join(__dirname, `../public/category/${filename}`)
+            );
+          } catch (err) {
+            console.log(err);
+          }
         }
         return res.status(400).send({ message: "name alrdy exist" });
       }
@@ -29,7 +36,11 @@ const categoryController = {
       return res.status(200).send({ message: "success add Category" });
     } catch (err) {
       if (filename) {
-        fs.unlinkSync(`${__dirname}/../public/category/${filename}`);
+        try {
+          fs.unlinkSync(path.join(__dirname, `../public/category/${filename}`));
+        } catch (err) {
+          console.log(err);
+        }
       }
       await t.rollback();
       return res.status(500).send(err.message);
@@ -159,7 +170,13 @@ const categoryController = {
 
       if (check) {
         if (filename) {
-          fs.unlinkSync(`${__dirname}/../public/category/${filename}`);
+          try {
+            fs.unlinkSync(
+              path.join(__dirname, `../public/category/${filename}`)
+            );
+          } catch (err) {
+            console.log(err);
+          }
         }
         return res.status(400).send({ message: "name alrdy exist" });
       }
@@ -176,11 +193,18 @@ const categoryController = {
 
       if (check?.dataValues?.category_img) {
         if (filename) {
-          fs.unlinkSync(
-            `${__dirname}/../public/category/${
-              check.dataValues.category_img.split("/")[1]
-            }`
-          );
+          try {
+            fs.unlinkSync(
+              path.join(
+                __dirname,
+                `../public/category/${
+                  check.dataValues.category_img.split("/")[1]
+                }`
+              )
+            );
+          } catch (err) {
+            console.log(err);
+          }
         }
       }
 
@@ -188,7 +212,11 @@ const categoryController = {
       return res.status(200).send({ message: "success edit category" });
     } catch (err) {
       if (filename) {
-        fs.unlinkSync(`${__dirname}/../public/category/${filename}`);
+        try {
+          fs.unlinkSync(path.join(__dirname, `../public/category/${filename}`));
+        } catch (err) {
+          console.log(err);
+        }
       }
       await t.rollback();
       return res.status(500).send(err.message);
@@ -225,11 +253,18 @@ const categoryController = {
       });
 
       if (check?.dataValues?.category_img) {
-        fs.unlinkSync(
-          `${__dirname}/../public/category/${
-            check.dataValues.category_img.split("/")[1]
-          }`
-        );
+        try {
+          fs.unlinkSync(
+            path.join(
+              __dirname,
+              `../public/category/${
+                check.dataValues.category_img.split("/")[1]
+              }`
+            )
+          );
+        } catch (err) {
+          console.log(err);
+        }
       }
 
       await t.commit();

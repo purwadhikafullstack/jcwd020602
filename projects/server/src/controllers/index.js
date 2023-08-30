@@ -3,7 +3,6 @@ const provinceCityController = require("./province&city");
 const shoeController = require("./shoe");
 const categoryController = require("./category");
 const brandController = require("./brand");
-const addressController = require("./address");
 const userController = require("./user");
 const stockController = require("./stock");
 const shoeSizeController = require("./shoeSize");
@@ -17,7 +16,6 @@ const salesReportController = require("./salesReport");
 
 module.exports = {
   userController,
-  addressController,
   provinceCityController,
   warehouseController,
   shoeController,

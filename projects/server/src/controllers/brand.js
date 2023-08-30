@@ -3,6 +3,7 @@ const db = require("../models");
 const fs = require("fs");
 const { errorResponse } = require("../utils/function");
 const { CustomError } = require("../utils/customErrors");
+const path = require("path");
 
 //-------------------------------------------------- DONE CLEAN CODE! -FAHMI
 const brandController = {
@@ -16,7 +17,7 @@ const brandController = {
       if (check) {
         if (filenames) {
           filenames.forEach((filename) => {
-            fs.unlinkSync(`${__dirname}/../public/brand/${filename}`);
+            fs.unlinkSync(path.join(__dirname, `../public/brand/${filename}`));
           });
         }
         return res.status(400).send({ message: "name already exists." });
@@ -35,7 +36,7 @@ const brandController = {
     } catch (err) {
       if (filenames) {
         filenames.forEach((filename) => {
-          fs.unlinkSync(`${__dirname}/../public/brand/${filename}`);
+          fs.unlinkSync(path.join(__dirname, `../public/brand/${filename}`));
         });
       }
       await t.rollback();
@@ -52,7 +53,7 @@ const brandController = {
       const offset = (parseInt(page) - 1) * limit;
 
       const brand = await db.Brand.findAndCountAll({
-        include: [{ model: db.Shoe, paranoid: false }],
+        include: [db.Shoe],
         where: { name: { [Op.like]: `%${search}%` } },
         distinct: true,
         limit,
@@ -79,15 +80,31 @@ const brandController = {
     try {
       const check = await db.Brand.findOne({ where: { id: req.params.id } });
 
-      if (check?.dataValues?.logo_img) {
-        `${__dirname}/../public/brand/${
-          check?.dataValues?.logo_img.split("/")[1]
-        }`;
-      }
-      if (check?.dataValues?.brand_img) {
-        `${__dirname}/../public/brand/${
-          check?.dataValues?.brand_img.split("/")[1]
-        }`;
+      if (check) {
+        if (check?.dataValues?.logo_img) {
+          try {
+            fs.unlinkSync(
+              path.join(
+                __dirname,
+                `../public/brand/${check?.dataValues?.logo_img.split("/")[1]}`
+              )
+            );
+          } catch (err) {
+            console.log(err);
+          }
+        }
+        if (check?.dataValues?.brand_img) {
+          try {
+            fs.unlinkSync(
+              path.join(
+                __dirname,
+                `../public/brand/${check?.dataValues?.brand_img.split("/")[1]}`
+              )
+            );
+          } catch (err) {
+            console.log(err);
+          }
+        }
       }
 
       await db.Brand.destroy({ where: { id: req.params.id }, transaction: t });

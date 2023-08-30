@@ -14,6 +14,7 @@ const {
   mailerEmail,
 } = require("../service/user.service");
 const { Op } = require("sequelize");
+const path = require("path");
 
 const userController = {
   register: async (req, res) => {
@@ -185,9 +186,10 @@ const userController = {
         if (check?.dataValues?.avatar_url) {
           try {
             fs.unlinkSync(
-              `${__dirname}/../public/avatar/${
-                check.dataValues.avatar_url.split("/")[1]
-              }`
+              path.join(
+                __dirname,
+                `../public/avatar/${check.dataValues.avatar_url.split("/")[1]}`
+              )
             );
           } catch (err) {
             console.log(err);
@@ -201,7 +203,11 @@ const userController = {
         .send({ message: "Your changes has successfully saved" });
     } catch (err) {
       if (filename) {
-        fs.unlinkSync(`${__dirname}/../public/avatar/${filename}`);
+        try {
+          fs.unlinkSync(path.join(__dirname, `../public/avatar/${filename}`));
+        } catch (err) {
+          console.log(err);
+        }
       }
       await t.rollback();
       return res.status(500).send({ message: err.message });
@@ -235,7 +241,11 @@ const userController = {
 
       if (check) {
         if (filename) {
-          fs.unlinkSync(`${__dirname}/../public/avatar/${filename}`);
+          try {
+            fs.unlinkSync(path.join(__dirname, `../public/avatar/${filename}`));
+          } catch (err) {
+            console.log(err);
+          }
         }
         return res.status(400).send({ message: "email alrdy exist" });
       }
@@ -245,7 +255,11 @@ const userController = {
       return res.status(200).send({ message: "success add admin" });
     } catch (err) {
       if (filename) {
-        fs.unlinkSync(`${__dirname}/../public/avatar/${filename}`);
+        try {
+          fs.unlinkSync(path.join(__dirname, `../public/avatar/${filename}`));
+        } catch (err) {
+          console.log(err);
+        }
       }
       await t.rollback();
       return res.status(500).send({ message: err.message });
@@ -305,11 +319,16 @@ const userController = {
       await db.Admin.destroy({ where: { user_id: id } }, { transaction: t });
       await db.User.destroy({ where: { id } }, { transaction: t });
       if (check?.dataValues?.avatar_url) {
-        fs.unlinkSync(
-          `${__dirname}/../public/avatar/${
-            check.dataValues.avatar_url.split("/")[1]
-          }`
-        );
+        try {
+          fs.unlinkSync(
+            path.join(
+              __dirname,
+              `../public/avatar/${check.dataValues.avatar_url.split("/")[1]}`
+            )
+          );
+        } catch (err) {
+          console.log(err);
+        }
       }
       await t.commit();
       return res.status(200).send({ message: "success delete admin" });

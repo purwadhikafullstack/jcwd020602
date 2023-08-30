@@ -10,6 +10,7 @@ import {
   Button,
   useToast,
   Skeleton,
+  Spinner,
 } from "@chakra-ui/react";
 import Footer from "../components/website/footer";
 import { Recommend } from "../components/website/carousel";
@@ -81,10 +82,13 @@ export default function ProductDetailPage() {
           justify={"center"}
           border={"2px"}
         >
-          <Image
+          <LazyLoadImage
+            className="sepatu-detail"
+            effect="blur"
             src={`${process.env.REACT_APP_API_BASE_URL}/${shoe?.ShoeImages[selectedImage]?.shoe_img}`}
-            objectFit={"cover"}
-            w={"100%"}
+            width={"100%"}
+            delayMethod="debounce"
+            delayTime={2000}
           />
 
           <Flex pos={"absolute"} gap={2} mt={2}>

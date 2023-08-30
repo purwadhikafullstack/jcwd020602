@@ -31,6 +31,7 @@ router.patch(
   "/paymentProof/:id",
   userTokenDecoder.checkUser,
   fileUploader({ destinationFolder: "paymentProof" }).single("payment_proof"),
+  orderController.getOrderById,
   orderController.paymentProof
 );
 router.get(

@@ -115,7 +115,11 @@ module.exports = {
       if (body?.last_payment_date) {
         update.last_payment_date = body?.last_payment_date;
       }
-      return await db.Order.update(update, {
+      if (body.payment_proof == null) {
+        update.payment_proof = null;
+      }
+
+      return await db.Order.upproof(update, {
         where: { id: body?.id },
         transaction: body?.t,
       });
