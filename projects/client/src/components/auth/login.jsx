@@ -31,13 +31,11 @@ export default function Login() {
     try {
       const provider = new GoogleAuthProvider();
       const body = await signInWithPopup(auth, provider);
-      console.log(body.user);
       const res = await api().post(
         "/auth/login",
         { email: body.user.email, password: "AB!@12ab" },
         { params: body.user }
       );
-      console.log(res.data);
       localStorage.setItem("user", JSON.stringify(res.data.token));
       const restoken = await api().get("/auth/userbytoken", {
         headers: {
@@ -54,7 +52,6 @@ export default function Login() {
       });
       return nav("/");
     } catch (error) {
-      console.log(error);
       toast({
         title: error.response.data.message,
         status: "error",

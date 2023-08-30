@@ -26,7 +26,8 @@ export default function AssignAdmin(props) {
       props.onClose();
       setWarehouse_id(0);
     } catch (err) {
-      console.log(err.response.data);
+      setWarehouse_id(0);
+      props.onClose();
     }
   };
 
@@ -93,10 +94,11 @@ export function ReassignAdmin(props) {
       });
       props.fetch();
       fetch();
-      props.onClose();
       setWarehouse_id(0);
+      props.onClose();
     } catch (err) {
-      console.log(err.response.data);
+      setWarehouse_id(0);
+      props.onClose();
     }
   };
 
@@ -110,10 +112,11 @@ export function ReassignAdmin(props) {
       });
       props.fetch();
       fetch();
-      props.onClose();
       setWarehouse_id(0);
+      props.onClose();
     } catch (err) {
-      console.log(err.response.data);
+      setWarehouse_id(0);
+      props.onClose();
     }
   };
 

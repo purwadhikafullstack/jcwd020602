@@ -71,7 +71,6 @@ export default function EditProduct(props) {
       setShoe({});
       props.onClose();
     } catch (err) {
-      console.log(err);
       setIsLoading(false);
     }
   };

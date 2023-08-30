@@ -29,7 +29,7 @@ export default function DeleteWarehouse(props) {
       props.fetch();
       props.onClose();
     } catch (err) {
-      console.log(err.response.message);
+      props.onClose();
     }
   };
 

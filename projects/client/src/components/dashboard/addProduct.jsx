@@ -66,7 +66,7 @@ export default function AddShoe(props) {
       clear();
     } catch (err) {
       setIsLoading(false);
-      console.log(err);
+      clear();
     }
   };
 

@@ -34,16 +34,14 @@ export default function OrderDetailsModal(props) {
   };
   const handleFile = (event) => {
     setSelectedFile(event.target.files[0]);
-    console.log(event.target.files[0]);
   };
 
   const fetchVal = async () => {
     try {
       const fetch = await api().get("/orders/admin/" + props.val.id);
-      console.log(fetch.data);
       props.setVal(fetch.data.order);
     } catch (err) {
-      console.log(err.response?.data);
+      props.setVal(null);
     }
   };
 
@@ -56,7 +54,7 @@ export default function OrderDetailsModal(props) {
       fetchVal();
       alert("successfully upload payment proof");
     } catch (err) {
-      console.log(err.response?.data);
+      alert(err.response?.data);
     }
   };
   return (
@@ -289,7 +287,10 @@ export default function OrderDetailsModal(props) {
                 </Text>
                 <Flex flexDir={"column"} pl={"10px"}>
                   <Text fontSize={"sm"}>Bank Transfer</Text>
-                  <Text fontSize={"sm"}>Mandiri : <span style={{fontWeight:"bold"}}>0854 1123 2212</span></Text>
+                  <Text fontSize={"sm"}>
+                    Mandiri :{" "}
+                    <span style={{ fontWeight: "bold" }}>0854 1123 2212</span>
+                  </Text>
                 </Flex>
               </Flex>
               <Flex justify={"space-between"}>

@@ -28,7 +28,7 @@ export default function DeleteAdmin(props) {
       props.fetch();
       props.onClose();
     } catch (err) {
-      console.log(err.response.data);
+      props.onClose();
     }
   };
 

@@ -22,7 +22,6 @@ const QtyOption = ({ cartItem, onQuantityChange }) => {
         onQuantityChange(cartItem.id, parseInt(value));
       },
     });
-  // console.log(cartItem);
 
   const inc = getIncrementButtonProps();
   const dec = getDecrementButtonProps();

@@ -162,7 +162,7 @@ export function AddBrand(props) {
       props.fetch();
       clearB();
     } catch (err) {
-      console.log(err);
+      clearB();
     }
   };
 

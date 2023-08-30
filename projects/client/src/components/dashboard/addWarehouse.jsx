@@ -37,7 +37,7 @@ export default function AddWarehouse(props) {
       props.fetch();
       clearData();
     } catch (err) {
-      console.log(err.response.data);
+      clearData();
     }
   };
 

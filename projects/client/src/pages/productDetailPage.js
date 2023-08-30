@@ -24,7 +24,8 @@ export default function ProductDetailPage() {
   const [selectedImage, setSelectedImage] = useState(0);
   const [category, setCategory] = useState();
   const [shoeId, setShoeId] = useState();
-  const [sizeAndStock, setSizeAndStock] = useState();
+  const [sizeAndStock, setSizeAndStock] = useState([]);
+
   useEffect(() => {
     getShoe();
   }, [name]);
@@ -40,7 +41,8 @@ export default function ProductDetailPage() {
       setShoe(res.data.shoe);
       setSizeAndStock(res.data.sizeAndStock);
     } catch (err) {
-      console.log(err.response);
+      setShoe();
+      setSizeAndStock([]);
     }
   };
 

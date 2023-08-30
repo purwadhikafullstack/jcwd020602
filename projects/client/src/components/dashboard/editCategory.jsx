@@ -150,7 +150,7 @@ export function EditSubcategory(props) {
       props.fetch();
       clearS();
     } catch (err) {
-      console.log(err.response.data);
+      clearS();
     }
   };
 

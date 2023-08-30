@@ -49,12 +49,8 @@ export default function PaymentImageModal(props) {
     }
   }, [props.order]);
   function clearData() {
-    try {
-      props.setOrder(null);
-      props.onClose();
-    } catch (error) {
-      console.log(error);
-    }
+    props.setOrder(null);
+    props.onClose();
   }
   return (
     <>

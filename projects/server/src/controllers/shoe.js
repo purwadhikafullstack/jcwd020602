@@ -251,7 +251,6 @@ const shoeController = {
             fs.unlinkSync(
               path.join(__dirname, `../public/shoe/${img.split("/")[1]}`)
             );
-            console.log(`berhasil delete sepatu ${img}`);
           } catch (err) {
             console.log(err.message);
           }
@@ -334,7 +333,6 @@ const shoeController = {
               fs.unlinkSync(
                 path.join(__dirname, `../public/shoe/${img.split("/")[1]}`)
               );
-              console.log(`berhasil delete sepatu ${img}`);
             } catch (err) {
               console.log(err);
             }

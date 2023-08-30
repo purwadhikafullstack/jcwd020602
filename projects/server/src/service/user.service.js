@@ -204,7 +204,7 @@ module.exports = {
         html,
       });
     } catch (err) {
-      console.log(err);
+      return err;
     }
   },
 };
