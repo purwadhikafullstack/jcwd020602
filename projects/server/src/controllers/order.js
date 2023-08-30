@@ -269,6 +269,7 @@ const orderController = {
           });
           if (val.stock.stock < val.qty) {
             const warehouses = await checkWarehouseSupply({
+              warehouse_id: req.order.warehouse_id,
               shoe_id: val.stock.shoe_id,
               shoe_size_id: val.stock.shoe_size_id,
               qty: val.qty - val.stock.stock,
@@ -334,33 +335,44 @@ const orderController = {
           toStock.stock -= val.qty;
           toStock.booked_stock += val.qty;
           await toStock.save({ transaction: t });
-          // Decrease booked_stock in the Product table
-          toStock.booked_stock -= val.qty;
-          await toStock.save({ transaction: t });
-          if (val.stock?.stock - val.qty != val.stock?.stock) {
-            await addStockHistory({
-              stock_before: toStock.stock + toStock.booked_stock,
-              stock_after: toStock?.stock + toStock?.booked_stock - val.qty,
-              stock_id: val.stock?.id,
-              reference: req.order?.transaction_code,
-              t,
-            });
-          }
         }
-        await updateOrder({ t, status: "DELIVERY", id: req.order?.id });
       } else if (req?.body?.status == "PAYMENT") {
-        await updateOrder({
-          t,
-          last_payment_date: moment().add(1, "day"),
-          payment_proof: null,
-          id: req.order?.id,
-        });
+        await await db.Order.update(
+          { last_payment_date: moment().add(1, "day"), payment_proof: null },
+          {
+            where: { id: req.order?.id },
+            transaction: t,
+          }
+        );
         try {
           fs.unlinkSync(
             path.join(__dirname, `../public/${req.order?.payment_proof}`)
           );
         } catch (err) {
           console.log(err);
+        }
+      } else if (req?.body?.status == "DELIVERY") {
+        const orderDetail = await findAllOrderDetail({
+          order_id: req.order?.id,
+        });
+        for (const val of orderDetail) {
+          if (val.stock.booked_stock < val.qty) {
+            throw new ConflictError("Stock Insuficient");
+          }
+          const toStock = await findStockBy({
+            id: val.stock.id,
+          });
+          toStock.booked_stock -= val.qty;
+          await toStock.save({ transaction: t });
+          if (val.stock?.stock - val.qty != val.stock?.stock) {
+            await addStockHistory({
+              stock_before: toStock?.stock + toStock?.booked_stock + val.qty,
+              stock_after: toStock?.stock + toStock?.booked_stock,
+              stock_id: val.stock?.id,
+              reference: req.order?.transaction_code,
+              t,
+            });
+          }
         }
       }
       await t.commit();

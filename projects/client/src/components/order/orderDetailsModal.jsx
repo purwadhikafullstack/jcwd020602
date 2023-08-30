@@ -42,7 +42,6 @@ export default function OrderDetailsModal(props) {
       const fetch = await api().get("/orders/admin/" + props.val.id);
       console.log(fetch.data);
       props.setVal(fetch.data.order);
-      alert("successfully fetch val");
     } catch (err) {
       console.log(err.response?.data);
     }

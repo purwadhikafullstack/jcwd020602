@@ -18,7 +18,7 @@ export default function TableMutation({
   return (
     <>
       {/* tampilan desktop table */}
-      {stockMutations?.rows?.length ? (
+      {!stockMutations?.rows?.length ? (
         <Center border={"1px"} h={"550px"} w={"100%"}>
           Product not found
         </Center>

@@ -41,6 +41,7 @@ export default function AddStock(props) {
         .required("Warehouse Name is required"),
     }),
     onSubmit: async () => {
+      setIsLoading(true);
       try {
         const res = await api().post("/stocks", formik.values);
         toast({
@@ -171,7 +172,6 @@ export default function AddStock(props) {
             <Button
               isLoading={isLoading}
               onClick={() => {
-                setIsLoading(true);
                 formik.handleSubmit();
               }}
             >

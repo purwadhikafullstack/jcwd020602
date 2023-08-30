@@ -16,7 +16,7 @@ export default function CardMutation({
       {/* tampilan mobile card */}
       <Box id="card-content" display={"none"}>
         <Flex flexDir={"column"} py={1}>
-          {stockMutations?.rows?.length ? (
+          {!stockMutations?.rows?.length ? (
             <Center border={"1px"} h={"550px"}>
               Product not found
             </Center>

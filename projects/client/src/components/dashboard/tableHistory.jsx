@@ -5,7 +5,7 @@ export default function TableHistory({ stockHistories }) {
   return (
     <>
       {/* tampilan mobile card */}
-      {stockHistories?.rows?.length ? (
+      {!stockHistories?.rows?.length ? (
         <Center border={"1px"} h={"550px"} w={"100%"}>
           Product not found
         </Center>
