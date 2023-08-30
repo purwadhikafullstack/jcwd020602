@@ -153,7 +153,7 @@ export default function BarChart(props) {
                         </Tr>
                       </Thead>
                       <Tbody>
-                        {val.labels
+                        {val?.labels?.length
                           ? val?.labels?.map((label, idx) => {
                               {
                                 return idx < 2 ? (

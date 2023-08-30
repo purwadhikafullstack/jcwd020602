@@ -3,7 +3,7 @@ const moment = require("moment");
 const fs = require("fs");
 const haversine = require("haversine");
 const { errorResponse } = require("../utils/function");
-const { CustomError } = require("../utils/customErrors");
+const { CustomError, ConflictError } = require("../utils/customErrors");
 const {
   getWarehouse,
   checkWarehouseSupply,
@@ -253,7 +253,7 @@ const orderController = {
               qty: val.qty - val.stock.stock,
             });
             if (!warehouses?.length) {
-              return res.status(500).send({ message: "stock insuficient" });
+              throw new ConflictError("Stock insuficient");
             }
             let closestWarehouse = null;
             let shortestDistance = Number.MAX_SAFE_INTEGER;
@@ -341,6 +341,7 @@ const orderController = {
         .status(200)
         .send({ message: `Order is in ${req.body?.status}` });
     } catch (err) {
+      await t.rollback();
       errorResponse(res, err, CustomError);
     }
   },

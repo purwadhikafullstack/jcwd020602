@@ -117,14 +117,17 @@ module.exports = {
             model: db.User,
             required: false,
             as: "requestedBy",
+            paranoid: false,
           },
           {
             model: db.Warehouse,
             as: "fromWarehouse",
+            paranoid: false,
           },
           {
             model: db.Warehouse,
             as: "toWarehouse",
+            paranoid: false,
           },
           {
             model: db.Stock,
@@ -132,11 +135,13 @@ module.exports = {
               { model: db.Shoe, include: [{ model: db.Brand }] },
               { model: db.ShoeSize },
             ],
+            paranoid: false,
           },
           {
             model: db.User,
             required: false,
             as: "respondedBy",
+            paranoid: false,
           },
         ],
         distinct: true,

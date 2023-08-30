@@ -4,7 +4,13 @@ module.exports = {
     try {
       return await db.OrderDetail.findAll({
         where: { order_id: body?.order_id },
-        include: [{ model: db.Stock, include: { model: db.Warehouse } }],
+        include: [
+          {
+            model: db.Stock,
+            paranoid: false,
+            include: { model: db.Warehouse, paranoid: false },
+          },
+        ],
       });
     } catch (error) {
       return error;
