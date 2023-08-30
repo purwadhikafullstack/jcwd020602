@@ -8,6 +8,7 @@ import Navbar from "../components/website/navbar";
 
 export default function MyAccountPage() {
   const userSelector = useSelector((state) => state.auth);
+  console.log(userSelector);
   const menu = [
     { icon: FaCircleUser, name: "Profile" },
     { icon: FaAddressBook, name: "Address Book" },

@@ -40,6 +40,7 @@ export default function Verify() {
       phone: Yup.string()
         .min(10, "min 10 digits")
         .max(12, "max 12 digits")
+        .matches(/^((0)|(\+62))/, "Must start with 0 ")
         .required("required"),
       password: Yup.string()
         .matches(/^(?=.*[A-Z])/, "Must contain at least one uppercase")

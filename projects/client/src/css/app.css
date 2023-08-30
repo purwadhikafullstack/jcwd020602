@@ -173,10 +173,9 @@
   border: 1px solid;
   padding: 5px;
 }
-/* .sepatu-detail {
-  height: 650px;
-  object-fit: cover;
-} */
+.sepatu-detail {
+  border: 2px solid black;
+}
 
 /*---------------------- cart ----------------------*/
 .cart-card {
