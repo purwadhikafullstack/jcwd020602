@@ -95,7 +95,7 @@ const shoeController = {
       const page = req?.query?.filter?.page || 1;
       const offset = (parseInt(page) - 1) * limit;
       const whereClause = { [Op.and]: [] };
-
+      console.log(category, brand);
       if (category && sub) {
         whereClause[Op.and].push({
           [Op.and]: [

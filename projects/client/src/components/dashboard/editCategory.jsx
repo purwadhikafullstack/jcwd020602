@@ -1,12 +1,5 @@
-import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-} from "@chakra-ui/react";
+import { ModalOverlay, ModalContent, ModalCloseButton } from "@chakra-ui/react";
+import { ModalHeader, ModalFooter, ModalBody, Modal } from "@chakra-ui/react";
 import { Button, Input, useToast, Box, Image } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { api } from "../../api/api";
@@ -154,24 +147,21 @@ export function EditSubcategory(props) {
       });
       props.fetch();
       clearS();
-      props.onClose();
     } catch (err) {
       console.log(err.response.data);
     }
   };
 
   const clearS = () => {
-    setName({});
+    setName("");
     props.setId(null);
+    props.onClose();
   };
   return (
     <>
       <Modal
         isOpen={props.isOpen}
-        onClose={() => {
-          props.onClose();
-          clearS();
-        }}
+        onClose={clearS}
         closeOnOverlayClick={false}
         isCentered
       >

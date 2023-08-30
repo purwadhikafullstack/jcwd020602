@@ -6,7 +6,7 @@ import { useState } from "react";
 import { api } from "../../api/api";
 
 export default function AssignAdmin(props) {
-  const toast = useToast();
+  const toast = useToast({ duration: 3000, isClosable: true, position: "top" });
   const { warehouses, fetch } = useFetchWarehouse();
   const [isLoading, setIsLoading] = useState(false);
   const [warehouse_id, setWarehouse_id] = useState(0);
@@ -20,7 +20,6 @@ export default function AssignAdmin(props) {
       toast({
         title: res.data.message,
         status: "success",
-        position: "top",
       });
       props.fetch();
       fetch();
@@ -35,7 +34,7 @@ export default function AssignAdmin(props) {
     <>
       <Modal isOpen={props.isOpen} onClose={props.onClose}>
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent mx={2}>
           <ModalHeader>Assign Admin</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
@@ -77,7 +76,7 @@ export default function AssignAdmin(props) {
 }
 
 export function ReassignAdmin(props) {
-  const toast = useToast();
+  const toast = useToast({ duration: 3000, isClosable: true, position: "top" });
   const { warehouses, fetch } = useFetchWarehouse();
   const [isLoading, setIsLoading] = useState(false);
   const [warehouse_id, setWarehouse_id] = useState(0);
@@ -91,7 +90,6 @@ export function ReassignAdmin(props) {
       toast({
         title: res.data.message,
         status: "success",
-        position: "top",
       });
       props.fetch();
       fetch();

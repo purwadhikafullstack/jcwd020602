@@ -10,25 +10,20 @@ import { useEffect, useState } from "react";
 import { api } from "../../api/api";
 import { useFetchCity, useFetchProv } from "../../hooks/useFetchProvCity";
 
-export default function EditWarehouse(props) {
+export default function EditWarehouse({ data, fetch, isOpen, onClose }) {
   const [isLoading, setIsLoading] = useState(false);
   const { provinces } = useFetchProv();
-  const toast = useToast();
+  const toast = useToast({ duration: 3000, isClosable: true, position: "top" });
   const [warehouse, setWarehouse] = useState({});
   const [provid, setProvid] = useState(0);
-  const { cities } = useFetchCity(provid);
+  const { cities } = useFetchCity(provid || data?.city?.province_id);
 
   useEffect(() => {
-    if (props.id) {
-      fetchWarehouseById();
+    if (data) {
+      setWarehouse(data);
+      setProvid(data?.city?.province_id);
     }
-  }, [props.id]);
-
-  const fetchWarehouseById = async () => {
-    const res = await api().get("/warehouses/" + props.id);
-    setWarehouse(res.data);
-    setProvid(res.data.city.province);
-  };
+  }, [data]);
 
   function inputHandler(e) {
     const { id, value } = e.target;
@@ -43,91 +38,107 @@ export default function EditWarehouse(props) {
       toast({
         title: res.data.message,
         status: "success",
-        position: "top",
       });
-      props.fetch();
-      clearWarehouse();
-    } catch (err) {
-      console.log(err.response.message);
-    }
+      fetch();
+      onClose();
+    } catch (err) {}
   };
 
-  const clearWarehouse = () => {
-    setWarehouse({});
-    props.onClose();
-  };
   return (
     <>
       <Modal
         scrollBehavior="inside"
-        isOpen={props.isOpen}
-        onClose={clearWarehouse}
+        isOpen={isOpen}
+        onClose={onClose}
         closeOnOverlayClick={false}
       >
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent mx={2}>
           <ModalHeader p={2}>Edit Warehouse</ModalHeader>
           <ModalCloseButton />
-          <ModalBody display={"flex"} flexDir={"column"} gap={2}>
-            <Box>
-              name:{" "}
+          <ModalBody display={"flex"} flexDir={"column"} gap={4}>
+            <Box
+              className={`inputbox ${warehouse.name ? "input-has-value" : ""}`}
+            >
               <Input
                 id="name"
                 type="text"
                 onChange={inputHandler}
-                defaultValue={warehouse?.name}
+                value={warehouse?.name}
               />
-              phone:
+              <label>Name</label>
+            </Box>
+            <Box
+              className={`inputbox ${warehouse.phone ? "input-has-value" : ""}`}
+            >
               <Input
                 id="phone"
                 type={"number"}
                 onChange={inputHandler}
-                defaultValue={warehouse?.phone}
+                value={warehouse?.phone}
               />
+              <label>Phone</label>
             </Box>
-            <Box>
-              province:
+            <Box
+              className={`inputbox ${
+                warehouse.address ? "input-has-value" : ""
+              }`}
+            >
+              <Input
+                id="address"
+                onChange={inputHandler}
+                value={warehouse.address}
+              />
+              <label>Address</label>
+            </Box>
+
+            <Box className={`inputbox ${provid ? "input-has-value" : ""}`}>
               <Select
                 id="province"
-                placeholder="choose province.."
-                value={warehouse?.city?.province}
+                placeholder="          "
                 onChange={(e) => {
                   inputHandler(e);
                   setProvid(e.target.value);
                 }}
               >
                 {provinces &&
-                  provinces.map((val, idx) => (
-                    <option key={val?.province} value={val?.province}>
-                      {val?.province}
-                    </option>
-                  ))}
+                  provinces.map((val, idx) =>
+                    warehouse?.city?.province_id != val.province_id ? (
+                      <option key={val.province_id} value={val.province_id}>
+                        {val.province}
+                      </option>
+                    ) : (
+                      <option
+                        selected
+                        key={val.province_id}
+                        value={val.province_id}
+                      >
+                        {val.province}
+                      </option>
+                    )
+                  )}
               </Select>
+              <label>Province</label>
             </Box>
-            <Box>
-              city:
+            <Box
+              className={`inputbox ${
+                warehouse.city_id ? "input-has-value" : ""
+              }`}
+            >
               <Select
-                placeholder="choose city.."
+                placeholder="         "
                 onChange={inputHandler}
-                value={warehouse?.city?.city_name}
-                id="city"
+                value={warehouse?.city_id}
+                id="city_id"
               >
                 {cities &&
                   cities.map((val, idx) => (
-                    <option value={val?.city_name}>{val?.city_name}</option>
+                    <option key={val.city_id} value={val?.city_id}>
+                      {val.type} {val?.city_name}
+                    </option>
                   ))}
               </Select>
-            </Box>
-
-            <Box>
-              address:
-              <Textarea
-                id="address"
-                maxLength={225}
-                onChange={inputHandler}
-                placeholder="road, district  "
-                defaultValue={warehouse?.address}
-              />
+              <label>City</label>
             </Box>
           </ModalBody>
 

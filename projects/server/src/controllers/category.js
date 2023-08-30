@@ -55,7 +55,7 @@ const categoryController = {
       const limit = req?.query?.limit || 8;
       const page = req?.query?.page || 1;
       const offset = (parseInt(page) - 1) * limit;
-      console.log(req.query);
+
       const categories = await db.Category.findAndCountAll({
         include: [{ model: db.SubCategory, include: [db.Shoe] }],
         where: { name: { [Op.like]: `%${search}%` } },

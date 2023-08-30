@@ -1,6 +1,7 @@
 import { Center, Spinner } from "@chakra-ui/react";
 import { Suspense, lazy } from "react";
 import ProtectedPage from "./protectedPage";
+import FaqPage from "../pages/faqPage";
 
 const LandingPage = lazy(() => import("../pages/landingPage"));
 const AuthForm = lazy(() => import("../pages/authPage"));
@@ -59,6 +60,7 @@ class RouteClass {
 
 export const routes = [
   new RouteClass("/", <LandingPage />, true, false, false),
+  new RouteClass("/support/faq", <FaqPage />, true, false, false),
   new RouteClass("/auth", <AuthForm />, true, false, false),
   new RouteClass("/verify/:token", <Verify />, true, false, false),
   new RouteClass("/forgot-password", <ForgotPassword />, true, false, false),

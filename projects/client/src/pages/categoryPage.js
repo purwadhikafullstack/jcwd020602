@@ -1,4 +1,9 @@
-import { IconButton, InputGroup, InputRightAddon } from "@chakra-ui/react";
+import {
+  Center,
+  IconButton,
+  InputGroup,
+  InputRightAddon,
+} from "@chakra-ui/react";
 import { ButtonGroup, Divider, Flex, Icon, Input } from "@chakra-ui/react";
 import { Table, Thead, Tbody, Tr, Th, Td, Box, Button } from "@chakra-ui/react";
 import { Select, Menu, MenuList, MenuItem, Image, Tag } from "@chakra-ui/react";
@@ -61,6 +66,47 @@ export default function CategoryPage() {
   useEffect(() => {
     fetch();
   }, [filter]);
+
+  function MenuBurger({ category }) {
+    return (
+      <Menu>
+        {({ isOpen }) => (
+          <>
+            <MenuButton isActive={isOpen} as={Button} p={0}>
+              <Icon as={isOpen ? GrClose : GrMenu} />
+            </MenuButton>
+            <MenuList>
+              <MenuItem
+                onClick={() => {
+                  setCategoryId(category.id);
+                  addSub.onOpen();
+                }}
+              >
+                + Subcategory
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  setCategoryId(category.id);
+                  editModal.onOpen();
+                }}
+              >
+                Edit
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  setCategoryId(category.id);
+                  deleteModal.onOpen();
+                }}
+              >
+                Delete
+              </MenuItem>
+            </MenuList>
+          </>
+        )}
+      </Menu>
+    );
+  }
+
   return (
     <>
       <NavbarDashboard />
@@ -143,41 +189,7 @@ export default function CategoryPage() {
                         #{idx + 1}
                       </Box>
                       {userSelector.role == "SUPERADMIN" ? (
-                        <Menu>
-                          {({ isOpen }) => (
-                            <>
-                              <MenuButton isActive={isOpen} as={Button} p={0}>
-                                <Icon as={isOpen ? GrClose : GrMenu} />
-                              </MenuButton>
-                              <MenuList>
-                                <MenuItem
-                                  onClick={() => {
-                                    setCategoryId(category.id);
-                                    addSub.onOpen();
-                                  }}
-                                >
-                                  + Subcategory
-                                </MenuItem>
-                                <MenuItem
-                                  onClick={() => {
-                                    setCategoryId(category.id);
-                                    editModal.onOpen();
-                                  }}
-                                >
-                                  Edit
-                                </MenuItem>
-                                <MenuItem
-                                  onClick={() => {
-                                    setCategoryId(category.id);
-                                    deleteModal.onOpen();
-                                  }}
-                                >
-                                  Delete
-                                </MenuItem>
-                              </MenuList>
-                            </>
-                          )}
-                        </Menu>
+                        <MenuBurger category={category} />
                       ) : null}
                     </Flex>
                     <Box>name: {category?.name}</Box>
@@ -204,108 +216,80 @@ export default function CategoryPage() {
             </Flex>
           </Box>
           {/* tampilan desktop table */}
-          <TableContainer id="table-content">
-            <Table size="sm">
-              <Thead>
-                <Tr>
-                  <Th>#</Th>
-                  <Th>Image</Th>
-                  <Th>name</Th>
-                  <Th>Subcategory</Th>
-                  <Th>Action</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {categoriesFilter &&
-                  categoriesFilter?.rows.map((category, idx) => (
-                    <Tr>
-                      <Td w={"5%"}>{idx + 1}</Td>
-                      <Td>
-                        <Image
-                          cursor={"pointer"}
-                          onClick={() => {
-                            setImg(category.category_img);
-                            onOpen();
-                          }}
-                          src={`${process.env.REACT_APP_API_BASE_URL}/${category.category_img}`}
-                          w={"30px"}
-                        />
-                      </Td>
-                      <Td>{category.name}</Td>
-
-                      {category?.subcategories?.length == 0 ? (
-                        <Td>no hve subcategory</Td>
-                      ) : (
+          {categoriesFilter?.rows?.length ? (
+            <TableContainer id="table-content">
+              <Table size="sm">
+                <Thead>
+                  <Tr>
+                    <Th>#</Th>
+                    <Th>Image</Th>
+                    <Th>name</Th>
+                    <Th>Subcategory</Th>
+                    <Th>Action</Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  {categoriesFilter &&
+                    categoriesFilter?.rows.map((category, idx) => (
+                      <Tr>
+                        <Td w={"5%"}>{idx + 1}</Td>
                         <Td>
-                          {category?.subcategories?.map((val, idx) => (
-                            <Tag mr={1}>{val.name}</Tag>
-                          ))}
+                          <Image
+                            cursor={"pointer"}
+                            onClick={() => {
+                              setImg(category.category_img);
+                              onOpen();
+                            }}
+                            src={`${process.env.REACT_APP_API_BASE_URL}/${category.category_img}`}
+                            w={"30px"}
+                          />
                         </Td>
-                      )}
-                      <Td w={"5%"}>
-                        {userSelector.role == "SUPERADMIN" ? (
-                          <Menu>
-                            {({ isOpen }) => (
-                              <>
-                                <MenuButton isActive={isOpen} as={Button} p={0}>
-                                  <Icon as={isOpen ? GrClose : GrMenu} />
-                                </MenuButton>
-                                <MenuList>
-                                  <MenuItem
-                                    onClick={() => {
-                                      setCategoryId(category.id);
-                                      addSub.onOpen();
-                                    }}
-                                  >
-                                    + Subcategory
-                                  </MenuItem>
-                                  <MenuItem
-                                    onClick={() => {
-                                      setCategoryId(category.id);
-                                      editModal.onOpen();
-                                    }}
-                                  >
-                                    Edit
-                                  </MenuItem>
-                                  <MenuItem
-                                    onClick={() => {
-                                      setCategoryId(category.id);
-                                      deleteModal.onOpen();
-                                    }}
-                                  >
-                                    Delete
-                                  </MenuItem>
-                                </MenuList>
-                              </>
-                            )}
-                          </Menu>
-                        ) : null}
-                      </Td>
-                    </Tr>
-                  ))}
-              </Tbody>
-              <AddSubCategory
-                isOpen={addSub.isOpen}
-                onClose={addSub.onClose}
-                fetch={fetch}
-                id={categoyId}
-              />
-              <EditCategory
-                id={categoyId}
-                isOpen={editModal.isOpen}
-                onClose={editModal.onClose}
-                fetch={fetch}
-                setId={setCategoryId}
-              />
-              <DeleteCategory
-                id={categoyId}
-                isOpen={deleteModal.isOpen}
-                onClose={deleteModal.onClose}
-                fetch={fetch}
-              />
-              <ImageModal isOpen={isOpen} onClose={onClose} image={img} />
-            </Table>
-          </TableContainer>
+                        <Td>{category.name}</Td>
+
+                        {category?.subcategories?.length == 0 ? (
+                          <Td>no hve subcategory</Td>
+                        ) : (
+                          <Td>
+                            {category?.subcategories?.map((val, idx) => (
+                              <Tag mr={1}>{val.name}</Tag>
+                            ))}
+                          </Td>
+                        )}
+                        <Td w={"5%"}>
+                          {userSelector.role == "SUPERADMIN" ? (
+                            <MenuBurger category={category} />
+                          ) : null}
+                        </Td>
+                      </Tr>
+                    ))}
+                </Tbody>
+                <AddSubCategory
+                  isOpen={addSub.isOpen}
+                  onClose={addSub.onClose}
+                  fetch={fetch}
+                  id={categoyId}
+                />
+                <EditCategory
+                  id={categoyId}
+                  isOpen={editModal.isOpen}
+                  onClose={editModal.onClose}
+                  fetch={fetch}
+                  setId={setCategoryId}
+                />
+                <DeleteCategory
+                  id={categoyId}
+                  isOpen={deleteModal.isOpen}
+                  onClose={deleteModal.onClose}
+                  fetch={fetch}
+                />
+                <ImageModal isOpen={isOpen} onClose={onClose} image={img} />
+              </Table>
+            </TableContainer>
+          ) : (
+            <Center border={"1px"} h={"550px"}>
+              category not found
+            </Center>
+          )}
         </Box>
         <Flex p={2} m={2} justify={"center"}>
           <Pagination

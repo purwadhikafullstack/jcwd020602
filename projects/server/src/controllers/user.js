@@ -13,8 +13,8 @@ const {
   editPassword,
   mailerEmail,
 } = require("../service/user.service");
+const { Op } = require("sequelize");
 
-// --------------------- CLEAR -FAHMI
 const userController = {
   register: async (req, res) => {
     const t = await db.sequelize.transaction();
@@ -253,8 +253,40 @@ const userController = {
   },
   getAllUser: async (req, res) => {
     try {
-      const result = await db.User.findAll();
-      return res.status(200).send(result);
+      const search = req?.query?.search || "";
+      const sort = req?.query?.sort || "name";
+      const order = req?.query?.order || "ASC";
+      const role = req?.query?.role || "";
+      const limit = req?.query?.limit || 8;
+      const page = req?.query?.page || 1;
+      const offset = (parseInt(page) - 1) * limit;
+      const whereClause = { [Op.and]: [] };
+
+      if (role) {
+        whereClause[Op.and].push({
+          role: { [Op.like]: `${role}%` },
+        });
+      } else if (search) {
+        whereClause[Op.and].push({
+          [Op.or]: [
+            { name: { [Op.like]: `%${search}%` } },
+            { role: { [Op.like]: `${search}%` } },
+            { email: { [Op.like]: `%${search}%` } },
+            { phone: { [Op.like]: `%${search}%` } },
+          ],
+        });
+      }
+
+      const result = await db.User.findAndCountAll({
+        where: whereClause,
+        limit,
+        offset,
+        distinct: true,
+        order: [[sort, order]],
+      });
+      return res
+        .status(200)
+        .send({ ...result, totalPages: Math.ceil(result.count / limit) });
     } catch (err) {
       res.status(500).send({ message: err.message });
     }

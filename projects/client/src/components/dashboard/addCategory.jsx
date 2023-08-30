@@ -59,7 +59,6 @@ export function AddCategory(props) {
 
           <ModalFooter>
             <Button
-              id="button"
               isDisabled={!(name && selectedFile)}
               isLoading={isLoading}
               onClick={() => {
@@ -122,7 +121,6 @@ export function AddSubCategory(props) {
 
           <ModalFooter>
             <Button
-              id="button"
               isLoading={isLoading}
               onClick={() => {
                 setIsLoading(true);
@@ -226,7 +224,6 @@ export function AddBrand(props) {
 
           <ModalFooter>
             <Button
-              id="button"
               isDisabled={
                 !(name && selectedFiles[0] && selectedFiles[1]) ? true : false
               }

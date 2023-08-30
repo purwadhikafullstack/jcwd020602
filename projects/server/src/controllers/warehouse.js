@@ -23,7 +23,7 @@ const warehouseControllers = {
         {
           name,
           phone,
-          address: `${address}, ${city.dataValues.city_name}, ${city.dataValues.province}, ${city.dataValues.postal_code}`,
+          address: address,
           province_id: city.dataValues.province_id,
           city_id: city_id,
           postcode: city.dataValues.postal_code,
@@ -47,7 +47,6 @@ const warehouseControllers = {
       const search = req?.query?.search || "";
       let sort = req?.query?.sort || "name";
       const order = req?.query?.order || "ASC";
-      const category = req?.query?.category || "";
       const limit = req?.query?.limit || 8;
       const page = req?.query?.page || 1;
       const offset = (parseInt(page) - 1) * limit;
@@ -58,6 +57,7 @@ const warehouseControllers = {
           break;
         case "province":
           sort = [{ model: db.City }, "province"];
+          break;
         default:
           sort = [sort];
       }
@@ -71,19 +71,19 @@ const warehouseControllers = {
           },
           { model: db.City },
         ],
-        // where: {
-        //   [Op.or]: [
-        //     { name: { [Op.like]: `%${search}%` } },
-        //     { "$city.city_name$": { [Op.like]: `%${search}%` } },
-        //     { "$city.province$": { [Op.like]: `%${search}%` } },
-        //     { address: { [Op.like]: `%${search}%` } },
-        //   ],
-        // },
-        limit,
+        where: {
+          [Op.or]: [
+            { name: { [Op.like]: `%${search}%` } },
+            { "$city.city_name$": { [Op.like]: `%${search}%` } },
+            { "$city.province$": { [Op.like]: `%${search}%` } },
+            { address: { [Op.like]: `%${search}%` } },
+          ],
+        },
         distinct: true,
-        offset,
         order: [[...sort, order]],
       });
+      warehouses.rows = warehouses.rows.slice(offset, page * limit);
+
       return res.status(200).send({
         ...warehouses,
         totalPages: Math.ceil(warehouses.count / limit),
@@ -121,7 +121,7 @@ const warehouseControllers = {
         where: { city_id },
       });
       if (city) {
-        const response = await opencage(
+        const response = await openCage(
           address,
           city.dataValues.city_name,
           city.dataValues.province
@@ -130,7 +130,7 @@ const warehouseControllers = {
           {
             name,
             phone,
-            address: `${address}, ${city.dataValues.city_name}, ${city.dataValues.province}, ${city.dataValues.postal_code}`,
+            address: address,
             province_id: city.dataValues.province_id,
             city_id: city.dataValues.city_id,
             postcode: city.dataValues.postal_code,

@@ -49,7 +49,7 @@ export function DeleteCategory(props) {
           <AlertDialogBody>
             Are you sure you want to delete {props.id}?
           </AlertDialogBody>
-          <AlertDialogFooter>
+          <AlertDialogFooter display={"flex"} justifyContent={"space-between"}>
             <Button ref={cancelRef} onClick={props.onClose}>
               No
             </Button>
@@ -109,7 +109,7 @@ export function DeleteSubcategory(props) {
           <AlertDialogBody>
             Are you sure you want to delete {props.id}?
           </AlertDialogBody>
-          <AlertDialogFooter>
+          <AlertDialogFooter display={"flex"} justifyContent={"space-between"}>
             <Button ref={cancelRef} onClick={props.onClose}>
               No
             </Button>
@@ -169,7 +169,7 @@ export function DeleteBrand(props) {
           <AlertDialogBody>
             Are you sure you want to delete {props.id}?
           </AlertDialogBody>
-          <AlertDialogFooter>
+          <AlertDialogFooter display={"flex"} justifyContent={"space-between"}>
             <Button ref={cancelRef} onClick={props.onClose}>
               No
             </Button>
