@@ -289,7 +289,8 @@ export default function OrderDetailsModal(props) {
                   Payment Methode
                 </Text>
                 <Flex flexDir={"column"} pl={"10px"}>
-                  <Text fontSize={"sm"}>Transfer</Text>
+                  <Text fontSize={"sm"}>Bank Transfer</Text>
+                  <Text fontSize={"sm"}>Mandiri : <span style={{fontWeight:"bold"}}>0854 1123 2212</span></Text>
                 </Flex>
               </Flex>
               <Flex justify={"space-between"}>
