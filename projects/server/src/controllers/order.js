@@ -28,7 +28,7 @@ const {
   updateStock,
 } = require("../service/stock.service");
 const { addStockHistory } = require("../service/stockHistory.service");
-const { Op } = require("sequelize");
+const { Op, Transaction } = require("sequelize");
 const path = require("path");
 
 const generateTransactionCode = () =>
@@ -187,7 +187,7 @@ const orderController = {
   cancelPaymentUser: async (req, res) => {
     const t = await db.sequelize.transaction();
     try {
-      await updateOrder({ t, status: "CANCELED", id: req.order?.id });
+      await db.Order.update({ status: "CANCELED"},{where:{id: req.order?.id},transaction:t});
       await t.commit();
       return res.status(200).send({ message: `Order successfully canceled` });
     } catch (err) {
@@ -394,7 +394,7 @@ const orderController = {
   doneOrderUser: async (req, res) => {
     const t = await db.sequelize.transaction();
     try {
-      await updateOrder({ t, status: "DONE", id: req?.order?.id });
+      await db.Order.update({ status:"DONE"}, {where:{id:req.order?.id}, transaction:t});
       await t.commit();
       return res.status(200).send({ message: `Order Completed` });
     } catch (err) {
