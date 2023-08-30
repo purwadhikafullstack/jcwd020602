@@ -128,6 +128,7 @@ module.exports = {
   checkWarehouseSupply: async (body) => {
     try {
       return await db.Warehouse.findAll({
+        where: { id: { [Op.not]: body?.warehouse_id } },
         include: [
           {
             model: db.Stock,

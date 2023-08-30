@@ -46,6 +46,7 @@ export default function ConfirmStockMutation(props) {
   }
 
   const confirmStockMutation = async () => {
+    setIsLoadingButton(true);
     try {
       const res = await api().patch("/stockMutations/confirm/" + props.id, {
         status: props.status,
@@ -56,7 +57,6 @@ export default function ConfirmStockMutation(props) {
         position: "top",
       });
       props.fetch();
-      clearData();
     } catch (err) {
       toast({
         title: `${err.response.data}`,
@@ -66,6 +66,7 @@ export default function ConfirmStockMutation(props) {
       });
     } finally {
       setIsLoadingButton(false);
+      clearData();
     }
   };
   return (
@@ -104,7 +105,6 @@ export default function ConfirmStockMutation(props) {
             <Button
               isLoading={isLoadingButton}
               onClick={() => {
-                setIsLoadingButton(true);
                 confirmStockMutation();
               }}
             >

@@ -54,6 +54,7 @@ export default function AddStockMutation(props) {
         .required("Product name is required"),
     }),
     onSubmit: async () => {
+      setIsLoading(true);
       try {
         delete formik.values.from_warehouse_id;
         const resPostMutation = await api().post(
@@ -65,7 +66,6 @@ export default function AddStockMutation(props) {
           status: "success",
           position: "top",
         });
-        setIsLoading(false);
         props.fetch();
         clearData();
       } catch (err) {
@@ -75,6 +75,8 @@ export default function AddStockMutation(props) {
           duration: 9000,
           isClosable: true,
         });
+      } finally {
+        setIsLoading(false);
       }
     },
   });
@@ -236,7 +238,6 @@ export default function AddStockMutation(props) {
               <Button
                 isLoading={isLoading}
                 onClick={() => {
-                  setIsLoading(true);
                   formik.handleSubmit();
                 }}
               >

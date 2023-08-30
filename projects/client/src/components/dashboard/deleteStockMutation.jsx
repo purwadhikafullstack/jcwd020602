@@ -43,6 +43,7 @@ export default function DeleteStockMutation(props) {
   }
 
   const deleteStockMutation = async () => {
+    setIsLoadingButton(true);
     try {
       const res = await api().delete("/stockMutations/" + props.id);
       toast({
@@ -96,7 +97,6 @@ export default function DeleteStockMutation(props) {
             <Button
               isLoading={isLoadingButton}
               onClick={() => {
-                setIsLoadingButton(true);
                 deleteStockMutation();
               }}
             >

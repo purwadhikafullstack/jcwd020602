@@ -168,7 +168,7 @@ export default function InventoryPage() {
               />
             </>
           )}
-          <Flex p={2} m={2} justify={"center"} border={"2px"}>
+          <Flex p={2} m={2} justify={"center"}>
             <EditStock
               id={stockId}
               isOpen={editS.isOpen}

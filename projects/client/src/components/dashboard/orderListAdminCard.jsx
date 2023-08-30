@@ -44,7 +44,8 @@ export default function OrderListAdmin({ filter }) {
                         {moment(order.createdAt).format("DD MMM YYYY, HH:MM")}
                       </Box>
                     </Flex>
-                    {order.status == "CONFIRM_PAYMENT" ? (
+                    {order.status == "CONFIRM_PAYMENT" ||
+                    order.status == "PROCESSING" ? (
                       <Flex gap={1}>
                         <Menu>
                           {({ isOpen }) => (

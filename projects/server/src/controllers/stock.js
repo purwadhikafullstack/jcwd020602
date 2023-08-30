@@ -87,7 +87,7 @@ const stockController = {
           shoe_id,
           shoe_size_id,
           warehouse_id,
-          stock: Number(findExisting?.dataValues?.stock) + Number(stock),
+          stock: Number(findExisting?.stock) + Number(stock),
           t,
         });
       } else {
@@ -102,11 +102,11 @@ const stockController = {
       if (stock > 0) {
         const addHistory = await addStockHistory({
           stock_before:
-            Number(findExisting?.dataValues?.stock) +
-              Number(findExisting?.dataValues?.booked_stock) || 0,
+            Number(findExisting?.stock) + Number(findExisting?.booked_stock) ||
+            0,
           stock_after: findExisting
-            ? Number(findExisting?.dataValues?.stock) +
-              Number(findExisting?.dataValues?.booked_stock) +
+            ? Number(findExisting?.stock) +
+              Number(findExisting?.booked_stock) +
               Number(stock)
             : stock,
           stock_id: findExisting?.dataValues?.id || add?.dataValues?.id,
@@ -131,9 +131,9 @@ const stockController = {
       ) {
         const addHistory = await addStockHistory({
           stock_before:
-            req?.stock?.dataValues?.stock +
-            req?.stock?.dataValues?.booked_stock,
-          stock_after: req?.body?.stock + req?.stock?.dataValues?.booked_stock,
+            Number(req?.stock?.stock) + Number(req?.stock?.booked_stock),
+          stock_after:
+            Number(req?.body?.stock) + Number(req?.stock?.booked_stock),
           stock_id: req?.params?.id,
           reference: "manual",
           t,
@@ -152,7 +152,7 @@ const stockController = {
       const stock = await deleteStock({ id: req.params.id, t });
       const addHistory = await addStockHistory({
         stock_before:
-          req?.stock?.dataValues?.stock + req?.stock?.dataValues?.booked_stock,
+          Number(req?.stock?.stock) + Number(req?.stock?.booked_stock),
         stock_after: 0,
         stock_id: req?.params?.id,
         reference: "manual",

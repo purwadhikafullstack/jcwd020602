@@ -127,7 +127,7 @@ export default function OrderListPage() {
           <Flex flexDir={"column"} py={1}>
             <OrderListAdmin filter={filter} />
           </Flex>
-          <Flex p={2} m={2} justify={"center"} border={"2px"}>
+          <Flex p={2} m={2} justify={"center"}>
             <Pagination
               shown={shown}
               setShown={setShown}
