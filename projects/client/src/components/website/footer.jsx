@@ -17,6 +17,7 @@ import {
   GrYoutube,
   GrTwitter,
 } from "react-icons/gr";
+import { Link } from "react-router-dom";
 import logo1 from "../../assets/newlogo1.png";
 
 export default function Footer() {
@@ -44,13 +45,17 @@ export default function Footer() {
           </Flex>
           <Flex color={"gray"} flexDir={"column"} gap={2} pb={2}>
             <Box color={"white"} fontWeight={"bold"} borderBottom={"1px"}>
-              CUSTOMER CARE
+              SUPPORT
             </Box>
-            <Text id="text">FAQ</Text>
+            <Link to={"/support/faq"}>
+              <Text id="text">FAQ</Text>
+            </Link>
             <Text id="text">Size Guide</Text>
             <Text id="text">Contact Us</Text>
             <Text id="text">Return Policy</Text>
-            <Text id="text">Order Status</Text>
+            <Link to={"/my-account/order-list"}>
+              <Text id="text">Order Status</Text>
+            </Link>
           </Flex>
           <Flex flexDir={"column"} gap={2}>
             <Text color={"white"} fontWeight={"bold"} borderBottom={"1px"}>
@@ -76,15 +81,17 @@ export default function Footer() {
               >
                 <Image as={GrFacebook} size={"30px"} />
               </Center>
-              <Center
-                boxSize={"50px"}
-                border={"1px"}
-                borderColor={"white"}
-                color={"white"}
-                id="logo"
-              >
-                <Image as={GrInstagram} size={"30px"} />
-              </Center>
+              <a href="https://instagram.com/fahminurk" target="_blank">
+                <Center
+                  boxSize={"50px"}
+                  border={"1px"}
+                  borderColor={"white"}
+                  color={"white"}
+                  id="logo"
+                >
+                  <Image as={GrInstagram} size={"30px"} />
+                </Center>
+              </a>
               <Center
                 boxSize={"50px"}
                 border={"1px"}

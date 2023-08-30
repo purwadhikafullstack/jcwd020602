@@ -1,4 +1,4 @@
-import { Box, Button } from "@chakra-ui/react";
+import { Box, Button, Center } from "@chakra-ui/react";
 import { Divider, Flex, Icon, Input, Table } from "@chakra-ui/react";
 import { InputGroup, InputRightAddon, useDisclosure } from "@chakra-ui/react";
 import { Thead, Tbody, Tr, Th, Td, TableContainer } from "@chakra-ui/react";
@@ -54,6 +54,38 @@ export default function SubcategoryPage() {
   useEffect(() => {
     fetch();
   }, [filter]);
+
+  function MenuBurger({ sub }) {
+    return (
+      <Menu>
+        {({ isOpen }) => (
+          <>
+            <MenuButton isActive={isOpen} as={Button} p={0}>
+              <Icon as={isOpen ? GrClose : GrMenu} />
+            </MenuButton>
+            <MenuList>
+              <MenuItem
+                onClick={() => {
+                  setSubId(sub.id);
+                  editModal.onOpen();
+                }}
+              >
+                Edit
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  setSubId(sub.id);
+                  deleteModal.onOpen();
+                }}
+              >
+                Delete
+              </MenuItem>
+            </MenuList>
+          </>
+        )}
+      </Menu>
+    );
+  }
   return (
     <>
       <NavbarDashboard />
@@ -130,33 +162,7 @@ export default function SubcategoryPage() {
                         #{idx + 1}
                       </Box>
                       {userSelector.role == "SUPERADMIN" ? (
-                        <Menu>
-                          {({ isOpen }) => (
-                            <>
-                              <MenuButton isActive={isOpen} as={Button} p={0}>
-                                <Icon as={isOpen ? GrClose : GrMenu} />
-                              </MenuButton>
-                              <MenuList>
-                                <MenuItem
-                                  onClick={() => {
-                                    setSubId(sub.id);
-                                    editModal.onOpen();
-                                  }}
-                                >
-                                  Edit
-                                </MenuItem>
-                                <MenuItem
-                                  onClick={() => {
-                                    setSubId(sub.id);
-                                    deleteModal.onOpen();
-                                  }}
-                                >
-                                  Delete
-                                </MenuItem>
-                              </MenuList>
-                            </>
-                          )}
-                        </Menu>
+                        <MenuBurger sub={sub} />
                       ) : null}
                     </Flex>
                     <Divider />
@@ -168,72 +174,52 @@ export default function SubcategoryPage() {
             </Flex>
           </Box>
           {/* tampilan desktop table */}
-          <TableContainer id="table-content">
-            <Table size="sm">
-              <Thead>
-                <Tr>
-                  <Th>#</Th>
-                  <Th>name</Th>
-                  <Th>Category</Th>
-                  <Th>Action</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {subFilter &&
-                  subFilter?.rows?.map((sub, idx) => (
-                    <Tr>
-                      <Td w={"5%"}>{idx + 1}</Td>
-                      <Td>{sub.name}</Td>
-                      <Td>{sub.Category.name}</Td>
-                      <Td w={"5%"}>
-                        {userSelector.role == "SUPERADMIN" ? (
-                          <Menu>
-                            {({ isOpen }) => (
-                              <>
-                                <MenuButton isActive={isOpen} as={Button} p={0}>
-                                  <Icon as={isOpen ? GrClose : GrMenu} />
-                                </MenuButton>
-                                <MenuList>
-                                  <MenuItem
-                                    onClick={() => {
-                                      setSubId(sub.id);
-                                      editModal.onOpen();
-                                    }}
-                                  >
-                                    Edit
-                                  </MenuItem>
-                                  <MenuItem
-                                    onClick={() => {
-                                      setSubId(sub.id);
-                                      deleteModal.onOpen();
-                                    }}
-                                  >
-                                    Delete
-                                  </MenuItem>
-                                </MenuList>
-                              </>
-                            )}
-                          </Menu>
-                        ) : null}
-                      </Td>
-                    </Tr>
-                  ))}
-              </Tbody>
-              <EditSubcategory
-                id={subId}
-                setId={setSubId}
-                isOpen={editModal.isOpen}
-                onClose={editModal.onClose}
-                fetch={fetch}
-              />
-              <DeleteSubcategory
-                id={subId}
-                isOpen={deleteModal.isOpen}
-                onClose={deleteModal.onClose}
-                fetch={fetch}
-              />
-            </Table>
-          </TableContainer>
+          {subFilter?.rows?.length ? (
+            <TableContainer id="table-content">
+              <Table size="sm">
+                <Thead>
+                  <Tr>
+                    <Th>#</Th>
+                    <Th>name</Th>
+                    <Th>Category</Th>
+                    <Th>Action</Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  {subFilter &&
+                    subFilter?.rows?.map((sub, idx) => (
+                      <Tr>
+                        <Td w={"5%"}>{idx + 1}</Td>
+                        <Td>{sub.name}</Td>
+                        <Td>{sub.Category.name}</Td>
+                        <Td w={"5%"}>
+                          {userSelector.role == "SUPERADMIN" ? (
+                            <MenuBurger sub={sub} />
+                          ) : null}
+                        </Td>
+                      </Tr>
+                    ))}
+                </Tbody>
+                <EditSubcategory
+                  id={subId}
+                  setId={setSubId}
+                  isOpen={editModal.isOpen}
+                  onClose={editModal.onClose}
+                  fetch={fetch}
+                />
+                <DeleteSubcategory
+                  id={subId}
+                  isOpen={deleteModal.isOpen}
+                  onClose={deleteModal.onClose}
+                  fetch={fetch}
+                />
+              </Table>
+            </TableContainer>
+          ) : (
+            <Center border={"1px"} h={"550px"}>
+              Subcategory not found
+            </Center>
+          )}
         </Box>
         <Flex p={2} m={2} justify={"center"}>
           <Pagination

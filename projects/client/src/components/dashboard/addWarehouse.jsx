@@ -35,35 +35,51 @@ export default function AddWarehouse(props) {
         position: "top",
       });
       props.fetch();
-      props.onClose();
+      clearData();
     } catch (err) {
       console.log(err.response.data);
     }
   };
+
+  const clearData = () => {
+    setWarehouse({ name: "", phone: "", city_id: "", address: "" });
+    setProvince_id(null);
+    props.onClose();
+  };
+
   return (
     <>
-      <Modal
-        scrollBehavior="inside"
-        isOpen={props.isOpen}
-        onClose={props.onClose}
-      >
+      <Modal scrollBehavior="inside" isOpen={props.isOpen} onClose={clearData}>
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent mx={2}>
           <ModalHeader p={2}>Add Warehouse</ModalHeader>
           <ModalCloseButton />
-          <ModalBody display={"flex"} flexDir={"column"} gap={2}>
-            <Box>
-              name: <Input id="name" type="text" onChange={inputHandler} />
+          <ModalBody display={"flex"} flexDir={"column"} gap={4}>
+            <Box
+              className={`inputbox ${warehouse.name ? "input-has-value" : ""}`}
+            >
+              <Input id="name" onChange={inputHandler} />
+              <label>Name</label>
             </Box>
-            <Box>
-              phone:
-              <Input id="phone" type={"number"} onChange={inputHandler} />
+            <Box
+              className={`inputbox ${warehouse.phone ? "input-has-value" : ""}`}
+            >
+              <Input id="phone" onChange={inputHandler} type="number" />
+              <label>Phone</label>
             </Box>
-            <Box>
-              province:
+            <Box
+              className={`inputbox ${
+                warehouse.address ? "input-has-value" : ""
+              }`}
+            >
+              <Input id="address" onChange={inputHandler} />
+              <label>Address</label>
+            </Box>
+            <Box className={`inputbox ${province_id ? "input-has-value" : ""}`}>
               <Select
                 id="province"
-                placeholder="choose province.."
+                placeholder="          "
+                value={province_id}
                 onChange={(e) => {
                   setProvince_id(e.target.value);
                 }}
@@ -75,13 +91,18 @@ export default function AddWarehouse(props) {
                     </option>
                   ))}
               </Select>
+              <label>Province</label>
             </Box>
-            <Box>
-              city:
+            <Box
+              className={`inputbox ${
+                warehouse.city_id ? "input-has-value" : ""
+              }`}
+            >
               <Select
-                placeholder="choose city.."
+                placeholder="         "
                 onChange={inputHandler}
                 id="city_id"
+                value={warehouse.city_id}
               >
                 {cities &&
                   cities.map((val, idx) => (
@@ -90,21 +111,22 @@ export default function AddWarehouse(props) {
                     </option>
                   ))}
               </Select>
-            </Box>
-
-            <Box>
-              address:
-              <Textarea
-                id="address"
-                maxLength={225}
-                onChange={inputHandler}
-                placeholder="road, district  "
-              />
+              <label>City</label>
             </Box>
           </ModalBody>
 
           <ModalFooter>
             <Button
+              isDisabled={
+                !(
+                  warehouse.name &&
+                  warehouse.phone &&
+                  warehouse.address &&
+                  warehouse.city_id
+                )
+                  ? true
+                  : false
+              }
               isLoading={isLoading}
               onClick={() => {
                 setIsLoading(true);
