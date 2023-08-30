@@ -1,4 +1,4 @@
-import { Box, Center, Flex, Grid } from "@chakra-ui/react";
+import { Box, Center, Flex } from "@chakra-ui/react";
 import {
   Accordion,
   AccordionItem,
@@ -27,7 +27,7 @@ export default function FaqPage() {
         <Box fontSize={"30px"} fontWeight={"bold"}>
           FREQUENTLY ASKED QUESTIONS
         </Box>
-        <Grid templateColumns={"repeat(2, 1fr)"} gap={5}>
+        <Box className="faqpage">
           <Flex flexDir={"column"}>
             <Box fontSize={"20px"} fontWeight={"bold"} my={5}>
               TOP QUESTIONS
@@ -256,7 +256,7 @@ export default function FaqPage() {
               </AccordionItem>
             </Accordion>
           </Flex>
-        </Grid>
+        </Box>
       </Flex>
       <Footer />
     </Center>

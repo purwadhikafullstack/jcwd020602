@@ -51,7 +51,7 @@ export default function ProfilePage() {
       if (selectedFile) {
         formData.append("avatar", selectedFile);
       }
-
+      setIsLoading(true);
       try {
         const res = await api().patch("/auth/profile", formData);
         toast({
@@ -59,11 +59,13 @@ export default function ProfilePage() {
           status: "success",
         });
         fetch(dispatch);
+        setIsLoading(false);
       } catch (err) {
         toast({
           title: err?.response?.data.message,
           status: "error",
         });
+        setIsLoading(false);
       }
     },
   });
@@ -89,17 +91,20 @@ export default function ProfilePage() {
         .required("Required"),
     }),
     onSubmit: async () => {
+      setIsLoading1(true);
       try {
         const res = await api().patch("/auth/password", formik2.values);
         toast({
           title: res.data.message,
           status: "success",
         });
+        setIsLoading1(false);
       } catch (err) {
         toast({
           title: err?.response?.data?.message,
           status: "error",
         });
+        setIsLoading1(false);
       }
     },
   });
@@ -195,9 +200,7 @@ export default function ProfilePage() {
             ))}
           </Box>
           <Box className="form-profile">
-            <FormControl
-              isInvalid={formField === "phone" && formik.errors.phone}
-            >
+            <FormControl>
               <Box
                 className={`inputbox ${
                   formik.values.phone ? "input-has-value" : ""
@@ -216,10 +219,14 @@ export default function ProfilePage() {
                   </InputRightElement>
                 </InputGroup>
                 <Box>
-                  <FormErrorMessage>
-                    <Icon as={TbAlertCircleFilled} w="16px" h="16px" />
-                    <Text fontSize={10}>{formik.errors.phone}</Text>
-                  </FormErrorMessage>
+                  {formik.errors.phone ? (
+                    <Flex p={1} align={"center"} color={"red"}>
+                      <Box>
+                        <Icon as={TbAlertCircleFilled} />
+                      </Box>
+                      <Box fontSize={10}>{formik.errors.phone}</Box>
+                    </Flex>
+                  ) : null}
                 </Box>
               </Box>
             </FormControl>
@@ -227,13 +234,7 @@ export default function ProfilePage() {
           <Button
             id="button"
             isLoading={isLoading}
-            onClick={() => {
-              setIsLoading(true);
-              setTimeout(() => {
-                setIsLoading(false);
-                formik.handleSubmit();
-              }, 2000);
-            }}
+            onClick={formik.handleSubmit}
           >
             SAVE CHANGES
           </Button>
@@ -256,10 +257,7 @@ export default function ProfilePage() {
               >
                 <Box className="form-profile">
                   {inputPass.map((val) => (
-                    <FormControl
-                      key={val.id}
-                      isInvalid={formField === val.id && formik2.errors[val.id]}
-                    >
+                    <FormControl key={val.id}>
                       <Box
                         className={`inputbox ${
                           formik2.values[val.id] ? "input-has-value" : ""
@@ -283,10 +281,14 @@ export default function ProfilePage() {
                           </InputRightElement>
                         </InputGroup>
                         <Box>
-                          <FormErrorMessage>
-                            <Icon as={TbAlertCircleFilled} w="16px" h="16px" />
-                            <Text fontSize={10}>{formik2.errors[val.id]}</Text>
-                          </FormErrorMessage>
+                          {formik2.errors[val.id] ? (
+                            <Flex p={1} align={"center"} color={"red"}>
+                              <Box>
+                                <Icon as={TbAlertCircleFilled} />
+                              </Box>
+                              <Box fontSize={10}>{formik2.errors[val.id]}</Box>
+                            </Flex>
+                          ) : null}
                         </Box>
                       </Box>
                     </FormControl>
@@ -295,13 +297,7 @@ export default function ProfilePage() {
                 <Button
                   id="button"
                   isLoading={isLoading1}
-                  onClick={() => {
-                    setIsLoading1(true);
-                    setTimeout(() => {
-                      setIsLoading1(false);
-                      formik2.handleSubmit();
-                    }, 2000);
-                  }}
+                  onClick={formik2.handleSubmit}
                 >
                   UPDATE PASSWORD
                 </Button>

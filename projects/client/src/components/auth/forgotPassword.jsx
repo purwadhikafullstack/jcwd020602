@@ -12,17 +12,27 @@ import {
 import { InputGroup, InputRightElement, useToast } from "@chakra-ui/react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Footer from "../website/footer";
 import { api } from "../../api/api";
 import { EmailIcon } from "@chakra-ui/icons";
 import { TbAlertCircleFilled } from "react-icons/tb";
 import Navbar from "../website/navbar";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 export default function ForgotPassword() {
   const toast = useToast({ duration: 3000, isClosable: true, position: "top" });
   const [isLoading, setIsLoading] = useState(false);
   const [formField, setFormField] = useState("");
+  const nav = useNavigate();
+  const userSelector = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (userSelector.email) {
+      return nav("/");
+    }
+  }, [userSelector]);
 
   const formik = useFormik({
     initialValues: {
@@ -36,6 +46,7 @@ export default function ForgotPassword() {
         .required("* Email is required"),
     }),
     onSubmit: async () => {
+      setIsLoading(true);
       try {
         const email = formik.values.email;
         const res = await api().get("/auth/generate-token/email", {
@@ -45,11 +56,13 @@ export default function ForgotPassword() {
           title: res.data.message,
           status: "success",
         });
+        setIsLoading(false);
       } catch (err) {
         toast({
           title: err?.response?.data,
           status: "error",
         });
+        setIsLoading(false);
       }
     },
   });
@@ -107,13 +120,7 @@ export default function ForgotPassword() {
             id="button"
             isDisabled={!formik.values.email}
             isLoading={isLoading}
-            onClick={() => {
-              setIsLoading(true);
-              setTimeout(() => {
-                formik.handleSubmit();
-                setIsLoading(false);
-              }, 2000);
-            }}
+            onClick={formik.handleSubmit}
           >
             Reset
           </Button>
