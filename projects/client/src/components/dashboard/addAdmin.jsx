@@ -54,7 +54,6 @@ export default function AddAdmin(props) {
         props.fetch();
         clearData();
       } catch (err) {
-        console.log(err.response.data);
         toast({
           title: err?.response?.data?.message,
           status: "error",

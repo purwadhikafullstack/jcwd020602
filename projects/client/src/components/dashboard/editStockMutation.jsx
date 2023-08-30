@@ -41,6 +41,7 @@ export default function EditStockMutation(props) {
         .required("Product name is required"),
     }),
     onSubmit: async () => {
+      setIsLoadingButton(true);
       try {
         const resPostMutation = await api().patch(
           `/stockMutations/${props.id}`,
@@ -258,7 +259,6 @@ export default function EditStockMutation(props) {
               <Button
                 isLoading={isLoadingButton}
                 onClick={() => {
-                  setIsLoadingButton(true);
                   formik.handleSubmit();
                 }}
               >

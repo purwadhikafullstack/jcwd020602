@@ -45,11 +45,11 @@ export default function EditAdmin(props) {
         props.fetch();
         clearAdmin();
       } catch (err) {
-        console.log(err.response.data);
+        clearAdmin();
       }
     },
   });
-  console.log(formik.values);
+
   useEffect(() => {
     if (props.id) {
       fetchAdminbyId();

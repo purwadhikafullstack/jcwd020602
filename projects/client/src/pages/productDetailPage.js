@@ -1,17 +1,8 @@
 import { useLocation } from "react-router-dom";
 import { api } from "../api/api";
 import { useEffect, useState } from "react";
-import {
-  Box,
-  Center,
-  Flex,
-  Image,
-  Text,
-  Button,
-  useToast,
-  Skeleton,
-  Spinner,
-} from "@chakra-ui/react";
+import { Box, Center, Flex, Image } from "@chakra-ui/react";
+import { Text, Button, useToast } from "@chakra-ui/react";
 import Footer from "../components/website/footer";
 import { Recommend } from "../components/website/carousel";
 import { useDispatch, useSelector } from "react-redux";
@@ -33,7 +24,8 @@ export default function ProductDetailPage() {
   const [selectedImage, setSelectedImage] = useState(0);
   const [category, setCategory] = useState();
   const [shoeId, setShoeId] = useState();
-  const [sizeAndStock, setSizeAndStock] = useState();
+  const [sizeAndStock, setSizeAndStock] = useState([]);
+
   useEffect(() => {
     getShoe();
   }, [name]);
@@ -49,7 +41,8 @@ export default function ProductDetailPage() {
       setShoe(res.data.shoe);
       setSizeAndStock(res.data.sizeAndStock);
     } catch (err) {
-      console.log(err.response);
+      setShoe();
+      setSizeAndStock([]);
     }
   };
 
@@ -80,7 +73,7 @@ export default function ProductDetailPage() {
           w={"100%"}
           pos={"relative"}
           justify={"center"}
-          border={"2px"}
+          // border={"2px"}
         >
           <LazyLoadImage
             className="sepatu-detail"

@@ -151,7 +151,7 @@ export default function StockHistoryPage() {
               <TableHistory stockHistories={stockHistories} />
             </>
           )}
-          <Flex p={2} m={2} justify={"center"} border={"2px"}>
+          <Flex p={2} m={2} justify={"center"}>
             <Pagination
               shown={shown}
               setShown={setShown}

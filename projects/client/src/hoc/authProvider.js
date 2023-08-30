@@ -31,6 +31,6 @@ export async function fetch(dispatch) {
       }
     }
   } catch (err) {
-    console.log(err.response.data);
+    return err;
   }
 }

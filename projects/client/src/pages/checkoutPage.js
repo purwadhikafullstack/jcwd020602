@@ -97,7 +97,6 @@ export default function CheckOutPage() {
         payModal.onOpen();
       }
     } catch (err) {
-      console.log(err.response?.data);
       toast({
         title: err.response?.data,
         status: "error",

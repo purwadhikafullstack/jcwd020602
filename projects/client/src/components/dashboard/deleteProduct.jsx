@@ -28,7 +28,7 @@ export function DeleteProduct(props) {
       props.fetch();
       props.onClose();
     } catch (err) {
-      console.log(err.response.data);
+      props.onClose();
     }
   };
 

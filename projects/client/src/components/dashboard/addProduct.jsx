@@ -50,6 +50,7 @@ export default function AddShoe(props) {
     for (const files of selectedFiles) {
       formData.append("shoe", files);
     }
+    setIsLoading(true);
     try {
       const token = JSON.parse(localStorage.getItem("user"));
       const res = await api().post("/shoes", formData, {
@@ -60,10 +61,12 @@ export default function AddShoe(props) {
         status: "success",
         position: "top",
       });
+      setIsLoading(false);
       props.fetch();
       clear();
     } catch (err) {
-      console.log(err);
+      setIsLoading(false);
+      clear();
     }
   };
 
@@ -111,7 +114,11 @@ export default function AddShoe(props) {
             </Box>
             <Box>
               status:
-              <Select id="status" onChange={inputHandler}>
+              <Select
+                placeholder="select..."
+                id="status"
+                onChange={inputHandler}
+              >
                 <option value={"NORMAL"}>NORMAL</option>
                 <option value={"BESTSELLER"}>BESTSELLER</option>
                 <option value={"DISCOUNT"}>DISCOUNT</option>
@@ -195,16 +202,7 @@ export default function AddShoe(props) {
           </ModalBody>
 
           <ModalFooter>
-            <Button
-              isLoading={isLoading}
-              onClick={() => {
-                setIsLoading(true);
-                setTimeout(() => {
-                  setIsLoading(false);
-                  uploadShoe();
-                }, 2000);
-              }}
-            >
+            <Button isLoading={isLoading} onClick={uploadShoe}>
               confirm
             </Button>
           </ModalFooter>

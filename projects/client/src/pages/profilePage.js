@@ -30,6 +30,7 @@ export default function ProfilePage() {
   const [selectedFile, setSelectedfile] = useState();
   const userSelector = useSelector((state) => state.auth);
   const dispatch = useDispatch();
+
   const formik = useFormik({
     initialValues: {
       ...userSelector,
@@ -39,6 +40,7 @@ export default function ProfilePage() {
       phone: Yup.string()
         .min(10, "min 10 digits")
         .max(12, "max 12 digits")
+        .matches(/^((0)|(\+62))/, "Must start with 0 ")
         .required("phone is required"),
     }),
     onSubmit: async () => {
@@ -236,70 +238,76 @@ export default function ProfilePage() {
             SAVE CHANGES
           </Button>
 
-          <Flex flexDir={"column"} gap={5}>
-            <Box
-              w={"180px"}
-              cursor={"pointer"}
-              fontWeight={"bold"}
-              textDecor={"underline"}
-              onClick={() => (boxPass ? setBoxPass(false) : setBoxPass(true))}
-            >
-              CHANGE PASSWORD
-            </Box>
-            <Box display={boxPass ? "flex" : "none"} flexDir={"column"} gap={5}>
-              <Box className="form-profile">
-                {inputPass.map((val) => (
-                  <FormControl
-                    key={val.id}
-                    isInvalid={formField === val.id && formik2.errors[val.id]}
-                  >
-                    <Box
-                      className={`inputbox ${
-                        formik2.values[val.id] ? "input-has-value" : ""
-                      }`}
-                    >
-                      <InputGroup size="md">
-                        <Input
-                          id={val.id}
-                          name={val.id}
-                          value={formik2.values[val.id]}
-                          onChange={inputHandler2}
-                          type={val.type ? "text" : "password"}
-                          border={"2px"}
-                          borderRadius={0}
-                        />
-                        <label>{val.id}</label>
-                        <InputRightElement width="4rem">
-                          <Button h="1.75rem" size="sm" onClick={val.handle}>
-                            {val.type ? <ViewOffIcon /> : <ViewIcon />}
-                          </Button>
-                        </InputRightElement>
-                      </InputGroup>
-                      <Box>
-                        <FormErrorMessage>
-                          <Icon as={TbAlertCircleFilled} w="16px" h="16px" />
-                          <Text fontSize={10}>{formik2.errors[val.id]}</Text>
-                        </FormErrorMessage>
-                      </Box>
-                    </Box>
-                  </FormControl>
-                ))}
-              </Box>
-              <Button
-                id="button"
-                isLoading={isLoading1}
-                onClick={() => {
-                  setIsLoading1(true);
-                  setTimeout(() => {
-                    setIsLoading1(false);
-                    formik2.handleSubmit();
-                  }, 2000);
-                }}
+          {userSelector.providerId ? null : (
+            <Flex flexDir={"column"} gap={5}>
+              <Box
+                w={"180px"}
+                cursor={"pointer"}
+                fontWeight={"bold"}
+                textDecor={"underline"}
+                onClick={() => (boxPass ? setBoxPass(false) : setBoxPass(true))}
               >
-                UPDATE PASSWORD
-              </Button>
-            </Box>
-          </Flex>
+                CHANGE PASSWORD
+              </Box>
+              <Box
+                display={boxPass ? "flex" : "none"}
+                flexDir={"column"}
+                gap={5}
+              >
+                <Box className="form-profile">
+                  {inputPass.map((val) => (
+                    <FormControl
+                      key={val.id}
+                      isInvalid={formField === val.id && formik2.errors[val.id]}
+                    >
+                      <Box
+                        className={`inputbox ${
+                          formik2.values[val.id] ? "input-has-value" : ""
+                        }`}
+                      >
+                        <InputGroup size="md">
+                          <Input
+                            id={val.id}
+                            name={val.id}
+                            value={formik2.values[val.id]}
+                            onChange={inputHandler2}
+                            type={val.type ? "text" : "password"}
+                            border={"2px"}
+                            borderRadius={0}
+                          />
+                          <label>{val.id}</label>
+                          <InputRightElement width="4rem">
+                            <Button h="1.75rem" size="sm" onClick={val.handle}>
+                              {val.type ? <ViewOffIcon /> : <ViewIcon />}
+                            </Button>
+                          </InputRightElement>
+                        </InputGroup>
+                        <Box>
+                          <FormErrorMessage>
+                            <Icon as={TbAlertCircleFilled} w="16px" h="16px" />
+                            <Text fontSize={10}>{formik2.errors[val.id]}</Text>
+                          </FormErrorMessage>
+                        </Box>
+                      </Box>
+                    </FormControl>
+                  ))}
+                </Box>
+                <Button
+                  id="button"
+                  isLoading={isLoading1}
+                  onClick={() => {
+                    setIsLoading1(true);
+                    setTimeout(() => {
+                      setIsLoading1(false);
+                      formik2.handleSubmit();
+                    }, 2000);
+                  }}
+                >
+                  UPDATE PASSWORD
+                </Button>
+              </Box>
+            </Flex>
+          )}
         </Flex>
       </Flex>
       <Footer />

@@ -1,4 +1,4 @@
-import { ModalHeader, ModalFooter, ModalBody } from "@chakra-ui/react";
+import { ModalHeader, ModalFooter, ModalBody, Show } from "@chakra-ui/react";
 import { Modal, ModalOverlay, ModalContent } from "@chakra-ui/react";
 import { ModalCloseButton, Button, Flex, Image } from "@chakra-ui/react";
 import { Input, Textarea, Select, Box, useToast } from "@chakra-ui/react";
@@ -29,8 +29,8 @@ export default function EditProduct(props) {
 
   const fetchProductId = async () => {
     const res = await api().get("/shoes/" + props.id);
-    setShoe(res.data);
-    const { ShoeImages } = res.data;
+    setShoe(res.data.shoe);
+    const { ShoeImages } = res.data.shoe;
     const images = ShoeImages.map((val) => val.shoe_img);
     setSelectedImages(images);
   };
@@ -56,6 +56,7 @@ export default function EditProduct(props) {
         formData.append("shoe", files);
       }
     }
+    setIsLoading(true);
     try {
       const res = await api().patch("/shoes/" + props.id, formData);
       toast({
@@ -63,11 +64,14 @@ export default function EditProduct(props) {
         status: "success",
         position: "top",
       });
+      setIsLoading(false);
       props.fetch();
-      clearS();
+      setSelectedImages([]);
+      setSelectedFiles([]);
+      setShoe({});
       props.onClose();
     } catch (err) {
-      console.log(err.response.data);
+      setIsLoading(false);
     }
   };
 
@@ -91,18 +95,15 @@ export default function EditProduct(props) {
     setShoe((prevShoe) => ({ ...prevShoe, shoe_img: shoeImages }));
   };
 
-  const clearS = () => {
-    setShoe({});
-    setSelectedFiles(null);
-    props.setId(null);
-  };
   return (
     <>
       <Modal
         scrollBehavior="inside"
         isOpen={props.isOpen}
         onClose={() => {
-          clearS();
+          setSelectedImages([]);
+          setSelectedFiles([]);
+          setShoe({});
           props.onClose();
         }}
       >
@@ -167,18 +168,24 @@ export default function EditProduct(props) {
               <Select
                 id="category_id"
                 placeholder="choose category.."
-                value={shoe.category_id}
+                // value={shoe.category_id}
                 onChange={(e) => {
                   inputHandler(e);
                   setSub(e.target.value);
                 }}
               >
                 {categories &&
-                  categories.map((val, idx) => (
-                    <option key={val.id} value={val.id}>
-                      {val.name}
-                    </option>
-                  ))}
+                  categories.map((val, idx) =>
+                    shoe?.category_id != val.id ? (
+                      <option key={val.id} value={val.id}>
+                        {val.name}
+                      </option>
+                    ) : (
+                      <option selected key={val.id} value={val.id}>
+                        {val.name}
+                      </option>
+                    )
+                  )}
               </Select>
             </Box>
             <Box>
@@ -186,17 +193,23 @@ export default function EditProduct(props) {
               <Select
                 id="subcategory_id"
                 placeholder="choose subcategory.."
-                value={shoe.subcategory_id}
+                // value={shoe.subcategory_id}
                 onChange={inputHandler}
               >
                 {subcategories &&
                   subcategories
-                    .filter((val) => val.category_id == sub)
-                    .map((val) => (
-                      <option key={val.id} value={val.id}>
-                        {val.name}
-                      </option>
-                    ))}
+                    ?.filter((val) => val.category_id == shoe?.category_id)
+                    .map((val) =>
+                      shoe?.subcategory_id != val.id ? (
+                        <option key={val.id} value={val.id}>
+                          {val.name}
+                        </option>
+                      ) : (
+                        <option selected key={val.id} value={val.id}>
+                          {val.name}
+                        </option>
+                      )
+                    )}
               </Select>
             </Box>
             <Box>
@@ -211,12 +224,24 @@ export default function EditProduct(props) {
               />
             </Box>
             {/* Preview the selected images */}
-            {selectedImages.length ? (
+            {selectedFiles.length ? (
+              selectedImages.length ? (
+                <Flex flexDir={"column"} borderColor={"#E6EBF2"} gap={1}>
+                  {selectedImages.map((imageUrl, index) => (
+                    <Image
+                      key={index}
+                      src={imageUrl}
+                      alt={`Product Image ${index + 1}`}
+                    />
+                  ))}
+                </Flex>
+              ) : null
+            ) : selectedImages.length ? (
               <Flex flexDir={"column"} borderColor={"#E6EBF2"} gap={1}>
                 {selectedImages.map((imageUrl, index) => (
                   <Image
                     key={index}
-                    src={imageUrl}
+                    src={`${process.env.REACT_APP_API_BASE_URL}/${imageUrl}`}
                     alt={`Product Image ${index + 1}`}
                   />
                 ))}
@@ -225,16 +250,7 @@ export default function EditProduct(props) {
           </ModalBody>
 
           <ModalFooter>
-            <Button
-              isLoading={isLoading}
-              onClick={() => {
-                setIsLoading(true);
-                setTimeout(() => {
-                  setIsLoading(false);
-                  editShoe();
-                }, 2000);
-              }}
-            >
+            <Button isLoading={isLoading} onClick={editShoe}>
               confirm
             </Button>
           </ModalFooter>

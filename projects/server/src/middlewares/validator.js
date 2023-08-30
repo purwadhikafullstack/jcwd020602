@@ -9,7 +9,6 @@ const validate = (schema) => (req, res, next) => {
       data: null,
     });
   }
-  console.log("masuk validasi joi");
   next();
 };
 //-----------------------------------------------------USER

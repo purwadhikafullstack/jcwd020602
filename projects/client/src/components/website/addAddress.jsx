@@ -32,13 +32,15 @@ export default function AddAddress(props) {
       title: Yup.string().required("Required"),
       name: Yup.string().required("Required"),
       phone: Yup.string()
-        .min(12, "min 12 digits")
+        .min(10, "min 10 digits")
         .max(12, "max 12 digits")
+        .matches(/^((0)|(\+62))/, "Must start with 0 ")
         .required("Required"),
       city_id: Yup.number().required("Required"),
       address: Yup.string().max(100).required("Required"),
     }),
     onSubmit: async () => {
+      setIsLoading(true);
       try {
         const res = await api().post("/address", formik.values);
         toast({
@@ -46,12 +48,14 @@ export default function AddAddress(props) {
           status: "success",
         });
         props.fetch();
+        setIsLoading(false);
         clearData();
       } catch (err) {
         toast({
           title: err?.response?.data?.message,
           status: "error",
         });
+        setIsLoading(false);
       }
     },
   });
@@ -177,13 +181,7 @@ export default function AddAddress(props) {
           <Button
             id="button"
             isLoading={isLoading}
-            onClick={() => {
-              setIsLoading(true);
-              setTimeout(() => {
-                setIsLoading(false);
-                formik.handleSubmit();
-              }, 2000);
-            }}
+            onClick={formik.handleSubmit}
           >
             Save
           </Button>

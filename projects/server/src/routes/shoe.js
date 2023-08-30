@@ -1,6 +1,6 @@
 const shoeController = require("../controllers").shoeController;
 const router = require("express").Router();
-const { fileUploader } = require("../middlewares/shoemulter");
+const { fileUploader } = require("../middlewares/multer");
 const roleDecoder = require("../middlewares/roleDecoder");
 
 router.post(

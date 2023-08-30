@@ -49,12 +49,8 @@ export default function PaymentImageModal(props) {
     }
   }, [props.order]);
   function clearData() {
-    try {
-      props.setOrder(null);
-      props.onClose();
-    } catch (error) {
-      console.log(error);
-    }
+    props.setOrder(null);
+    props.onClose();
   }
   return (
     <>
@@ -78,16 +74,25 @@ export default function PaymentImageModal(props) {
               >
                 Cancel Order
               </Button>
+
               <Flex gap={"5px"} w={"50%"}>
+                {props?.order?.status == "CONFIRM_PAYMENT" ? (
+                  <Button
+                    isLoading={isLoadingButton}
+                    onClick={() => confirmOrder("PAYMENT")}
+                  >
+                    Reject Payment
+                  </Button>
+                ) : null}
                 <Button
                   isLoading={isLoadingButton}
-                  onClick={() => confirmOrder("PAYMENT")}
-                >
-                  Reject Payment
-                </Button>
-                <Button
-                  isLoading={isLoadingButton}
-                  onClick={() => confirmOrder("PROCESSING")}
+                  onClick={() => {
+                    if (props?.order?.status == "CONFIRM_PAYMENT") {
+                      confirmOrder("PROCESSING");
+                    } else if (props?.order?.status == "PROCESSING") {
+                      confirmOrder("DELIVERY");
+                    }
+                  }}
                 >
                   Process Order
                 </Button>

@@ -1,14 +1,8 @@
-import {
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  Spinner,
-  Center,
-} from "@chakra-ui/react";
+import { ModalOverlay, ModalContent, ModalHeader } from "@chakra-ui/react";
 import { ModalFooter, ModalBody, ModalCloseButton } from "@chakra-ui/react";
-import { Button, Input, Select, useToast, Box, Modal } from "@chakra-ui/react";
+import { Button, Select, useToast, Modal, Spinner } from "@chakra-ui/react";
 import { FormControl, FormLabel, NumberInput } from "@chakra-ui/react";
-import { NumberInputField, FormErrorMessage } from "@chakra-ui/react";
+import { NumberInputField, FormErrorMessage, Center } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { api } from "../../api/api";
 import * as Yup from "yup";
@@ -28,6 +22,7 @@ export default function EditStock(props) {
         .required("stock is required"),
     }),
     onSubmit: async () => {
+      setIsLoadingButton(true);
       try {
         const res = await api().patch("/stocks/" + formik.values?.id, {
           stock: formik.values.stock,
@@ -76,7 +71,7 @@ export default function EditStock(props) {
           <ModalHeader p={2}>Edit Stock</ModalHeader>
           <ModalCloseButton />
           {isLoading ? (
-            <Center w={"100%"} h={"100%"}>
+            <Center border={"1px"} h={"550px"}>
               <Spinner />
             </Center>
           ) : (
@@ -160,7 +155,6 @@ export default function EditStock(props) {
             <Button
               isLoading={isLoadingButton}
               onClick={() => {
-                setIsLoadingButton(true);
                 formik.handleSubmit();
               }}
             >

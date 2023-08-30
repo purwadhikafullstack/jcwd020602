@@ -28,7 +28,7 @@ export function DeleteCategory(props) {
       props.fetch();
       props.onClose();
     } catch (err) {
-      console.log(err.response.data);
+      props.onClose();
     }
   };
 
@@ -88,7 +88,7 @@ export function DeleteSubcategory(props) {
       props.fetch();
       props.onClose();
     } catch (err) {
-      console.log(err.response.data);
+      props.onClose();
     }
   };
 
@@ -148,7 +148,7 @@ export function DeleteBrand(props) {
       props.fetch();
       props.onClose();
     } catch (err) {
-      console.log(err.response.data);
+      props.onClose();
     }
   };
 

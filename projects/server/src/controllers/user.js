@@ -250,7 +250,7 @@ const userController = {
         return res.status(400).send({ message: "email alrdy exist" });
       }
 
-      await addAdmin(req.body, req.file, t);
+      await addAdmin(req.body, filename, t);
       await t.commit();
       return res.status(200).send({ message: "success add admin" });
     } catch (err) {
