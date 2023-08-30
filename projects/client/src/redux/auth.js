@@ -13,6 +13,7 @@ function userReducer(state = init, action) {
       role: action.payload.role,
       avatar_url: action.payload.avatar_url,
       phone: action.payload.phone,
+      providerId: action.payload.providerId,
     };
   } else if (action.type == "logout") {
     return init;

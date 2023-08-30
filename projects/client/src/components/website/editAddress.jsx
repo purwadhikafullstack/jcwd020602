@@ -32,12 +32,14 @@ export default function EditAddress({ data, fetch, isOpen, onClose }) {
       address_details: Yup.string().max(100).required("Required"),
     }),
     onSubmit: async () => {
+      setIsLoading(true);
       try {
         const res = await api().patch("/address/edit", formik.values);
         toast({
           title: res.data.message,
           status: "success",
         });
+        setIsLoading(false);
         fetch();
         onClose();
       } catch (err) {
@@ -45,6 +47,7 @@ export default function EditAddress({ data, fetch, isOpen, onClose }) {
           title: err?.response?.data?.message,
           status: "error",
         });
+        setIsLoading(false);
       }
     },
   });
@@ -186,13 +189,7 @@ export default function EditAddress({ data, fetch, isOpen, onClose }) {
             id="button"
             variant={"outline"}
             isLoading={isLoading}
-            onClick={() => {
-              setIsLoading(true);
-              setTimeout(() => {
-                setIsLoading(false);
-                formik.handleSubmit();
-              }, 2000);
-            }}
+            onClick={formik.handleSubmit}
           >
             Save
           </Button>
