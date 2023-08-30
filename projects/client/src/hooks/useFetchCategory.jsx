@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { api } from "../api/api";
 
-export const useFetchCategory = () => {
+export const useFetchCategory = (filter) => {
   const [categories, setCategories] = useState([]);
+  const [categoriesFilter, setCategoriesFilter] = useState({ rows: [] });
   const fetch = async () => {
     try {
-      const res = await api().get(`/categories`);
-      setCategories(res.data);
+      const res = await api().get(`/categories`, { params: { ...filter } });
+      setCategories(res.data.rows);
+      setCategoriesFilter(res.data);
     } catch (err) {
       console.log(err?.response?.data);
     }
@@ -16,16 +18,18 @@ export const useFetchCategory = () => {
     fetch();
   }, []);
 
-  return { categories, fetch };
+  return { categories, categoriesFilter, fetch };
 };
 
-export const useFetchSubcategory = () => {
+export const useFetchSubcategory = (filter) => {
   const [sub, setSub] = useState([]);
+  const [subFilter, setSubFilter] = useState({ rows: [] });
 
   const fetch = async () => {
     try {
-      const res = await api().get("/subcategories");
-      setSub(res.data);
+      const res = await api().get("/subcategories", { params: filter });
+      setSub(res.data.rows);
+      setSubFilter(res.data);
     } catch (err) {
       console.log(err?.response?.data);
     }
@@ -35,7 +39,7 @@ export const useFetchSubcategory = () => {
     fetch();
   }, []);
 
-  return { sub, fetch };
+  return { sub, subFilter, fetch };
 };
 
 export const useFetchSelectCategory = () => {

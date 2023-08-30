@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import { api } from "../api/api";
 import { useSelector } from "react-redux";
 
-export const useFetchWarehouse = () => {
+export const useFetchWarehouse = (filter) => {
   const [warehouses, setWarehouses] = useState([]);
-
+  const [warehouseFilter, SetWarehouseFilter] = useState({ rows: [] });
   const fetch = async () => {
     try {
-      const res = await api().get(`/warehouses`);
-      setWarehouses(res.data);
+      const res = await api().get(`/warehouses`, { params: filter });
+      setWarehouses(res.data.rows);
+      SetWarehouseFilter(res.data);
     } catch (err) {
       console.log(err.response.data);
     }
@@ -16,7 +17,7 @@ export const useFetchWarehouse = () => {
   useEffect(() => {
     fetch();
   }, []);
-  return { warehouses, fetch };
+  return { warehouses, warehouseFilter, fetch };
 };
 
 export const useFetchWareProv = () => {

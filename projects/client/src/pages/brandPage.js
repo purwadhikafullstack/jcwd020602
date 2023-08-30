@@ -2,7 +2,7 @@ import {
   InputRightAddon,
   InputGroup,
   ButtonGroup,
-  InputRightElement,
+  Center,
 } from "@chakra-ui/react";
 import { useDisclosure, TableContainer, MenuButton } from "@chakra-ui/react";
 import { Select, Menu, MenuList, MenuItem, Image } from "@chakra-ui/react";
@@ -19,7 +19,7 @@ import { AddBrand } from "../components/dashboard/addCategory";
 import { DeleteBrand } from "../components/dashboard/deleteCategory";
 import Pagination from "../components/dashboard/pagination";
 import NavbarDashboard from "../components/dashboard/navbarDashboard";
-
+// ----------------------------------------------- CLEAR -FAHMI
 export default function BrandPage() {
   const { isOpen, onClose, onOpen } = useDisclosure();
   const addModal = useDisclosure();
@@ -36,7 +36,6 @@ export default function BrandPage() {
     search: "",
   });
   const { brandsFilter, fetch } = useFetchBrand(filter);
-
   // -------------------------- pagination
   const [pages, setPages] = useState([]);
   const [shown, setShown] = useState({ page: 1 });
@@ -61,6 +60,38 @@ export default function BrandPage() {
   useEffect(() => {
     fetch();
   }, [filter]);
+
+  function MenuBurger({ brand }) {
+    return (
+      <Menu>
+        {({ isOpen }) => (
+          <>
+            <MenuButton isActive={isOpen} as={Button} p={0}>
+              <Icon as={isOpen ? GrClose : GrMenu} />
+            </MenuButton>
+            <MenuList>
+              <MenuItem
+                onClick={() => {
+                  setBrandId(brand.id);
+                  editModal.onOpen();
+                }}
+              >
+                Edit
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  setBrandId(brand.id);
+                  deleteModal.onOpen();
+                }}
+              >
+                Delete
+              </MenuItem>
+            </MenuList>
+          </>
+        )}
+      </Menu>
+    );
+  }
 
   return (
     <>
@@ -144,33 +175,7 @@ export default function BrandPage() {
                         #{idx + 1}
                       </Box>
                       {userSelector.role == "SUPERADMIN" ? (
-                        <Menu>
-                          {({ isOpen }) => (
-                            <>
-                              <MenuButton isActive={isOpen} as={Button} p={0}>
-                                <Icon as={isOpen ? GrClose : GrMenu} />
-                              </MenuButton>
-                              <MenuList>
-                                <MenuItem
-                                  onClick={() => {
-                                    setBrandId(brand.id);
-                                    editModal.onOpen();
-                                  }}
-                                >
-                                  Edit
-                                </MenuItem>
-                                <MenuItem
-                                  onClick={() => {
-                                    setBrandId(brand.id);
-                                    deleteModal.onOpen();
-                                  }}
-                                >
-                                  Delete
-                                </MenuItem>
-                              </MenuList>
-                            </>
-                          )}
-                        </Menu>
+                        <MenuBurger brand={brand} />
                       ) : null}
                     </Flex>
                     <Box>name: {brand?.name}</Box>
@@ -204,92 +209,70 @@ export default function BrandPage() {
             </Flex>
           </Box>
           {/* tampilan desktop table */}
-          <TableContainer id="table-content">
-            <Table size="sm">
-              <Thead>
-                <Tr>
-                  <Th>#</Th>
-                  <Th>name</Th>
-                  <Th>Image</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {brandsFilter &&
-                  brandsFilter?.rows.map((brand, idx) => (
-                    <Tr>
-                      <Td w={"5%"}>{idx + 1}</Td>
-                      <Td>{brand.name}</Td>
-                      <Td>
-                        <Flex gap={2}>
-                          <Image
-                            cursor={"pointer"}
-                            onClick={() => {
-                              setImg(brand.logo_img);
-                              onOpen();
-                            }}
-                            src={`${process.env.REACT_APP_API_BASE_URL}/${brand.logo_img}`}
-                            w={"50px"}
-                            h={"50px"}
-                            objectFit={"cover"}
-                          />
-                          <Image
-                            cursor={"pointer"}
-                            onClick={() => {
-                              setImg(brand.brand_img);
-                              onOpen();
-                            }}
-                            src={`${process.env.REACT_APP_API_BASE_URL}/${brand.brand_img}`}
-                            w={"50px"}
-                            h={"50px"}
-                            objectFit={"cover"}
-                          />
-                        </Flex>
-                      </Td>
+          {brandsFilter?.rows.length ? (
+            <TableContainer id="table-content">
+              <Table size="sm">
+                <Thead>
+                  <Tr>
+                    <Th>#</Th>
+                    <Th>name</Th>
+                    <Th>Image</Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  {brandsFilter &&
+                    brandsFilter?.rows.map((brand, idx) => (
+                      <Tr>
+                        <Td w={"5%"}>{idx + 1}</Td>
+                        <Td>{brand.name}</Td>
+                        <Td>
+                          <Flex gap={2}>
+                            <Image
+                              cursor={"pointer"}
+                              onClick={() => {
+                                setImg(brand.logo_img);
+                                onOpen();
+                              }}
+                              src={`${process.env.REACT_APP_API_BASE_URL}/${brand.logo_img}`}
+                              w={"50px"}
+                              h={"50px"}
+                              objectFit={"cover"}
+                            />
+                            <Image
+                              cursor={"pointer"}
+                              onClick={() => {
+                                setImg(brand.brand_img);
+                                onOpen();
+                              }}
+                              src={`${process.env.REACT_APP_API_BASE_URL}/${brand.brand_img}`}
+                              w={"50px"}
+                              h={"50px"}
+                              objectFit={"cover"}
+                            />
+                          </Flex>
+                        </Td>
 
-                      <Td w={"5%"}>
-                        {userSelector.role == "SUPERADMIN" ? (
-                          <Menu>
-                            {({ isOpen }) => (
-                              <>
-                                <MenuButton isActive={isOpen} as={Button} p={0}>
-                                  <Icon as={isOpen ? GrClose : GrMenu} />
-                                </MenuButton>
-                                <MenuList>
-                                  <MenuItem
-                                    onClick={() => {
-                                      setBrandId(brand.id);
-                                      editModal.onOpen();
-                                    }}
-                                  >
-                                    Edit
-                                  </MenuItem>
-                                  <MenuItem
-                                    onClick={() => {
-                                      setBrandId(brand.id);
-                                      deleteModal.onOpen();
-                                    }}
-                                  >
-                                    Delete
-                                  </MenuItem>
-                                </MenuList>
-                              </>
-                            )}
-                          </Menu>
-                        ) : null}
-                      </Td>
-                    </Tr>
-                  ))}
-              </Tbody>
-
-              <DeleteBrand
-                id={brandId}
-                isOpen={deleteModal.isOpen}
-                onClose={deleteModal.onClose}
-                fetch={fetch}
-              />
-              <ImageModal isOpen={isOpen} onClose={onClose} image={img} />
-            </Table>
-          </TableContainer>
+                        <Td w={"5%"}>
+                          {userSelector.role == "SUPERADMIN" ? (
+                            <MenuBurger brand={brand} />
+                          ) : null}
+                        </Td>
+                      </Tr>
+                    ))}
+                  <DeleteBrand
+                    id={brandId}
+                    isOpen={deleteModal.isOpen}
+                    onClose={deleteModal.onClose}
+                    fetch={fetch}
+                  />
+                </Tbody>
+              </Table>
+            </TableContainer>
+          ) : (
+            <Center border={"1px"} h={"550px"}>
+              Brand not found
+            </Center>
+          )}
         </Box>
         <Flex p={2} m={2} justify={"center"}>
           <Pagination
@@ -300,6 +283,8 @@ export default function BrandPage() {
           />
         </Flex>
       </Box>
+
+      <ImageModal isOpen={isOpen} onClose={onClose} image={img} />
     </>
   );
 }

@@ -8,6 +8,8 @@ import {
   AlertDialogCloseButton,
   Button,
   useToast,
+  Spinner,
+  Center,
 } from "@chakra-ui/react";
 import React, { useState, useEffect } from "react";
 import { api } from "../../api/api";
@@ -15,11 +17,11 @@ import { useSelector } from "react-redux";
 
 export default function ConfirmStockMutation(props) {
   const userSelector = useSelector((state) => state.auth);
+  const [isLoadingButton, setIsLoadingButton] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [stockMutation, setStockMutation] = useState({});
   const cancelRef = React.useRef();
   const toast = useToast();
-
   function clearData() {
     props.setStatus(null);
     props.setId(null);
@@ -27,13 +29,20 @@ export default function ConfirmStockMutation(props) {
   }
   useEffect(() => {
     if (props.id) {
+      setIsLoading(true);
       fetch();
     }
   }, [props.id]);
-
+  useEffect(() => {
+    setIsLoading(false);
+  }, [stockMutation]);
   async function fetch() {
-    const response = await api().get(`/stockMutations/${props.id}`);
-    setStockMutation(response?.data?.stockMutation);
+    try {
+      const response = await api().get(`/stockMutations/${props.id}`);
+      setStockMutation(response?.data?.stockMutation);
+    } catch (error) {
+      setStockMutation({});
+    }
   }
 
   const confirmStockMutation = async () => {
@@ -55,9 +64,10 @@ export default function ConfirmStockMutation(props) {
         duration: 9000,
         isClosable: true,
       });
+    } finally {
+      setIsLoadingButton(false);
     }
   };
-
   return (
     <>
       <AlertDialog
@@ -74,26 +84,28 @@ export default function ConfirmStockMutation(props) {
             <AlertDialogCloseButton />
           </AlertDialogHeader>
 
-          <AlertDialogBody>
-            {`${userSelector.role == "SUPERADMIN" ? "Super Admin" : "Admin"}
-            ${userSelector.name} want to confirm stock MUT/
-            ${
-              stockMutation.mutation_code &&
-              JSON.parse(stockMutation.mutation_code).MUT
-            } status as ${props.status}. is this true?`}
-          </AlertDialogBody>
+          {isLoading ? (
+            <Center w={"100%"} h={"100%"}>
+              <Spinner />
+            </Center>
+          ) : (
+            <AlertDialogBody>
+              {`${userSelector.role == "SUPERADMIN" ? "Super Admin" : "Admin"}
+            ${userSelector.name} want to confirm stock 
+            ${stockMutation.mutation_code} status as ${
+                props.status
+              }. is this true?`}
+            </AlertDialogBody>
+          )}
           <AlertDialogFooter>
             <Button ref={cancelRef} onClick={clearData}>
               No
             </Button>
             <Button
-              isLoading={isLoading}
+              isLoading={isLoadingButton}
               onClick={() => {
-                setIsLoading(true);
-                setTimeout(() => {
-                  setIsLoading(false);
-                  confirmStockMutation();
-                }, 2000);
+                setIsLoadingButton(true);
+                confirmStockMutation();
               }}
             >
               Yes

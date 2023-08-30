@@ -1,4 +1,9 @@
-import { IconButton, InputGroup, InputRightAddon } from "@chakra-ui/react";
+import {
+  Center,
+  IconButton,
+  InputGroup,
+  InputRightAddon,
+} from "@chakra-ui/react";
 import { ButtonGroup, Divider, Flex, Icon, Input } from "@chakra-ui/react";
 import { Table, Thead, Tbody, Tr, Th, Td, Box, Button } from "@chakra-ui/react";
 import { Select, Menu, MenuList, MenuItem, Image, Tag } from "@chakra-ui/react";
@@ -17,7 +22,8 @@ import { EditCategory } from "../components/dashboard/editCategory";
 import { DeleteCategory } from "../components/dashboard/deleteCategory";
 import ImageModal from "../components/dashboard/imageModal";
 import NavbarDashboard from "../components/dashboard/navbarDashboard";
-
+import Pagination from "../components/dashboard/pagination";
+// ------------------------------------------------------------------------- CLEAR -FAHMI
 export default function CategoryPage() {
   const { isOpen, onClose, onOpen } = useDisclosure();
   const addModal = useDisclosure();
@@ -27,16 +33,89 @@ export default function CategoryPage() {
   const userSelector = useSelector((state) => state.auth);
   const [img, setImg] = useState();
   const inputFileRef = useRef(null);
-  const [search, setSearch] = useState();
-  const { categories, fetch } = useFetchCategory();
   const [categoyId, setCategoryId] = useState();
+  const [filter, setFilter] = useState({
+    page: 1,
+    sort: "",
+    order: "",
+    search: "",
+  });
+  const { categoriesFilter, fetch } = useFetchCategory(filter);
+
+  // -------------------------- pagination
+  const [pages, setPages] = useState([]);
+  const [shown, setShown] = useState({ page: 1 });
+
+  function pageHandler() {
+    const output = [];
+    for (let i = 1; i <= categoriesFilter?.totalPages; i++) {
+      output.push(i);
+    }
+    setPages(output);
+  }
+  useEffect(() => {
+    pageHandler();
+  }, [categoriesFilter]);
+  useEffect(() => {
+    if (shown.page > 0 && shown.page <= categoriesFilter?.totalPages) {
+      setFilter({ ...filter, page: shown.page });
+    }
+  }, [shown]);
+  //  -------------------------
+
+  useEffect(() => {
+    fetch();
+  }, [filter]);
+
+  function MenuBurger({ category }) {
+    return (
+      <Menu>
+        {({ isOpen }) => (
+          <>
+            <MenuButton isActive={isOpen} as={Button} p={0}>
+              <Icon as={isOpen ? GrClose : GrMenu} />
+            </MenuButton>
+            <MenuList>
+              <MenuItem
+                onClick={() => {
+                  setCategoryId(category.id);
+                  addSub.onOpen();
+                }}
+              >
+                + Subcategory
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  setCategoryId(category.id);
+                  editModal.onOpen();
+                }}
+              >
+                Edit
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  setCategoryId(category.id);
+                  deleteModal.onOpen();
+                }}
+              >
+                Delete
+              </MenuItem>
+            </MenuList>
+          </>
+        )}
+      </Menu>
+    );
+  }
+
   return (
     <>
       <NavbarDashboard />
       <Box id="content" pt={"52px"}>
         <Box mx={2} my={3}>
           <Flex justify={"space-between"} flexWrap={"wrap"}>
-            <Box fontSize={"30px"}>Category</Box>
+            <Box fontSize={"30px"} fontWeight={"bold"}>
+              Category
+            </Box>
             {userSelector.role == "SUPERADMIN" ? (
               <ButtonGroup
                 onClick={addModal.onOpen}
@@ -60,41 +139,43 @@ export default function CategoryPage() {
             />
           </Flex>
 
-          <Flex flexWrap={"wrap"} gap={2} my={2} justify={"space-between"}>
-            <InputGroup size={"sm"} w={"500px"}>
+          <Flex gap={5} my={2}>
+            <InputGroup size={"sm"} maxW={"500px"}>
               <Input placeholder="Search..." ref={inputFileRef} />
               <InputRightAddon
                 cursor={"pointer"}
                 onClick={() => {
-                  setSearch(inputFileRef.current.value);
+                  setShown({ page: 1 });
+                  setFilter({ ...filter, search: inputFileRef.current.value });
                 }}
               >
                 <Icon as={FaSearch} color={"black"} />
               </InputRightAddon>
             </InputGroup>
 
-            <Flex gap={2}>
-              <Flex align={"center"} gap={1}>
-                <Box whiteSpace={"nowrap"}> Sort By:</Box>
-                <Select size={"sm"} placeholder="select..">
-                  <option>name</option>
-                </Select>
-              </Flex>
-              <Flex align={"center"} gap={1}>
-                <Box whiteSpace={"nowrap"}> Order By:</Box>
-                <Select size={"sm"} placeholder="select..">
-                  <option>ASC</option>
-                  <option>DESC</option>
-                </Select>
-              </Flex>
-            </Flex>
+            <Box className="select-filter" w={"100px"}>
+              <Box id="title">ORDER BY</Box>
+              <Select
+                size={"sm"}
+                onChange={(e) => {
+                  setShown({ page: 1 });
+                  setFilter({
+                    ...filter,
+                    order: e.target.value,
+                  });
+                }}
+              >
+                <option value={"ASC"}>ASC</option>
+                <option value={"DESC"}>DESC</option>
+              </Select>
+            </Box>
           </Flex>
 
           {/* tampilan mobile card */}
           <Box id="card-content" display={"none"}>
             <Flex flexDir={"column"} py={1}>
-              {categories &&
-                categories?.map((category, idx) => (
+              {categoriesFilter &&
+                categoriesFilter?.rows.map((category, idx) => (
                   <Flex
                     p={1}
                     m={1}
@@ -108,41 +189,7 @@ export default function CategoryPage() {
                         #{idx + 1}
                       </Box>
                       {userSelector.role == "SUPERADMIN" ? (
-                        <Menu>
-                          {({ isOpen }) => (
-                            <>
-                              <MenuButton isActive={isOpen} as={Button} p={0}>
-                                <Icon as={isOpen ? GrClose : GrMenu} />
-                              </MenuButton>
-                              <MenuList>
-                                <MenuItem
-                                  onClick={() => {
-                                    setCategoryId(category.id);
-                                    addSub.onOpen();
-                                  }}
-                                >
-                                  + Subcategory
-                                </MenuItem>
-                                <MenuItem
-                                  onClick={() => {
-                                    setCategoryId(category.id);
-                                    editModal.onOpen();
-                                  }}
-                                >
-                                  Edit
-                                </MenuItem>
-                                <MenuItem
-                                  onClick={() => {
-                                    setCategoryId(category.id);
-                                    deleteModal.onOpen();
-                                  }}
-                                >
-                                  Delete
-                                </MenuItem>
-                              </MenuList>
-                            </>
-                          )}
-                        </Menu>
+                        <MenuBurger category={category} />
                       ) : null}
                     </Flex>
                     <Box>name: {category?.name}</Box>
@@ -160,115 +207,98 @@ export default function CategoryPage() {
                     <Divider />
                     <Image
                       src={`${process.env.REACT_APP_API_BASE_URL}/${category.category_img}`}
+                      w={"100px"}
+                      h={"100px"}
+                      objectFit={"cover"}
                     />
                   </Flex>
                 ))}
             </Flex>
           </Box>
           {/* tampilan desktop table */}
-          <TableContainer id="table-content">
-            <Table size="sm">
-              <Thead>
-                <Tr>
-                  <Th>#</Th>
-                  <Th>Image</Th>
-                  <Th>name</Th>
-                  <Th>Subcategory</Th>
-                  <Th>Action</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {categories &&
-                  categories?.map((category, idx) => (
-                    <Tr>
-                      <Td w={"5%"}>{idx + 1}</Td>
-                      <Td>
-                        <Image
-                          cursor={"pointer"}
-                          onClick={() => {
-                            setImg(category.category_img);
-                            onOpen();
-                          }}
-                          src={`${process.env.REACT_APP_API_BASE_URL}/${category.category_img}`}
-                          w={"30px"}
-                        />
-                      </Td>
-                      <Td>{category.name}</Td>
-
-                      {category?.subcategories?.length == 0 ? (
-                        <Td>no hve subcategory</Td>
-                      ) : (
+          {categoriesFilter?.rows?.length ? (
+            <TableContainer id="table-content">
+              <Table size="sm">
+                <Thead>
+                  <Tr>
+                    <Th>#</Th>
+                    <Th>Image</Th>
+                    <Th>name</Th>
+                    <Th>Subcategory</Th>
+                    <Th>Action</Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  {categoriesFilter &&
+                    categoriesFilter?.rows.map((category, idx) => (
+                      <Tr>
+                        <Td w={"5%"}>{idx + 1}</Td>
                         <Td>
-                          {category?.subcategories?.map((val, idx) => (
-                            <Tag mr={1}>{val.name}</Tag>
-                          ))}
+                          <Image
+                            cursor={"pointer"}
+                            onClick={() => {
+                              setImg(category.category_img);
+                              onOpen();
+                            }}
+                            src={`${process.env.REACT_APP_API_BASE_URL}/${category.category_img}`}
+                            w={"30px"}
+                          />
                         </Td>
-                      )}
-                      <Td w={"5%"}>
-                        {userSelector.role == "SUPERADMIN" ? (
-                          <Menu>
-                            {({ isOpen }) => (
-                              <>
-                                <MenuButton isActive={isOpen} as={Button} p={0}>
-                                  <Icon as={isOpen ? GrClose : GrMenu} />
-                                </MenuButton>
-                                <MenuList>
-                                  <MenuItem
-                                    onClick={() => {
-                                      setCategoryId(category.id);
-                                      addSub.onOpen();
-                                    }}
-                                  >
-                                    + Subcategory
-                                  </MenuItem>
-                                  <MenuItem
-                                    onClick={() => {
-                                      setCategoryId(category.id);
-                                      editModal.onOpen();
-                                    }}
-                                  >
-                                    Edit
-                                  </MenuItem>
-                                  <MenuItem
-                                    onClick={() => {
-                                      setCategoryId(category.id);
-                                      deleteModal.onOpen();
-                                    }}
-                                  >
-                                    Delete
-                                  </MenuItem>
-                                </MenuList>
-                              </>
-                            )}
-                          </Menu>
-                        ) : null}
-                      </Td>
-                    </Tr>
-                  ))}
-              </Tbody>
-              <AddSubCategory
-                isOpen={addSub.isOpen}
-                onClose={addSub.onClose}
-                fetch={fetch}
-                id={categoyId}
-              />
-              <EditCategory
-                id={categoyId}
-                isOpen={editModal.isOpen}
-                onClose={editModal.onClose}
-                fetch={fetch}
-                setId={setCategoryId}
-              />
-              <DeleteCategory
-                id={categoyId}
-                isOpen={deleteModal.isOpen}
-                onClose={deleteModal.onClose}
-                fetch={fetch}
-              />
-              <ImageModal isOpen={isOpen} onClose={onClose} image={img} />
-            </Table>
-          </TableContainer>
+                        <Td>{category.name}</Td>
+
+                        {category?.subcategories?.length == 0 ? (
+                          <Td>no hve subcategory</Td>
+                        ) : (
+                          <Td>
+                            {category?.subcategories?.map((val, idx) => (
+                              <Tag mr={1}>{val.name}</Tag>
+                            ))}
+                          </Td>
+                        )}
+                        <Td w={"5%"}>
+                          {userSelector.role == "SUPERADMIN" ? (
+                            <MenuBurger category={category} />
+                          ) : null}
+                        </Td>
+                      </Tr>
+                    ))}
+                </Tbody>
+                <AddSubCategory
+                  isOpen={addSub.isOpen}
+                  onClose={addSub.onClose}
+                  fetch={fetch}
+                  id={categoyId}
+                />
+                <EditCategory
+                  id={categoyId}
+                  isOpen={editModal.isOpen}
+                  onClose={editModal.onClose}
+                  fetch={fetch}
+                  setId={setCategoryId}
+                />
+                <DeleteCategory
+                  id={categoyId}
+                  isOpen={deleteModal.isOpen}
+                  onClose={deleteModal.onClose}
+                  fetch={fetch}
+                />
+                <ImageModal isOpen={isOpen} onClose={onClose} image={img} />
+              </Table>
+            </TableContainer>
+          ) : (
+            <Center border={"1px"} h={"550px"}>
+              category not found
+            </Center>
+          )}
         </Box>
+        <Flex p={2} m={2} justify={"center"}>
+          <Pagination
+            shown={shown}
+            setShown={setShown}
+            datas={categoriesFilter?.totalPages}
+            pages={pages}
+          />
+        </Flex>
       </Box>
     </>
   );

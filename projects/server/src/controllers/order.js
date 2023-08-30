@@ -1,8 +1,9 @@
 const db = require("../models");
 const moment = require("moment");
+const fs = require("fs");
 const haversine = require("haversine");
 const { errorResponse } = require("../utils/function");
-const { CustomError } = require("../utils/customErrors");
+const { CustomError, ConflictError } = require("../utils/customErrors");
 const {
   getWarehouse,
   checkWarehouseSupply,
@@ -17,13 +18,18 @@ const {
   findAllOrderDetail,
   addOrderDetails,
 } = require("../service/orderDetail.service");
-const { createMutation } = require("../service/stockMutation.service");
+const {
+  createMutation,
+  confirmMutation,
+} = require("../service/stockMutation.service");
 const {
   findStockBy,
   findCreateStock,
   updateStock,
 } = require("../service/stock.service");
 const { addStockHistory } = require("../service/stockHistory.service");
+const { Op } = require("sequelize");
+const path = require("path");
 
 const generateTransactionCode = () =>
   `ORD${moment().format("YYYYMMDDHHmmss")}${Math.floor(Math.random() * 10000)}`;
@@ -74,7 +80,6 @@ const orderController = {
           },
         ],
       });
-
       for (let i = 0; i < cartsData.length; i++) {
         let shoe_id = cartsData[i].shoe_id;
         let shoe_size_id = cartsData[i].shoe_size_id;
@@ -86,7 +91,6 @@ const orderController = {
           shoe_id,
           t,
         });
-
         await addOrderDetails({
           qty: qty,
           price: price,
@@ -94,84 +98,7 @@ const orderController = {
           order_id: addOrder.id,
           t,
         });
-
-        if (shoeStock.stock < qty) {
-          const warehouse = await checkWarehouseSupply({
-            shoe_id,
-            shoe_size_id,
-            qty: qty - shoeStock.stock,
-          });
-
-          if (!warehouse?.length) {
-            return res.status(500).send({ message: "stock insuficient" });
-          }
-          let closestWarehouse = null;
-          let shortestDistance = Number.MAX_SAFE_INTEGER;
-          warehouse.forEach((val) => {
-            const distance = haversine(
-              {
-                latitude: warehouseData?.latitude,
-                longitude: warehouseData?.longitude,
-              },
-              {
-                latitude: val.latitude,
-                longitude: val.longitude,
-              }
-            );
-            if (distance < shortestDistance) {
-              shortestDistance = distance;
-              closestWarehouse = val;
-            }
-          });
-          //stockMutation Auto
-          await createMutation({
-            from_warehouse_id: closestWarehouse.id,
-            to_warehouse_id: warehouseData.id,
-            qty: qty - shoeStock.stock,
-            status: "APPROVED",
-            stock_id: closestWarehouse.stocks[0].id,
-            t,
-          });
-          // stock transfer & history
-          const fromStock = await findStockBy({
-            id: closestWarehouse.stocks[0].id,
-          });
-          fromStock.stock -= qty - shoeStock.stock;
-          await fromStock.save({ transaction: t });
-
-          if (fromStock.stock + qty != fromStock.stock) {
-            await addStockHistory({
-              stock_before: fromStock.stock + qty,
-              stock_after: fromStock.stock,
-              stock_id: fromStock.id,
-              reference: addOrder.transaction_code,
-              t,
-            });
-          }
-          shoeStock.stock += qty - shoeStock.stock;
-          await shoeStock.save({ transaction: t });
-          if (shoeStock.stock - qty != shoeStock.stock) {
-            await addStockHistory({
-              stock_before: shoeStock.stock - qty,
-              stock_after: shoeStock.stock,
-              stock_id: shoeStock.id,
-              reference: addOrder.transaction_code,
-              t,
-            });
-          }
-        }
-        await db.Stock.update(
-          {
-            booked_stock: shoeStock.booked_stock + qty,
-            stock: shoeStock.stock - qty,
-          },
-          {
-            where: { shoe_id, shoe_size_id, warehouse_id: warehouseData.id },
-            transaction: t,
-          }
-        );
       }
-
       await db.Cart.destroy({ where: { user_id }, transaction: t });
       await t.commit();
       return res.status(200).send({
@@ -212,10 +139,29 @@ const orderController = {
   },
   paymentProof: async (req, res) => {
     const t = await db.sequelize.transaction();
+    const { filename } = req.file;
+
     try {
       const user_id = JSON.parse(req.user.id);
-      const { id } = req.body;
-      const { filename } = req.file;
+      const { id } = req.params;
+
+      if (filename) {
+        if (req?.order?.payment_proof) {
+          try {
+            fs.unlinkSync(
+              path.join(
+                __dirname,
+                `../public/paymentProof/${
+                  req?.order?.payment_proof.split("/")[1]
+                }`
+              )
+            );
+          } catch (err) {
+            console.log(err);
+          }
+        }
+      }
+
       await db.Order.update(
         {
           payment_proof: "paymentProof/" + filename,
@@ -228,35 +174,25 @@ const orderController = {
         .status(200)
         .send({ message: "succesfully upload payment proof" });
     } catch (err) {
+      if (filename) {
+        try {
+          fs.unlinkSync(
+            path.join(__dirname, `../public/paymentProof/${filename}`)
+          );
+        } catch (err) {
+          console.log(err);
+        }
+      }
       await t.rollback();
       res.status(500).send({
         message: err.message,
       });
     }
   },
-
   cancelPaymentUser: async (req, res) => {
     const t = await db.sequelize.transaction();
     try {
-      await db.Order.update(
-        {
-          status: "CANCELED",
-        },
-        { where: { id: req.order?.id } }
-      );
-      const orderDetail = await findAllOrderDetail({
-        order_id: req.order?.id,
-      });
-      for (const val of orderDetail) {
-        // Decrease booked_stock in the Product table
-        await updateStock({
-          stock: val.stock.stock + val.qty,
-          booked_stock: val.stock.booked_stock - val?.qty,
-          id: val.stock_id,
-          t,
-        });
-      }
-
+      await updateOrder({ t, status: "CANCELED", id: req.order?.id });
       await t.commit();
       return res.status(200).send({ message: `Order successfully canceled` });
     } catch (err) {
@@ -264,26 +200,43 @@ const orderController = {
       errorResponse(res, err, CustomError);
     }
   },
-  rejectPaymentProof: async (req, res) => {
+  cancelOrderAutomatically: async () => {
     const t = await db.sequelize.transaction();
     try {
-      await db.Order.update(
-        {
-          status: "PAYMENT",
-          payment_proof: null,
-          last_payment_date: moment().add(1, "days").format(),
-        },
-        { where: { id: req.order?.id } }
-      );
-
+      const currTime = moment().utc();
+      const orders = await db.Order.findAll({
+        where: { status: "PAYMENT", last_payment_date: { [Op.lte]: currTime } },
+      });
+      if (orders) {
+        for (const order of orders) {
+          await updateOrder({ t, status: "CANCELED", id: order?.id });
+        }
+      }
       await t.commit();
-      return res.status(200).send({ message: `Payment Proof Rejected` });
     } catch (err) {
       await t.rollback();
-      errorResponse(res, err, CustomError);
     }
   },
-
+  doneOrderAutomatically: async () => {
+    const t = await db.sequelize.transaction();
+    try {
+      const currTime = moment().utc().add(-5, "minute");
+      const orders = await db.Order.findAll({
+        where: {
+          status: "DELIVERY",
+          updatedAt: { [Op.lte]: currTime },
+        },
+      });
+      if (orders) {
+        for (const order of orders) {
+          await updateOrder({ t, status: "DONE", id: order?.id });
+        }
+      }
+      await t.commit();
+    } catch (err) {
+      await t.rollback();
+    }
+  },
   getOrderAdmin: async (req, res) => {
     try {
       const warehouse = await getWarehouse({
@@ -298,11 +251,11 @@ const orderController = {
         status: req.query?.status,
         timeFrom: req.query?.timeFrom,
         timeTo: req.query?.timeTo,
-        limit: 2,
+        limit: 3,
       });
       return res
         .status(200)
-        .send({ ...result, totalPages: Math.ceil(result?.count / 2) });
+        .send({ ...result, totalPages: Math.ceil(result?.count / 3) });
     } catch (err) {
       errorResponse(res, err, CustomError);
     }
@@ -316,17 +269,83 @@ const orderController = {
           order_id: req.order?.id,
         });
         for (const val of orderDetail) {
-          // Decrease booked_stock in the Product table
-          await updateStock({
-            id: val.stock_id,
-            booked_stock: val.stock.booked_stock - val?.qty,
-            t,
+          const toStock = await findStockBy({
+            id: val.stock.id,
           });
+          if (val.stock.stock < val.qty) {
+            const warehouses = await checkWarehouseSupply({
+              shoe_id: val.stock.shoe_id,
+              shoe_size_id: val.stock.shoe_size_id,
+              qty: val.qty - val.stock.stock,
+            });
+            if (!warehouses?.length) {
+              throw new ConflictError("Stock insuficient");
+            }
+            let closestWarehouse = null;
+            let shortestDistance = Number.MAX_SAFE_INTEGER;
+            warehouses.forEach((warehouse) => {
+              const distance = haversine(
+                {
+                  latitude: val.stock?.warehouse?.latitude,
+                  longitude: val.stock?.warehouse?.longitude,
+                },
+                {
+                  latitude: warehouse.latitude,
+                  longitude: warehouse.longitude,
+                }
+              );
+              if (distance < shortestDistance) {
+                shortestDistance = distance;
+                closestWarehouse = warehouse;
+              }
+            });
+            //stockMutation Auto
+            const mutation = await createMutation({
+              from_warehouse_id: closestWarehouse.id,
+              to_warehouse_id: val.stock?.warehouse_id,
+              qty: val.qty - val.stock?.stock,
+              status: "APPROVED",
+              stock_id: closestWarehouse.stocks[0].id,
+              t,
+            });
+            // stock transfer & history
+            const fromStock = await findStockBy({
+              id: closestWarehouse.stocks[0].id,
+            });
+            fromStock.stock -= val.qty - val.stock?.stock;
+            await fromStock.save({ transaction: t });
+            if (fromStock.stock + val.qty != fromStock.stock) {
+              await addStockHistory({
+                stock_before:
+                  fromStock.stock + fromStock.booked_stock + val.qty,
+                stock_after: fromStock.stock + fromStock.booked_stock,
+                stock_id: fromStock.id,
+                reference: mutation.mutation_code,
+                t,
+              });
+            }
+            toStock.stock += val.qty - val.stock.stock;
+            await toStock.save({ transaction: t });
+            if (toStock.stock - val.qty != toStock.stock) {
+              await addStockHistory({
+                stock_before: toStock.stock + toStock.booked_stock - val.qty,
+                stock_after: toStock.stock + toStock.booked_stock,
+                stock_id: val.stock.id,
+                reference: mutation.mutation_code,
+                t,
+              });
+            }
+          }
+          toStock.stock -= val.qty;
+          toStock.booked_stock += val.qty;
+          await toStock.save({ transaction: t });
+          // Decrease booked_stock in the Product table
+          toStock.booked_stock -= val.qty;
+          await toStock.save({ transaction: t });
           if (val.stock?.stock - val.qty != val.stock?.stock) {
             await addStockHistory({
-              stock_before: val.stock?.stock + val?.stock?.booked_stock,
-              stock_after:
-                val.stock?.stock + val?.stock?.booked_stock - val.qty,
+              stock_before: toStock.stock + toStock.booked_stock,
+              stock_after: toStock?.stock + toStock?.booked_stock - val.qty,
               stock_id: val.stock?.id,
               reference: req.order?.transaction_code,
               t,
@@ -334,36 +353,30 @@ const orderController = {
           }
         }
         await updateOrder({ t, status: "DELIVERY", id: req.order?.id });
-      } else if (req.body?.status == "CANCELED") {
-        const orderDetail = await findAllOrderDetail({
-          order_id: req.order?.id,
-        });
-        for (const val of orderDetail) {
-          // Decrease booked_stock in the Product table
-          const stock = val.stock.stock + val.qty;
-          const booked_stock = val.stock.booked_stock - val.qty;
-          await updateStock({
-            stock,
-            booked_stock,
-            id: val.stock_id,
-            t,
-          });
-        }
       } else if (req?.body?.status == "PAYMENT") {
         await updateOrder({
           t,
-          last_payment_date: moment(req.order?.last_payment_date).add(1, "day"),
+          last_payment_date: moment().add(1, "day"),
+          payment_proof: null,
           id: req.order?.id,
         });
-        fs.unlinkSync(
-          `${__dirname}/../public/paymentProof/${req.order?.payment_proof}`
-        );
+        try {
+          fs.unlinkSync(
+            path.join(
+              __dirname,
+              `../public/paymentProof/${req.order?.payment_proof}`
+            )
+          );
+        } catch (err) {
+          console.log(err);
+        }
       }
       await t.commit();
       return res
         .status(200)
         .send({ message: `Order is in ${req.body?.status}` });
     } catch (err) {
+      await t.rollback();
       errorResponse(res, err, CustomError);
     }
   },
@@ -384,6 +397,17 @@ const orderController = {
       return res.status(200).send({ message: "success", order: req.order });
     } catch (err) {
       return errorResponse(res, err, CustomError);
+    }
+  },
+  doneOrderUser: async (req, res) => {
+    const t = await db.sequelize.transaction();
+    try {
+      await updateOrder({ t, status: "DONE", id: req?.order?.id });
+      await t.commit();
+      return res.status(200).send({ message: `Order Completed` });
+    } catch (err) {
+      await t.rollback();
+      errorResponse(res, err, CustomError);
     }
   },
 };

@@ -10,12 +10,8 @@ import { useFetchCategory } from "../../hooks/useFetchCategory";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useFetchBrand } from "../../hooks/useFetchBrand";
-import {
-  cartSelector,
-  getCarts,
-  getTotalProductsInCart,
-} from "../../redux/cart";
-
+import { getCarts, getTotalProductsInCart } from "../../redux/cart";
+// -------------------------------------------------------- CLEAR - FAHMI
 export default function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [search, setSearch] = useState(false);
@@ -24,7 +20,6 @@ export default function Navbar() {
   const { brands } = useFetchBrand();
   const { categories } = useFetchCategory();
   const userSelector = useSelector((state) => state.auth);
-  const carts = useSelector(cartSelector.selectAll);
   const totalItem = useSelector(getTotalProductsInCart);
 
   const [keyword, setKeyword] = useState();
@@ -98,10 +93,7 @@ export default function Navbar() {
                 </Box>
                 <Box
                   className="categorymenu"
-                  bg={"white"}
-                  pos={"absolute"}
                   display={brand ? "flex" : "none"}
-                  border={"1px"}
                   onMouseEnter={(e) => setBrand(true)}
                   onMouseLeave={(e) => setBrand(false)}
                 >
@@ -147,10 +139,7 @@ export default function Navbar() {
                     </Link>
                     <Box
                       className="categorymenu"
-                      bg={"white"}
-                      pos={"absolute"}
                       display={subCategory[category.id] ? "flex" : "none"}
-                      border={"1px"}
                       onMouseEnter={() => handleCategoryMouseEnter(category.id)}
                       onMouseLeave={() => handleCategoryMouseLeave(category.id)}
                     >
@@ -221,8 +210,7 @@ export default function Navbar() {
                         <Flex
                           fontSize={"8px"}
                           color={"white"}
-                          w={"15px"}
-                          h={"15px"}
+                          boxSize={"15px"}
                           pos={"absolute"}
                           top={0}
                           right={0}
@@ -248,9 +236,11 @@ export default function Navbar() {
             flexDir={"column"}
           >
             <Divider my={2} />
-            <InputGroup p={2}>
+            <InputGroup border={"1px"}>
               <Input
+                border={0}
                 bg={"gray.100"}
+                borderRadius={0}
                 value={keyword}
                 onChange={(e) => {
                   setKeyword(e.target.value);

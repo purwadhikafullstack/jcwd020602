@@ -4,7 +4,7 @@ const axios = require("axios");
 const { openCage } = require("../service/opencage.service");
 
 const { getWarehouse } = require("../service/warehouse.service");
-
+const { Op } = require("sequelize");
 
 const warehouseControllers = {
   addWarehouse: async (req, res) => {
@@ -23,7 +23,7 @@ const warehouseControllers = {
         {
           name,
           phone,
-          address: `${address}, ${city.dataValues.city_name}, ${city.dataValues.province}, ${city.dataValues.postal_code}`,
+          address: address,
           province_id: city.dataValues.province_id,
           city_id: city_id,
           postcode: city.dataValues.postal_code,
@@ -44,16 +44,50 @@ const warehouseControllers = {
   },
   getAll: async (req, res) => {
     try {
-      const warehouses = await db.Warehouse.findAll({
+      const search = req?.query?.search || "";
+      let sort = req?.query?.sort || "name";
+      const order = req?.query?.order || "ASC";
+      const limit = req?.query?.limit || 8;
+      const page = req?.query?.page || 1;
+      const offset = (parseInt(page) - 1) * limit;
+
+      switch (sort) {
+        case "city":
+          sort = [{ model: db.City }, "city_name"];
+          break;
+        case "province":
+          sort = [{ model: db.City }, "province"];
+          break;
+        default:
+          sort = [sort];
+      }
+
+      const warehouses = await db.Warehouse.findAndCountAll({
         include: [
           {
             model: db.Admin,
             attributes: ["user_id"],
             include: [db.User],
           },
+          { model: db.City },
         ],
+        where: {
+          [Op.or]: [
+            { name: { [Op.like]: `%${search}%` } },
+            { "$city.city_name$": { [Op.like]: `%${search}%` } },
+            { "$city.province$": { [Op.like]: `%${search}%` } },
+            { address: { [Op.like]: `%${search}%` } },
+          ],
+        },
+        distinct: true,
+        order: [[...sort, order]],
       });
-      return res.status(200).send(warehouses);
+      warehouses.rows = warehouses.rows.slice(offset, page * limit);
+
+      return res.status(200).send({
+        ...warehouses,
+        totalPages: Math.ceil(warehouses.count / limit),
+      });
     } catch (err) {
       return res.status(500).send(err.message);
     }
@@ -87,7 +121,7 @@ const warehouseControllers = {
         where: { city_id },
       });
       if (city) {
-        const response = await opencage(
+        const response = await openCage(
           address,
           city.dataValues.city_name,
           city.dataValues.province
@@ -96,7 +130,7 @@ const warehouseControllers = {
           {
             name,
             phone,
-            address: `${address}, ${city.dataValues.city_name}, ${city.dataValues.province}, ${city.dataValues.postal_code}`,
+            address: address,
             province_id: city.dataValues.province_id,
             city_id: city.dataValues.city_id,
             postcode: city.dataValues.postal_code,

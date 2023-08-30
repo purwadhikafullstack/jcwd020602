@@ -131,7 +131,7 @@ export default function CheckOutPage() {
     }
   };
   return (
-    <Center>
+    <Center flexDir={"column"}>
       <Navbar />
       <Flex justify={"space-between"} w={"70vw"} h={"120vh"}>
         <Flex flexDir={"column"} mt={"100px"} w={"55vw"} mr={"40px"}>

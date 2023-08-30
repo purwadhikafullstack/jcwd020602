@@ -4,7 +4,6 @@ module.exports = (sequelize, Sequelize) => {
     {
       email: {
         type: Sequelize.STRING,
-        // unique: "email",
       },
       password: {
         type: Sequelize.STRING,
@@ -28,6 +27,9 @@ module.exports = (sequelize, Sequelize) => {
       },
       role: {
         type: Sequelize.ENUM("USER", "ADMIN", "SUPERADMIN"),
+      },
+      providerId: {
+        type: Sequelize.STRING,
       },
     },
     {

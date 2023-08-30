@@ -6,14 +6,15 @@ const { getWarehouse } = require("../service/warehouse.service");
 const stockHistoryController = {
   getStockHistory: async (req, res) => {
     try {
-      const limit = 2;
+      const limit = 8;
       const page = req?.query?.page || 1;
       const offset = (parseInt(page) - 1) * limit;
       let sort = req?.query?.sort || "createdAt";
       const order = req?.query?.order || "DESC";
       const search = req?.query?.search || "";
       const brand_id = req?.query?.brand_id;
-      const time = req?.query?.time || moment().format();
+      const timeFrom = req?.query?.timeFrom || moment().startOf("M").format();
+      const timeTo = req?.query?.timeTo || moment().format();
       const warehouse = await getWarehouse({
         id: req.query?.warehouse_id || req?.user?.warehouse_id,
       });
@@ -60,12 +61,12 @@ const stockHistoryController = {
           },
           {
             createdAt: {
-              [Op.gte]: moment(time).startOf("month").format(),
+              [Op.gte]: moment(timeFrom).startOf("date").format(),
             },
           },
           {
             createdAt: {
-              [Op.lte]: moment(time).endOf("month").format(),
+              [Op.lte]: moment(timeTo).endOf("date").format(),
             },
           },
         ],
@@ -73,7 +74,6 @@ const stockHistoryController = {
       if (brand_id) {
         whereClause[Op.and].push({ "$stock.Sho.brand_id$": brand_id });
       }
-
       const result = await findStockHistory({
         whereClause,
         limit,

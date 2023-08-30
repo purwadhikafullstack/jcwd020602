@@ -3,7 +3,6 @@ const provinceCityRoutes = require("./province&city");
 const shoeRoutes = require("./shoe");
 const categoryRoutes = require("./category");
 const brandRoutes = require("./brand");
-const addressRoutes = require("./address");
 const userRoutes = require("./user");
 const subcategoryRoutes = require("./subCategory");
 const shoeSizeRoutes = require("./shoeSize");
@@ -15,7 +14,6 @@ const checkOutRoutes = require("./checkOut");
 const orderRoutes = require("./order");
 const addressFRoutes = require("./addressF");
 
-
 module.exports = {
   provinceCityRoutes,
   warehouseRoutes,
@@ -23,7 +21,6 @@ module.exports = {
   shoeRoutes,
   categoryRoutes,
   brandRoutes,
-  addressRoutes,
   userRoutes,
   stockRoutes,
   subcategoryRoutes,

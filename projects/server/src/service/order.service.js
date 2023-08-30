@@ -4,7 +4,7 @@ const moment = require("moment");
 module.exports = {
   findAndCountAllOrder: async (body) => {
     try {
-      const timeFrom = body?.timeFrom || moment().startOf("week").format();
+      const timeFrom = body?.timeFrom || moment().startOf("W").format();
       const timeTo = body?.timeTo || moment().format();
       const whereClause = {
         [Op.and]: [
@@ -30,7 +30,9 @@ module.exports = {
         ],
       };
       if (body?.status) {
-        whereClause[Op.and].push({ status: body?.status });
+        whereClause[Op.and].push({
+          [Op.or]: body?.status.map((val) => ({ status: val })),
+        });
       }
       let sort = body?.sort;
       switch (sort) {
@@ -50,34 +52,40 @@ module.exports = {
             include: [
               {
                 model: db.Stock,
+                paranoid: false,
                 attributes: {
                   exclude: ["createdAt", "updatedAt", "deletedAt"],
                 },
                 include: [
                   {
                     model: db.Shoe,
+                    paranoid: false,
                     attributes: ["id", "name", "price"],
                     include: {
                       model: db.ShoeImage,
+                      paranoid: false,
                       attributes: ["shoe_img"],
                       limit: 1,
                     },
                   },
                   {
                     model: db.ShoeSize,
+                    paranoid: false,
                     attributes: ["size"],
                   },
                 ],
               },
             ],
           },
-          { model: db.User, attributes: ["name"] },
+          { model: db.User, attributes: ["name"], paranoid: false },
           {
             model: db.Address,
+            paranoid: false,
             attributes: { exclude: ["createdAt", "updatedAt", "deletedAt"] },
             include: [
               {
                 model: db.City,
+                paranoid: false,
                 attributes: ["type", "city_name", "province", "postal_code"],
               },
             ],
@@ -107,7 +115,11 @@ module.exports = {
       if (body?.last_payment_date) {
         update.last_payment_date = body?.last_payment_date;
       }
-      return await db.Order.update(update, {
+      if (body.payment_proof == null) {
+        update.payment_proof = null;
+      }
+
+      return await db.Order.upproof(update, {
         where: { id: body?.id },
         transaction: body?.t,
       });
@@ -126,34 +138,40 @@ module.exports = {
             include: [
               {
                 model: db.Stock,
+                paranoid: false,
                 attributes: {
                   exclude: ["createdAt", "updatedAt", "deletedAt"],
                 },
                 include: [
                   {
                     model: db.Shoe,
+                    paranoid: false,
                     attributes: ["id", "name", "price", "weight"],
                     include: {
                       model: db.ShoeImage,
+                      paranoid: false,
                       attributes: ["shoe_img"],
                       limit: 1,
                     },
                   },
                   {
                     model: db.ShoeSize,
+                    paranoid: false,
                     attributes: ["size"],
                   },
                 ],
               },
             ],
           },
-          { model: db.User, attributes: ["name"] },
+          { model: db.User, attributes: ["name"], paranoid: false },
           {
             model: db.Address,
+            paranoid: false,
             attributes: { exclude: ["createdAt", "updatedAt", "deletedAt"] },
             include: [
               {
                 model: db.City,
+                paranoid: false,
                 attributes: ["type", "city_name", "province", "postal_code"],
               },
             ],
@@ -213,28 +231,35 @@ module.exports = {
             include: [
               {
                 model: db.Stock,
+                paranoid: false,
                 include: [
                   {
                     model: db.Shoe,
+                    paranoid: false,
                     attributes: ["id", "name"],
-                    // as: "Shoes",
                     include: [
                       {
                         model: db.ShoeImage,
+                        paranoid: false,
                         attributes: ["id", "shoe_img"],
                         limit: 1,
                       },
                     ],
                   },
-                  { model: db.ShoeSize, attributes: ["id", "size"] },
+                  {
+                    model: db.ShoeSize,
+                    attributes: ["id", "size"],
+                    paranoid: false,
+                  },
                 ],
               },
             ],
           },
-          { model: db.User, attributes: ["id", "name"] },
-          { model: db.Address },
+          { model: db.User, attributes: ["id", "name"], paranoid: false },
+          { model: db.Address, paranoid: false },
         ],
         where: whereClause,
+        distinct: true,
         order: [[...sort, body?.order]],
       });
       return {

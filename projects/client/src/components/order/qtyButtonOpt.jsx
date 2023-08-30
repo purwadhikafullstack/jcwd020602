@@ -1,5 +1,14 @@
 import React from "react";
-import { useNumberInput, Button, Center, Input } from "@chakra-ui/react"; // You should import the necessary components from Chakra UI or any other library you're using.
+import {
+  useNumberInput,
+  Button,
+  Center,
+  Input,
+  Flex,
+  ButtonGroup,
+} from "@chakra-ui/react";
+
+// You should import the necessary components from Chakra UI or any other library you're using.
 
 const QtyOption = ({ cartItem, onQuantityChange }) => {
   const { getInputProps, getIncrementButtonProps, getDecrementButtonProps } =
@@ -20,13 +29,24 @@ const QtyOption = ({ cartItem, onQuantityChange }) => {
   const input = getInputProps();
 
   return (
-    <>
-      <Button {...dec}>-</Button>
-      <Center>
-        <Input {...input} w={"50px"} />
-      </Center>
-      <Button {...inc}>+</Button>
-    </>
+    // <Flex>
+    <ButtonGroup isAttached size={"sm"}>
+      <Button {...dec} border={"1px"}>
+        -
+      </Button>
+      <Input
+        {...input}
+        textAlign={"center"}
+        size={"sm"}
+        // h={"30px"}
+        w={"40px"}
+        borderBlock={"1px"}
+      />
+      <Button {...inc} border={"1px"}>
+        +
+      </Button>
+    </ButtonGroup>
+    // </Flex>
   );
 };
 

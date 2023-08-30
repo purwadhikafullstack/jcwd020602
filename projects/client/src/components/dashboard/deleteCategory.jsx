@@ -42,14 +42,14 @@ export function DeleteCategory(props) {
         isCentered
       >
         <AlertDialogOverlay />
-        <AlertDialogContent>
+        <AlertDialogContent mx={2}>
           <AlertDialogHeader>
             <AlertDialogCloseButton />
           </AlertDialogHeader>
           <AlertDialogBody>
             Are you sure you want to delete {props.id}?
           </AlertDialogBody>
-          <AlertDialogFooter>
+          <AlertDialogFooter display={"flex"} justifyContent={"space-between"}>
             <Button ref={cancelRef} onClick={props.onClose}>
               No
             </Button>
@@ -102,14 +102,14 @@ export function DeleteSubcategory(props) {
         isCentered
       >
         <AlertDialogOverlay />
-        <AlertDialogContent>
+        <AlertDialogContent mx={2}>
           <AlertDialogHeader>
             <AlertDialogCloseButton />
           </AlertDialogHeader>
           <AlertDialogBody>
             Are you sure you want to delete {props.id}?
           </AlertDialogBody>
-          <AlertDialogFooter>
+          <AlertDialogFooter display={"flex"} justifyContent={"space-between"}>
             <Button ref={cancelRef} onClick={props.onClose}>
               No
             </Button>
@@ -162,14 +162,14 @@ export function DeleteBrand(props) {
         isCentered
       >
         <AlertDialogOverlay />
-        <AlertDialogContent>
+        <AlertDialogContent mx={2}>
           <AlertDialogHeader>
             <AlertDialogCloseButton />
           </AlertDialogHeader>
           <AlertDialogBody>
             Are you sure you want to delete {props.id}?
           </AlertDialogBody>
-          <AlertDialogFooter>
+          <AlertDialogFooter display={"flex"} justifyContent={"space-between"}>
             <Button ref={cancelRef} onClick={props.onClose}>
               No
             </Button>

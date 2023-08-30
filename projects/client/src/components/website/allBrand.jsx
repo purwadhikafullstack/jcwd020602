@@ -2,9 +2,9 @@ import { Box, Flex, Text, Image } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useFetchBrand } from "../../hooks/useFetchBrand";
 import { Link } from "react-router-dom";
+// ------------------------------------------------------ CLEAR -FAHMI
 export default function AllBrand() {
   const { brands } = useFetchBrand();
-
   const [animateBoxes, setAnimateBoxes] = useState({});
 
   useEffect(() => {

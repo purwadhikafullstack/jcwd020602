@@ -22,15 +22,15 @@ export const addProduct = createAsyncThunk(
   async ({ name, size }) => {
     try {
       const token = JSON.parse(localStorage.getItem("user"));
-
       const response = await api().post(
         "/carts",
         { name, size },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      return response?.data?.data;
+      alert(response.data.message);
+      // return response?.data?.data;
     } catch (err) {
-      console.log(err.response?.data);
+      alert(err.response.data.message);
     }
   }
 );
@@ -76,10 +76,10 @@ export const getTotalProductsInCart = (state) => {
 
 export const getTotalPriceInCart = (state) => {
   const cartItems = cartSelector.selectAll(state);
-  return cartItems.reduce(
-    (total, cartItem) => total + cartItem.qty * cartItem.Shoes?.price,
-    0
-  );
+  return cartItems.reduce((total, cartItem) => {
+    total = total + cartItem.qty * cartItem.Shoes?.price;
+    return total;
+  }, 0);
 };
 
 export const getTotalWeightInCart = (state) => {

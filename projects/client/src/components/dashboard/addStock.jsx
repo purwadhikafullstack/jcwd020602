@@ -49,7 +49,6 @@ export default function AddStock(props) {
           position: "top",
         });
         props.fetch();
-        clearData();
       } catch (err) {
         toast({
           title: `${err.response.data.message}`,
@@ -57,6 +56,9 @@ export default function AddStock(props) {
           duration: 9000,
           isClosable: true,
         });
+      } finally {
+        setIsLoading(false);
+        clearData();
       }
     },
   });
@@ -170,10 +172,7 @@ export default function AddStock(props) {
               isLoading={isLoading}
               onClick={() => {
                 setIsLoading(true);
-                setTimeout(() => {
-                  setIsLoading(false);
-                  formik.handleSubmit();
-                }, 2000);
+                formik.handleSubmit();
               }}
             >
               confirm

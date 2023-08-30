@@ -9,12 +9,16 @@ import {
   Text,
   Button,
   useToast,
+  Skeleton,
+  Spinner,
 } from "@chakra-ui/react";
 import Footer from "../components/website/footer";
 import { Recommend } from "../components/website/carousel";
 import { useDispatch, useSelector } from "react-redux";
-import { addProduct } from "../redux/cart";
+import { addProduct, getCarts } from "../redux/cart";
 import Navbar from "../components/website/navbar";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import "react-lazy-load-image-component/src/effects/blur.css";
 
 export default function ProductDetailPage() {
   const loc = useLocation();
@@ -30,7 +34,6 @@ export default function ProductDetailPage() {
   const [category, setCategory] = useState();
   const [shoeId, setShoeId] = useState();
   const [sizeAndStock, setSizeAndStock] = useState();
-
   useEffect(() => {
     getShoe();
   }, [name]);
@@ -55,13 +58,6 @@ export default function ProductDetailPage() {
       addProduct({
         name,
         size,
-      }),
-      toast({
-        title: "Successfully add shoe to cart",
-        status: "success",
-        position: "top",
-        duration: 5000,
-        isClosable: true,
       })
     );
   };
@@ -86,11 +82,15 @@ export default function ProductDetailPage() {
           justify={"center"}
           border={"2px"}
         >
-          <Image
+          <LazyLoadImage
+            className="sepatu-detail"
+            effect="blur"
             src={`${process.env.REACT_APP_API_BASE_URL}/${shoe?.ShoeImages[selectedImage]?.shoe_img}`}
-            objectFit={"cover"}
-            w={"100%"}
+            width={"100%"}
+            delayMethod="debounce"
+            delayTime={2000}
           />
+
           <Flex pos={"absolute"} gap={2} mt={2}>
             {shoe?.ShoeImages?.map((val, idx) => (
               <Box
@@ -149,7 +149,7 @@ export default function ProductDetailPage() {
                     </Button>
                   ) : (
                     <Button
-                      isActive={size === val.size}
+                      isActive={size == val.size}
                       _active={{ bg: "black", color: "white" }}
                       variant={"outline"}
                       border={"1px"}

@@ -1,15 +1,14 @@
 import {
   Center,
   Grid,
-  Icon,
   Input,
   InputGroup,
   InputRightAddon,
 } from "@chakra-ui/react";
 import { useDisclosure, TableContainer, Select, Image } from "@chakra-ui/react";
-import { Box, Button, ButtonGroup, Divider, Flex, Tag } from "@chakra-ui/react";
+import { Box, Button, ButtonGroup, Divider, Flex } from "@chakra-ui/react";
 import { Table, Thead, Tbody, Tr, Th, Td, IconButton } from "@chakra-ui/react";
-import { Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
+import { Menu, MenuButton, MenuList, MenuItem, Icon } from "@chakra-ui/react";
 import { AiOutlinePlus } from "react-icons/ai";
 import { GrClose, GrMenu } from "react-icons/gr";
 import { FaSearch } from "react-icons/fa";
@@ -71,6 +70,38 @@ export default function ProductPage() {
     fetch();
   }, [filter]);
 
+  function MenuBurger({ shoe }) {
+    return (
+      <Menu>
+        {({ isOpen }) => (
+          <>
+            <MenuButton isActive={isOpen} as={Button} p={0}>
+              <Icon as={isOpen ? GrClose : GrMenu} />
+            </MenuButton>
+            <MenuList>
+              <MenuItem
+                onClick={() => {
+                  setShoeId(shoe.id);
+                  editModal.onOpen();
+                }}
+              >
+                Edit
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  setShoeId(shoe.id);
+                  deleteModal.onOpen();
+                }}
+              >
+                Delete
+              </MenuItem>
+            </MenuList>
+          </>
+        )}
+      </Menu>
+    );
+  }
+
   return (
     <>
       <NavbarDashboard />
@@ -110,7 +141,12 @@ export default function ProductPage() {
                 cursor={"pointer"}
                 onClick={() => {
                   setShown({ page: 1 });
-                  setFilter({ ...filter, search: inputFileRef.current.value });
+                  setFilter({
+                    ...filter,
+                    brand: "",
+                    search: inputFileRef.current.value,
+                  });
+                  setCategory("");
                 }}
               >
                 <Icon as={FaSearch} color={"black"} />
@@ -123,9 +159,10 @@ export default function ProductPage() {
                 <Select
                   size={"sm"}
                   placeholder="select"
+                  value={filter?.brand}
                   onChange={(e) => {
                     setShown({ page: 1 });
-                    setFilter({ ...filter, brand: e.target.value });
+                    setFilter({ ...filter, search: "", brand: e.target.value });
                   }}
                 >
                   {brands?.map((val) => (
@@ -138,10 +175,12 @@ export default function ProductPage() {
                 <Box id="title">CATEGORY</Box>
                 <Select
                   size={"sm"}
+                  value={category}
                   placeholder="select"
                   onChange={(e) => {
                     setShown({ page: 1 });
                     setCategory(e.target.value);
+                    setFilter({ ...filter, search: "" });
                   }}
                 >
                   {categories?.map((val) => (
@@ -191,33 +230,7 @@ export default function ProductPage() {
                         #{idx + 1}
                       </Box>
                       {userSelector.role == "SUPERADMIN" ? (
-                        <Menu>
-                          {({ isOpen }) => (
-                            <>
-                              <MenuButton isActive={isOpen} as={Button} p={0}>
-                                <Icon as={isOpen ? GrClose : GrMenu} />
-                              </MenuButton>
-                              <MenuList>
-                                <MenuItem
-                                  onClick={() => {
-                                    setShoeId(shoe.id);
-                                    editModal.onOpen();
-                                  }}
-                                >
-                                  Edit
-                                </MenuItem>
-                                <MenuItem
-                                  onClick={() => {
-                                    setShoeId(shoe.id);
-                                    deleteModal.onOpen();
-                                  }}
-                                >
-                                  Delete
-                                </MenuItem>
-                              </MenuList>
-                            </>
-                          )}
-                        </Menu>
+                        <MenuBurger shoe={shoe} />
                       ) : null}
                     </Flex>
                     <Box>name: {shoe.name} </Box>
@@ -248,106 +261,86 @@ export default function ProductPage() {
             </Flex>
           </Box>
           {/* tampilan desktop table */}
-          <TableContainer id="table-content">
-            <Table size="sm">
-              <Thead>
-                <Tr>
-                  <Th>#</Th>
-                  <Th>Image</Th>
-                  <Th>Name</Th>
-                  <Th>Price</Th>
-                  <Th>Brand</Th>
-                  <Th>Category</Th>
-                  <Th>Subcategory</Th>
-                  <Th>status</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {shoes?.rows &&
-                  shoes?.rows?.map((shoe, idx) => (
-                    <Tr>
-                      <Td w={"5%"}>{idx + 1}</Td>
-                      <Td>
-                        <Grid templateColumns={"repeat(2, 1fr)"} w={"100px"}>
-                          {shoe?.ShoeImages?.map((val) => (
-                            <Image
-                              cursor={"pointer"}
-                              onClick={() => {
-                                setImg(val.shoe_img);
-                                onOpen();
-                              }}
-                              src={`${process.env.REACT_APP_API_BASE_URL}/${val?.shoe_img}`}
-                              // w={10}
-                            />
-                          ))}
-                        </Grid>
-                      </Td>
-                      <Flex
-                        whiteSpace={"normal"}
-                        justify={"center"}
-                        align={"center"}
-                        h={"110px"}
-                      >
-                        <Box fontSize={14} m={1}>
-                          {shoe?.name}
-                        </Box>
-                      </Flex>
-                      <Td>{shoe?.price}</Td>
-                      <Td>{shoe?.brand?.name}</Td>
-                      <Td>{shoe?.Category?.name}</Td>
-                      <Td>{shoe?.subcategory?.name}</Td>
-                      <Td>{shoe?.status}</Td>
+          {shoes?.rows?.length ? (
+            <TableContainer id="table-content">
+              <Table size="sm">
+                <Thead>
+                  <Tr>
+                    <Th>#</Th>
+                    <Th>Image</Th>
+                    <Th>Name</Th>
+                    <Th>Price</Th>
+                    <Th>Brand</Th>
+                    <Th>Category</Th>
+                    <Th>Subcategory</Th>
+                    <Th>status</Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  {shoes?.rows &&
+                    shoes?.rows?.map((shoe, idx) => (
+                      <Tr>
+                        <Td w={"5%"}>{idx + 1}</Td>
+                        <Td>
+                          <Grid templateColumns={"repeat(2, 1fr)"} w={"100px"}>
+                            {shoe?.ShoeImages?.map((val) => (
+                              <Image
+                                cursor={"pointer"}
+                                onClick={() => {
+                                  setImg(val.shoe_img);
+                                  onOpen();
+                                }}
+                                src={`${process.env.REACT_APP_API_BASE_URL}/${val?.shoe_img}`}
+                                // w={10}
+                              />
+                            ))}
+                          </Grid>
+                        </Td>
+                        <Flex
+                          whiteSpace={"normal"}
+                          justify={"center"}
+                          align={"center"}
+                          h={"110px"}
+                        >
+                          <Box fontSize={14} m={1}>
+                            {shoe?.name}
+                          </Box>
+                        </Flex>
+                        <Td>{shoe?.price}</Td>
+                        <Td>{shoe?.brand?.name}</Td>
+                        <Td>{shoe?.Category?.name}</Td>
+                        <Td>{shoe?.subcategory?.name}</Td>
+                        <Td>{shoe?.status}</Td>
 
-                      <Td w={"5%"}>
-                        {userSelector.role == "SUPERADMIN" ? (
-                          <Menu>
-                            {({ isOpen }) => (
-                              <>
-                                <MenuButton isActive={isOpen} as={Button} p={0}>
-                                  <Icon as={isOpen ? GrClose : GrMenu} />
-                                </MenuButton>
-                                <MenuList>
-                                  <MenuItem
-                                    onClick={() => {
-                                      setShoeId(shoe.id);
-                                      editModal.onOpen();
-                                    }}
-                                  >
-                                    Edit
-                                  </MenuItem>
-                                  <MenuItem
-                                    onClick={() => {
-                                      setShoeId(shoe.id);
-                                      deleteModal.onOpen();
-                                    }}
-                                  >
-                                    Delete
-                                  </MenuItem>
-                                </MenuList>
-                              </>
-                            )}
-                          </Menu>
-                        ) : null}
-                      </Td>
-                    </Tr>
-                  ))}
-              </Tbody>
-              <ImageModal isOpen={isOpen} onClose={onClose} image={img} />
-              <DeleteProduct
-                id={shoeId}
-                isOpen={deleteModal.isOpen}
-                onClose={deleteModal.onClose}
-                fetch={fetch}
-              />
-              <EditProduct
-                id={shoeId}
-                isOpen={editModal.isOpen}
-                onClose={editModal.onClose}
-                fetch={fetch}
-                setId={setShoeId}
-              />
-            </Table>
-          </TableContainer>
+                        <Td w={"5%"}>
+                          {userSelector.role == "SUPERADMIN" ? (
+                            <MenuBurger shoe={shoe} />
+                          ) : null}
+                        </Td>
+                      </Tr>
+                    ))}
+                </Tbody>
+                <ImageModal isOpen={isOpen} onClose={onClose} image={img} />
+                <DeleteProduct
+                  id={shoeId}
+                  isOpen={deleteModal.isOpen}
+                  onClose={deleteModal.onClose}
+                  fetch={fetch}
+                />
+                <EditProduct
+                  id={shoeId}
+                  isOpen={editModal.isOpen}
+                  onClose={editModal.onClose}
+                  fetch={fetch}
+                  setId={setShoeId}
+                />
+              </Table>
+            </TableContainer>
+          ) : (
+            <Center border={"1px"} h={"550px"}>
+              Product not found
+            </Center>
+          )}
         </Box>
         <Flex p={2} m={2} justify={"center"}>
           <Pagination

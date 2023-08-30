@@ -7,13 +7,69 @@ import DeleteAddress from "../components/website/deleteAddress";
 import { useEffect, useState } from "react";
 import EditAddress from "../components/website/editAddress";
 import Navbar from "../components/website/navbar";
-
+// ---------------------------------------------------------- CLEAR -FAHMI
 export default function AddressBookPage() {
   const addModal = useDisclosure();
   const deleteModal = useDisclosure();
   const editModal = useDisclosure();
   const [selectedAddress, setSelectedAddress] = useState(null);
   const { address, fetch } = useFetchAddress();
+
+  function Address({ val }) {
+    const options = {
+      minW: "80px",
+      alignItems: "center",
+      justify: "center",
+      bg: "black",
+      color: "white",
+    };
+    return (
+      <Flex p={2} border={"2px"} flexDir={"column"} gap={3} bg={"white"}>
+        <Flex borderBottom={"1px"} gap={1}>
+          <Flex {...options}>Title</Flex>
+          <Box>{val.title}</Box>
+        </Flex>
+        <Flex borderBottom={"1px"} gap={1}>
+          <Flex {...options}>Name</Flex>
+          <Box>{val.name}</Box>
+        </Flex>
+        <Flex borderBottom={"1px"} gap={1}>
+          <Flex {...options}>Phone</Flex>
+          <Box>{val.phone}</Box>
+        </Flex>
+        <Flex borderBottom={"1px"} gap={1}>
+          <Flex {...options}>Address</Flex>
+
+          <Box>
+            {val.address}, {val.city.city_name}, {val.city.province},{" "}
+            {val.postcode}
+          </Box>
+        </Flex>
+        <Flex gap={2}>
+          <Button
+            id="button"
+            size={"sm"}
+            onClick={() => {
+              setSelectedAddress(val);
+              editModal.onOpen();
+            }}
+          >
+            EDIT
+          </Button>
+          <Button
+            id="button"
+            size={"sm"}
+            onClick={() => {
+              setSelectedAddress(val);
+              deleteModal.onOpen();
+            }}
+          >
+            DELETE
+          </Button>
+        </Flex>
+      </Flex>
+    );
+  }
 
   return (
     <Center flexDir={"column"}>
@@ -48,90 +104,7 @@ export default function AddressBookPage() {
               {address &&
                 address
                   ?.filter((val) => val.is_primary == true)
-                  ?.map((val) => (
-                    <Flex
-                      p={2}
-                      border={"2px"}
-                      flexDir={"column"}
-                      gap={3}
-                      bg={"white"}
-                    >
-                      <Flex borderBottom={"1px"} gap={1}>
-                        <Flex
-                          minW={"80px"}
-                          alignItems={"center"}
-                          justify={"center"}
-                          bg={"black"}
-                          color={"white"}
-                        >
-                          Title
-                        </Flex>
-                        <Box>{val.title}</Box>
-                      </Flex>
-                      <Flex borderBottom={"1px"} gap={1}>
-                        <Flex
-                          minW={"80px"}
-                          alignItems={"center"}
-                          justify={"center"}
-                          bg={"black"}
-                          color={"white"}
-                        >
-                          Name
-                        </Flex>
-                        <Box>{val.name}</Box>
-                      </Flex>
-                      <Flex borderBottom={"1px"} gap={1}>
-                        <Flex
-                          minW={"80px"}
-                          alignItems={"center"}
-                          justify={"center"}
-                          bg={"black"}
-                          color={"white"}
-                        >
-                          Phone
-                        </Flex>
-                        <Box>{val.phone}</Box>
-                      </Flex>
-                      <Flex borderBottom={"1px"} gap={1}>
-                        <Flex
-                          minW={"80px"}
-                          alignItems={"center"}
-                          justify={"center"}
-                          bg={"black"}
-                          color={"white"}
-                        >
-                          Address
-                        </Flex>
-
-                        <Box>
-                          {val.address}, {val.city.city_name},{" "}
-                          {val.city.province}, {val.postcode}
-                        </Box>
-                      </Flex>
-                      <Flex gap={2}>
-                        <Button
-                          id="button"
-                          size={"sm"}
-                          onClick={() => {
-                            setSelectedAddress(val);
-                            editModal.onOpen();
-                          }}
-                        >
-                          EDIT
-                        </Button>
-                        <Button
-                          id="button"
-                          size={"sm"}
-                          onClick={() => {
-                            setSelectedAddress(val);
-                            deleteModal.onOpen();
-                          }}
-                        >
-                          DELETE
-                        </Button>
-                      </Flex>
-                    </Flex>
-                  ))}
+                  ?.map((val) => <Address val={val} />)}
             </Flex>
             {address?.length > 1 ? (
               <Flex flexDir={"column"} gap={5} p={2} border={"2px"} w={"100%"}>
@@ -141,84 +114,7 @@ export default function AddressBookPage() {
                 {address &&
                   address
                     ?.filter((val) => val.is_primary == false)
-                    .map((val, idx) => (
-                      <Flex p={2} border={"2px"} flexDir={"column"} gap={3}>
-                        <Flex borderBottom={"1px"} gap={1}>
-                          <Flex
-                            minW={"80px"}
-                            alignItems={"center"}
-                            justify={"center"}
-                            bg={"black"}
-                            color={"white"}
-                          >
-                            Title
-                          </Flex>
-                          <Box>{val.title}</Box>
-                        </Flex>
-                        <Flex borderBottom={"1px"} gap={1}>
-                          <Flex
-                            minW={"80px"}
-                            alignItems={"center"}
-                            justify={"center"}
-                            bg={"black"}
-                            color={"white"}
-                          >
-                            Name
-                          </Flex>
-                          <Box>{val.name}</Box>
-                        </Flex>
-                        <Flex borderBottom={"1px"} gap={1}>
-                          <Flex
-                            minW={"80px"}
-                            alignItems={"center"}
-                            justify={"center"}
-                            bg={"black"}
-                            color={"white"}
-                          >
-                            Phone
-                          </Flex>
-                          <Box>{val.phone}</Box>
-                        </Flex>
-                        <Flex borderBottom={"1px"} gap={1}>
-                          <Flex
-                            minW={"80px"}
-                            alignItems={"center"}
-                            justify={"center"}
-                            bg={"black"}
-                            color={"white"}
-                          >
-                            Address
-                          </Flex>
-
-                          <Box>
-                            {val.address}, {val.city.city_name},{" "}
-                            {val.city.province}, {val.postcode}
-                          </Box>
-                        </Flex>
-                        <Flex gap={2}>
-                          <Button
-                            id="button"
-                            size={"sm"}
-                            onClick={() => {
-                              setSelectedAddress(val);
-                              editModal.onOpen();
-                            }}
-                          >
-                            EDIT
-                          </Button>
-                          <Button
-                            id="button"
-                            size={"sm"}
-                            onClick={() => {
-                              setSelectedAddress(val);
-                              deleteModal.onOpen();
-                            }}
-                          >
-                            DELETE
-                          </Button>
-                        </Flex>
-                      </Flex>
-                    ))}
+                    .map((val) => <Address val={val} />)}
               </Flex>
             ) : null}
           </>

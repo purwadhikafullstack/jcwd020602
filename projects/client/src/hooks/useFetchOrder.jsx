@@ -27,8 +27,10 @@ export const useFetchOrder = (filter) => {
 };
 
 export const useFetchOrderList = (filter) => {
+  const [isLoading, setIsLoading] = useState(false);
   const [orders, setOrders] = useState({ rows: [] });
   const fetchOrdersList = async () => {
+    setIsLoading(true);
     try {
       const token = JSON.parse(localStorage.getItem("user"));
       const res = await api().get(`/orders/admin`, {
@@ -37,13 +39,16 @@ export const useFetchOrderList = (filter) => {
       });
       setOrders(res.data);
     } catch (err) {
-      console.log(err.response?.data);
+      setOrders({ rows: [] });
     }
   };
   useEffect(() => {
     fetchOrdersList();
   }, [filter]);
-  return { orders, fetchOrdersList };
+  useEffect(() => {
+    setIsLoading(false);
+  }, [orders]);
+  return { orders, fetchOrdersList, isLoading };
 };
 
 export const useFetchSalesReport = (filter) => {

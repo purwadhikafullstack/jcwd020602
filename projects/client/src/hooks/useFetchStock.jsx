@@ -5,35 +5,38 @@ import { useToast } from "@chakra-ui/react";
 
 export const useFetchStock = (filter) => {
   const [stocks, setStocks] = useState({ rows: [] });
+  const [isLoading, setIsLoading] = useState(false);
   const fetch = async () => {
+    setIsLoading(true);
     try {
       const resGetStocks = await api().get(`/stocks`, {
         params: { ...filter },
       });
       setStocks(resGetStocks.data);
     } catch (err) {
-      console.log(err);
-      return err;
+      setStocks({ rows: [] });
     }
   };
-
   useEffect(() => {
     if (filter.city_id != "") {
       fetch();
     }
   }, [filter]);
-
-  return { stocks, fetch };
+  useEffect(() => {
+    setIsLoading(false);
+  }, [stocks]);
+  return { stocks, fetch, isLoading };
 };
 export const useFetchStockId = (id) => {
-  const toast = useToast();
+  const [isLoading, setIsLoading] = useState(false);
   const [stock, setStock] = useState({});
   const fetch = async () => {
+    setIsLoading(true);
     try {
       const resGetStock = await api().get(`/stocks/${id}`);
       setStock(resGetStock?.data?.stock);
     } catch (err) {
-      console.log(err);
+      setStock({});
     }
   };
   useEffect(() => {
@@ -41,7 +44,10 @@ export const useFetchStockId = (id) => {
       fetch();
     }
   }, [id]);
-  return { stock, setStock };
+  useEffect(() => {
+    setIsLoading(false);
+  }, [stock]);
+  return { stock, setStock, isLoading };
 };
 export const useFetchFromStock = (from_warehouse_id) => {
   const userSelector = useSelector((state) => state.auth);
@@ -55,7 +61,6 @@ export const useFetchFromStock = (from_warehouse_id) => {
       });
       setStocks(resGetFW.data);
     } catch (err) {
-      console.log(err);
       return err;
     }
   };

@@ -1,23 +1,24 @@
-import { Box, Button, Center, Divider, Flex } from "@chakra-ui/react";
+import { Box, Button, Flex, InputRightAddon } from "@chakra-ui/react";
 import { FormControl, FormErrorMessage } from "@chakra-ui/react";
 import { Heading, Icon, Input, InputGroup } from "@chakra-ui/react";
 import { InputRightElement, Stack, Text, useToast } from "@chakra-ui/react";
 import { TbAlertCircleFilled } from "react-icons/tb";
+import { FaSearch } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { ViewOffIcon, ViewIcon, EmailIcon } from "@chakra-ui/icons";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { api } from "../../api/api";
 import YupPassword from "yup-password";
-import { fetch } from "../../hoc/authProvider";
 import { auth } from "../../lib/firebase";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
 export default function Login() {
   YupPassword(Yup);
+  const inputFileRef = useRef(null);
   const dispatch = useDispatch();
   const toast = useToast({ duration: 3000, isClosable: true, position: "top" });
   const nav = useNavigate();
@@ -26,11 +27,39 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const [formField, setFormField] = useState("");
 
-  async function socialLogin() {
-    const provider = new GoogleAuthProvider();
-    signInWithPopup(auth, provider)
-      .then((res) => console.log(res))
-      .catch((err) => console.log(err));
+  async function googleLogin() {
+    try {
+      const provider = new GoogleAuthProvider();
+      const body = await signInWithPopup(auth, provider);
+      console.log(body.user);
+      const res = await api().post(
+        "/auth/login",
+        { email: body.user.email, password: "AB!@12ab" },
+        { params: body.user }
+      );
+      console.log(res.data);
+      localStorage.setItem("user", JSON.stringify(res.data.token));
+      const restoken = await api().get("/auth/userbytoken", {
+        headers: {
+          Authorization: `Bearer ${res.data.token}`,
+        },
+      });
+      dispatch({
+        type: "login",
+        payload: restoken.data,
+      });
+      toast({
+        title: "login success",
+        status: "success",
+      });
+      return nav("/");
+    } catch (error) {
+      console.log(error);
+      toast({
+        title: error.response.data.message,
+        status: "error",
+      });
+    }
   }
 
   const formik = useFormik({
@@ -89,7 +118,7 @@ export default function Login() {
       </Heading>
 
       <Stack spacing={"20px"}>
-        <Button onClick={socialLogin} size={"sm"} rightIcon={<FcGoogle />}>
+        <Button onClick={googleLogin} size={"sm"} rightIcon={<FcGoogle />}>
           login with google
         </Button>
         <Flex justify={"space-between"} align={"center"}>

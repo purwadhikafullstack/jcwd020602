@@ -23,13 +23,14 @@ module.exports = {
   },
   confirmMutation: async (body) => {
     try {
-      return await db.StockMutation.update(
-        { res_admin_id: body?.res_admin_id, status: body?.status },
-        {
-          where: { id: body?.id },
-          transaction: body?.t,
-        }
-      );
+      const update = { status: body?.status };
+      if (body?.res_admin_id) {
+        update.res_admin_id = body?.res_admin_id;
+      }
+      return await db.StockMutation.update(update, {
+        where: { id: body?.id },
+        transaction: body?.t,
+      });
     } catch (error) {
       return error;
     }
@@ -46,7 +47,8 @@ module.exports = {
   },
   findAndCountAllMutation: async (body) => {
     try {
-      const time = body?.time || moment().format();
+      const timeFrom = body?.timeFrom || moment().startOf("M").format();
+      const timeTo = body?.timeTo || moment().format();
       const whereClause = {
         [Op.and]: [
           {
@@ -65,12 +67,12 @@ module.exports = {
           },
           {
             createdAt: {
-              [Op.gte]: moment(time).startOf("month").format(),
+              [Op.gte]: moment(timeFrom).startOf("date").format(),
             },
           },
           {
             createdAt: {
-              [Op.lte]: moment(time).endOf("month").format(),
+              [Op.lte]: moment(timeTo).endOf("date").format(),
             },
           },
         ],
@@ -115,14 +117,17 @@ module.exports = {
             model: db.User,
             required: false,
             as: "requestedBy",
+            paranoid: false,
           },
           {
             model: db.Warehouse,
             as: "fromWarehouse",
+            paranoid: false,
           },
           {
             model: db.Warehouse,
             as: "toWarehouse",
+            paranoid: false,
           },
           {
             model: db.Stock,
@@ -130,13 +135,16 @@ module.exports = {
               { model: db.Shoe, include: [{ model: db.Brand }] },
               { model: db.ShoeSize },
             ],
+            paranoid: false,
           },
           {
             model: db.User,
             required: false,
             as: "respondedBy",
+            paranoid: false,
           },
         ],
+        distinct: true,
         where: whereClause,
         limit: body?.limit,
         offset: (parseInt(body?.page) - 1) * body?.limit,
