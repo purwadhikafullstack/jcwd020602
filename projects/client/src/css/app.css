@@ -29,6 +29,12 @@
 .banner-carosel {
   border: 2px;
 }
+
+.faqpage {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+}
 /*---------------------- navbar ----------------------*/
 .navbar {
   background: rgba(255, 255, 255, 0.8);
@@ -396,9 +402,11 @@
   }
   .shoe-list img {
     height: 230px;
-
     width: 100vw;
     object-fit: cover;
+  }
+  .faqpage {
+    grid-template-columns: 1fr;
   }
 }
 

@@ -4,7 +4,6 @@ import ProtectedPage from "./protectedPage";
 import FaqPage from "../pages/faqPage";
 
 const LandingPage = lazy(() => import("../pages/landingPage"));
-
 const AuthForm = lazy(() => import("../pages/authPage"));
 const Verify = lazy(() => import("../components/auth/registerVerif"));
 const ForgotPassword = lazy(() => import("../components/auth/forgotPassword"));

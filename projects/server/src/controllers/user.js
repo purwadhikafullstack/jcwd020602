@@ -27,7 +27,10 @@ const userController = {
         return res.status(400).send({ message: "email was registered" });
       }
 
-      const user = await db.User.create({ email, role: "USER" });
+      const user = await db.User.create(
+        { email, role: "USER" },
+        { transaction: t }
+      );
       const id = JSON.stringify({ id: user.dataValues.id });
       const generateToken = nanoid();
       await createToken(id, generateToken, 1, "VERIFY", t);
@@ -302,22 +305,26 @@ const userController = {
         .status(200)
         .send({ ...result, totalPages: Math.ceil(result.count / limit) });
     } catch (err) {
-      res.status(500).send({ message: err.message });
+      return res.status(500).send({ message: err.message });
     }
   },
   getAdminById: async (req, res) => {
-    const user = await db.User.findOne({
-      where: { id: req.params.id },
-    });
-    return res.status(200).send(user);
+    try {
+      const user = await db.User.findOne({
+        where: { id: req.params.id },
+      });
+      return res.status(200).send(user);
+    } catch (err) {
+      return res.status(500).send({ message: err.message });
+    }
   },
   deleteAdmin: async (req, res) => {
     const t = await db.sequelize.transaction();
     try {
       const id = req.params.id;
       const check = await findUser(id);
-      await db.Admin.destroy({ where: { user_id: id } }, { transaction: t });
-      await db.User.destroy({ where: { id } }, { transaction: t });
+      await db.Admin.destroy({ where: { user_id: id }, transaction: t });
+      await db.User.destroy({ where: { id }, transaction: t });
       if (check?.dataValues?.avatar_url) {
         try {
           fs.unlinkSync(

@@ -42,6 +42,7 @@ export default function ChangePassword() {
     }),
     onSubmit: async () => {
       const password = formik.values.password;
+      setIsLoading(true);
       try {
         const res = await api().patch(
           "/auth/forgot-password",
@@ -52,12 +53,14 @@ export default function ChangePassword() {
           title: res.data.message,
           status: "success",
         });
+        setIsLoading(false);
         return nav("/auth");
       } catch (err) {
         toast({
           title: err?.response?.data?.message,
           status: "error",
         });
+        setIsLoading(false);
       }
     },
   });
@@ -177,13 +180,7 @@ export default function ChangePassword() {
                     : true
                 }
                 isLoading={isLoading}
-                onClick={() => {
-                  setIsLoading(true);
-                  setTimeout(() => {
-                    setIsLoading(false);
-                    formik.handleSubmit();
-                  }, 2000);
-                }}
+                onClick={formik.handleSubmit}
               >
                 Confirm
               </Button>

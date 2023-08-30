@@ -26,7 +26,6 @@ module.exports = {
       const userId = body?.userId;
       const valid = body?.valid;
       const whereClause = {};
-
       if (userId) {
         whereClause[Op.and] = [{ userId }];
       } else if (token) {
@@ -85,10 +84,7 @@ module.exports = {
           status: status,
           valid: valid,
         },
-        {
-          where: { userId: id },
-        },
-        { transaction: t }
+        { where: { userId: id }, transaction: t }
       );
     } catch (err) {
       return err;

@@ -23,18 +23,20 @@ export default function Register() {
       email: Yup.string().email("Invalid email address").required("required"),
     }),
     onSubmit: async () => {
+      setIsLoading(true);
       try {
         const res = await api().post("/auth/register", formik.values);
         toast({
           title: res.data.message,
           status: "success",
         });
-        nav("/auth");
+        setIsLoading(false);
       } catch (err) {
         toast({
           title: err?.response?.data.message,
           status: "error",
         });
+        setIsLoading(false);
       }
     },
   });
@@ -79,13 +81,7 @@ export default function Register() {
           id="button"
           isDisabled={formik.values.email ? false : true}
           isLoading={isLoading}
-          onClick={() => {
-            setIsLoading(true);
-            setTimeout(() => {
-              setIsLoading(false);
-              formik.handleSubmit();
-            }, 2000);
-          }}
+          onClick={formik.handleSubmit}
         >
           Sign up
         </Button>
