@@ -58,7 +58,7 @@ export default function ProductList() {
   }, [category, sub, filter, search]);
 
   useEffect(() => {
-    setFilter({ ...filter, brand: "", gender: "" });
+    setFilter({ ...filter, brand: "", gender: "", size: "" });
     setShown({ page: 1 });
   }, [category, sub, search]);
 
@@ -80,6 +80,7 @@ export default function ProductList() {
               value={filter?.gender}
               onChange={(e) => {
                 setFilter({ ...filter, gender: e.target.value });
+                setShown({ page: 1 });
               }}
             >
               {categories?.map((val) => (
@@ -92,6 +93,7 @@ export default function ProductList() {
               value={filter?.brand}
               placeholder="FILTER BY BRAND:"
               onChange={(e) => {
+                setShown({ page: 1 });
                 setFilter({ ...filter, brand: e.target.value });
               }}
             >
@@ -105,6 +107,7 @@ export default function ProductList() {
             value={filter.size}
             placeholder="FILTER BY SIZE:"
             onChange={(e) => {
+              setShown({ page: 1 });
               setFilter({ ...filter, size: e.target.value });
             }}
           >

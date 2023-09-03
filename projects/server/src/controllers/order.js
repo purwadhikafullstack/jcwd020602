@@ -187,7 +187,10 @@ const orderController = {
   cancelPaymentUser: async (req, res) => {
     const t = await db.sequelize.transaction();
     try {
-      await db.Order.update({ status: "CANCELED"},{where:{id: req.order?.id},transaction:t});
+      await db.Order.update(
+        { status: "CANCELED" },
+        { where: { id: req.order?.id }, transaction: t }
+      );
       await t.commit();
       return res.status(200).send({ message: `Order successfully canceled` });
     } catch (err) {
@@ -196,7 +199,6 @@ const orderController = {
     }
   },
   cancelOrderAutomatically: async () => {
-    const t = await db.sequelize.transaction();
     try {
       const currTime = moment().utc();
       const orders = await db.Order.findAll({
@@ -204,16 +206,19 @@ const orderController = {
       });
       if (orders) {
         for (const order of orders) {
-          await updateOrder({ t, status: "CANCELED", id: order?.id });
+          await db.Order.update(
+            { status: "CANCELED" },
+            {
+              where: { id: order?.id },
+            }
+          );
         }
       }
-      await t.commit();
     } catch (err) {
-      await t.rollback();
+      return err;
     }
   },
   doneOrderAutomatically: async () => {
-    const t = await db.sequelize.transaction();
     try {
       const currTime = moment().utc().add(-5, "minute");
       const orders = await db.Order.findAll({
@@ -224,12 +229,16 @@ const orderController = {
       });
       if (orders) {
         for (const order of orders) {
-          await updateOrder({ t, status: "DONE", id: order?.id });
+          await db.Order.update(
+            { status: "DONE" },
+            {
+              where: { id: order?.id },
+            }
+          );
         }
       }
-      await t.commit();
     } catch (err) {
-      await t.rollback();
+      return err;
     }
   },
   getOrderAdmin: async (req, res) => {
@@ -374,6 +383,20 @@ const orderController = {
             });
           }
         }
+      } else if (req?.body?.status == "CANCELED") {
+        if (req.order?.status == "PROCESSING") {
+          const orderDetail = await findAllOrderDetail({
+            order_id: req.order?.id,
+          });
+          for (const val of orderDetail) {
+            const toStock = await findStockBy({
+              id: val.stock.id,
+            });
+            toStock.booked_stock -= val.qty;
+            toStock.stock += val.qty;
+            await toStock.save({ transaction: t });
+          }
+        }
       }
       await t.commit();
       return res
@@ -406,7 +429,10 @@ const orderController = {
   doneOrderUser: async (req, res) => {
     const t = await db.sequelize.transaction();
     try {
-      await db.Order.update({ status:"DONE"}, {where:{id:req.order?.id}, transaction:t});
+      await db.Order.update(
+        { status: "DONE" },
+        { where: { id: req.order?.id }, transaction: t }
+      );
       await t.commit();
       return res.status(200).send({ message: `Order Completed` });
     } catch (err) {
