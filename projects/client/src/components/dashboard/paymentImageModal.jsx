@@ -74,7 +74,6 @@ export default function PaymentImageModal(props) {
               >
                 Cancel Order
               </Button>
-
               <Flex gap={"5px"} w={"50%"}>
                 {props?.order?.status == "CONFIRM_PAYMENT" ? (
                   <Button

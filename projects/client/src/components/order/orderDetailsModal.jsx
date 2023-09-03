@@ -155,6 +155,7 @@ export default function OrderDetailsModal(props) {
                     w={"60px"}
                     bg={"black"}
                     onClick={paymentProof}
+                    isDisabled={!SelectedFile}
                     size={"sm"}
                     fontSize={"x-small"}
                     color={"white"}
