@@ -161,7 +161,6 @@
 }
 .shoe-list img {
   height: 330px;
-  max-width: 330px;
   width: 100%;
   object-fit: cover;
 }
