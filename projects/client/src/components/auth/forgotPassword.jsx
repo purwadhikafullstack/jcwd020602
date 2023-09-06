@@ -59,7 +59,7 @@ export default function ForgotPassword() {
         setIsLoading(false);
       } catch (err) {
         toast({
-          title: err?.response?.data,
+          title: err?.response?.data?.message,
           status: "error",
         });
         setIsLoading(false);

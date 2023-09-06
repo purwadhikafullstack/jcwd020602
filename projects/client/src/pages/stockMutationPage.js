@@ -55,6 +55,7 @@ export default function StockMutationPage() {
       setFilter({ ...filter, page: shown.page });
     }
   }, [shown]);
+  console.log(wareAdmin);
   return (
     <>
       <NavbarDashboard />
@@ -201,6 +202,7 @@ export default function StockMutationPage() {
             isOpen={editSM.isOpen}
             onClose={editSM.onClose}
             fetch={fetch}
+            ware={wareAdmin}
             setId={setStockMutId}
           />
           <DeleteStockMutation

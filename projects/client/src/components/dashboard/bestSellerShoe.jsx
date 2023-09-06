@@ -1,41 +1,49 @@
 import { Box, Divider, Flex, Image, Text } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { api } from "../../api/api";
+import { useSelector } from "react-redux";
 export default function BestSellerShoe(props) {
+  const userSelector = useSelector((state) => state.auth);
   const { salesData } = props;
   const [bestShoes, setBestShoes] = useState([]);
   async function dataProcessor() {
-    const bS = salesData.reduce((prev, curr) => {
-      const shoe = curr.stock.Sho.name;
-      if (prev[shoe]) {
-        prev[shoe].qty += curr?.qty;
-      } else {
-        prev[shoe] = curr;
-      }
-      return prev;
-    }, {});
-    const bestSeller = [];
-    Object.keys(bS).map((val) => {
-      if (bestSeller.length < 5) {
-        bestSeller.push(bS[val]);
-      } else {
-        if (bS[val].qty > bestSeller[1].qty) {
-          bestSeller.splice(0, 1, bS[val]);
-        } else if (bS[val] > bestSeller[2].qty) {
-          bestSeller.splice(1, 1, bS[val]);
-        } else if (bS[val] > bestSeller[3].qty) {
-          bestSeller.splice(2, 1, bS[val]);
-        } else if (bS[val] > bestSeller[4].qty) {
-          bestSeller.splice(3, 1, bS[val]);
-        } else if (bS[val] > bestSeller[5].qty) {
-          bestSeller.splice(4, 1, bS[val]);
+    try {
+      const bS = salesData.reduce((prev, curr) => {
+        const shoe = curr.stock.Sho.name;
+        if (prev[shoe]) {
+          prev[shoe].qty += curr?.qty;
+        } else {
+          prev[shoe] = curr;
         }
+        return prev;
+      }, {});
+      const bestSeller = [];
+      Object.keys(bS).map((val) => {
+        if (bestSeller.length < 5) {
+          bestSeller.push(bS[val]);
+        } else {
+          if (bS[val].qty > bestSeller[1].qty) {
+            bestSeller.splice(0, 1, bS[val]);
+          } else if (bS[val] > bestSeller[2].qty) {
+            bestSeller.splice(1, 1, bS[val]);
+          } else if (bS[val] > bestSeller[3].qty) {
+            bestSeller.splice(2, 1, bS[val]);
+          } else if (bS[val] > bestSeller[4].qty) {
+            bestSeller.splice(3, 1, bS[val]);
+          } else if (bS[val] > bestSeller[5].qty) {
+            bestSeller.splice(4, 1, bS[val]);
+          }
+        }
+        setBestShoes(bestSeller);
+      });
+      if (userSelector.role == "SUPERADMIN") {
+        const res = await api().patch("/shoes/bestSeller", {
+          shoe_ids: bestSeller.map((val) => val.stock.shoe_id),
+        });
       }
-      setBestShoes(bestSeller);
-    });
-    const res = await api().patch("/shoes/bestSeller", {
-      shoe_ids: bestSeller.map((val) => val.stock.shoe_id),
-    });
+    } catch (error) {
+      return error;
+    }
   }
   useEffect(() => {
     dataProcessor();

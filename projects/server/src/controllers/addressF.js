@@ -11,6 +11,8 @@ const {
   updateEditPrimary,
   editAddress,
 } = require("../service/address.service");
+const { ValidationError, CustomError } = require("../utils/customErrors");
+const { errorResponse } = require("../utils/function");
 
 //-------------------------------------------------- DONE CLEAN CODE! -FAHMI
 const addressFControllers = {
@@ -111,23 +113,21 @@ const addressFControllers = {
       let { id, title, name, address, is_primary, city_id, user_id } = req.body;
       const titleCheck = await titleChecker(title, user_id, id);
       const nameCheck = await nameChecker(name, user_id, id);
-
+      let error;
       if (titleCheck) {
-        return res.status(400).send({ message: "title alredy exist" });
+        throw new ValidationError("Title already exist");
       }
       if (nameCheck) {
-        return res.status(400).send({ message: "name alredy exist" });
+        throw new ValidationError("Name already exist");
       }
-
       const checkPrimary = await primaryChecker(user_id); //findOne
-
       const checkAddress = await db.Address.findOne({
         where: { id },
         raw: true,
       });
 
       if (!is_primary && id == checkPrimary.id) {
-        return res.status(400).send({ message: "you need  1 default address" });
+        throw new ValidationError("you need  1 default address");
       } else if (is_primary && checkPrimary.id != checkAddress.id) {
         await updateEditPrimary(t, user_id, checkPrimary.id); //upadate default address menjadi isprimary=false
       }
@@ -144,7 +144,7 @@ const addressFControllers = {
       return res.status(200).send({ message: "success update address" });
     } catch (err) {
       await t.rollback();
-      return res.status(500).send(err.message);
+      return errorResponse(res, err, CustomError);
     }
   },
 };

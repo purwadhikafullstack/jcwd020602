@@ -31,10 +31,18 @@
   grid-template-columns: 1fr 1fr 1fr 1fr;
   gap: 10px;
 }
+.barChartSales {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+}
 /*--------------------- @media ---------------------*/
 
 @media (max-width: 1035px) {
   .barChart {
+    grid-template-columns: 1fr;
+  }
+  .barChartSales {
     grid-template-columns: 1fr;
   }
 }

@@ -28,10 +28,14 @@ export default function MyAccountPage() {
       >
         <Flex mb={5} gap={2}>
           <Box>
-            <Avatar
-              size={"xl"}
-              src={`${process.env.REACT_APP_API_BASE_URL}/${userSelector.avatar_url}`}
-            />
+            {userSelector.providerId ? (
+              <Avatar size={"xl"} src={userSelector.avatar_url} />
+            ) : (
+              <Avatar
+                size={"xl"}
+                src={`${process.env.REACT_APP_API_BASE_URL}/${userSelector.avatar_url}`}
+              />
+            )}
           </Box>
           <Flex flexDir={"column"}>
             <Box p={1} fontSize={"30px"} fontWeight={"bold"}>

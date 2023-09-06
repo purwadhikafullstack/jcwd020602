@@ -20,7 +20,7 @@ export default function WarehouseSelect(props) {
   }, []);
   async function warehouseAdmin(token) {
     const warehouse = await api().get("/warehouses/fetchDefault");
-    props.setWareAdmin && props.setWareAdmin(warehouse?.data?.warehouse);
+    props.setWareAdmin && props.setWareAdmin(warehouse?.data[0]);
     props.setFilter({
       ...props.filter,
       warehouse_id: warehouse?.data[0]?.id,

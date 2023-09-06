@@ -143,17 +143,21 @@ export default function ProfilePage() {
             YOUR DETAILS
           </Text>
           <Center>
-            <Avatar
-              size={"xl"}
-              src={
-                image
-                  ? image
-                  : `${process.env.REACT_APP_API_BASE_URL}/${userSelector.avatar_url}`
-              }
-              onClick={() => {
-                fileRef.current.click();
-              }}
-            />
+            {userSelector.providerId ? (
+              <Avatar size={"xl"} src={userSelector.avatar_url} />
+            ) : (
+              <Avatar
+                size={"xl"}
+                src={
+                  image
+                    ? image
+                    : `${process.env.REACT_APP_API_BASE_URL}/${userSelector.avatar_url}`
+                }
+                onClick={() => {
+                  fileRef.current.click();
+                }}
+              />
+            )}
             <Input
               accept="image/png, image/jpeg"
               onChange={handleFile}

@@ -124,7 +124,7 @@ export default function BarChart(props) {
     setMapData([priceData, traData, shoeData]);
   }, [priceData, shoeData, traData]);
   return (
-    <Box className="barChart">
+    <Box className="barChartSales">
       {mapData
         ? mapData?.map((val) => (
             <Center>

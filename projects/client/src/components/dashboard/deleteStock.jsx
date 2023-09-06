@@ -31,9 +31,7 @@ export default function DeleteStock(props) {
       props.setShown({ page: 1 });
     } catch (err) {
       toast({
-        title: `${err?.response?.status} ${
-          err?.response?.data?.message || err?.response?.data
-        }`,
+        title: `${err?.response?.data?.message || err?.response?.data}`,
         status: "error",
         duration: 9000,
         isClosable: true,

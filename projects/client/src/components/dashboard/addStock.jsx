@@ -14,7 +14,7 @@ import { useSelector } from "react-redux";
 
 export default function AddStock(props) {
   const toast = useToast();
-  const { shoes } = useFetchShoe();
+  const { shoes } = useFetchShoe("", "", { limit: 99 });
   const { sizes } = useFetchShoeSize();
   const { warehouses } = useFetchWarehouse();
   const [isLoading, setIsLoading] = useState(false);

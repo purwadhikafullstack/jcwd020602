@@ -20,7 +20,7 @@ app.use(express.json());
 const verify = require("./middlewares/verify");
 const routes = require("./routes");
 const db = require("./models");
-// const cronJob = require("./utils/cronJob");
+const cronJob = require("./utils/cronJob");
 // db.sequelize.sync({ alter: true });
 // db.sequelize.sync({ force: true });
 
@@ -28,7 +28,7 @@ const db = require("./models");
 
 // ===========================
 // NOTE : Add your routes here
-// cronJob();
+cronJob();
 app.get("/api", (req, res) => {
   res.send(`Hello, this is my API`);
 });

@@ -1,7 +1,7 @@
 const { Op } = require("sequelize");
 const db = require("../models");
 const { addStockHistory } = require("../service/stockHistory.service");
-const { CustomError } = require("../utils/customErrors");
+const { CustomError, ValidationError } = require("../utils/customErrors");
 const {
   getAllStock,
   createStock,
@@ -149,6 +149,9 @@ const stockController = {
   deleteStock: async (req, res) => {
     const t = await db.sequelize.transaction();
     try {
+      if (req.stock.booked_stock) {
+        throw new ValidationError("There are still pending orders");
+      }
       const stock = await deleteStock({ id: req.params.id, t });
       const addHistory = await addStockHistory({
         stock_before:

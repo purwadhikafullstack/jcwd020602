@@ -161,8 +161,8 @@
 }
 .shoe-list img {
   height: 330px;
-
-  width: 100vw;
+  max-width: 330px;
+  width: 100%;
   object-fit: cover;
 }
 /*---------------------- product detail ----------------------*/

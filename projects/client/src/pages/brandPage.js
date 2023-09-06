@@ -24,7 +24,6 @@ export default function BrandPage() {
   const { isOpen, onClose, onOpen } = useDisclosure();
   const addModal = useDisclosure();
   const deleteModal = useDisclosure();
-  const editModal = useDisclosure();
   const [img, setImg] = useState();
   const userSelector = useSelector((state) => state.auth);
   const inputFileRef = useRef(null);
@@ -70,14 +69,6 @@ export default function BrandPage() {
               <Icon as={isOpen ? GrClose : GrMenu} />
             </MenuButton>
             <MenuList>
-              <MenuItem
-                onClick={() => {
-                  setBrandId(brand.id);
-                  editModal.onOpen();
-                }}
-              >
-                Edit
-              </MenuItem>
               <MenuItem
                 onClick={() => {
                   setBrandId(brand.id);

@@ -113,7 +113,7 @@ export default function CardMutation({
                   <Divider />
                   <Box>
                     Shoe:{" "}
-                    {`${stockMutation?.stock?.Sho?.name}-${stockMutation?.stock?.Sho?.shoeSize?.size}-${stockMutation?.stock?.Sho?.brand?.name}`}
+                    {`${stockMutation?.stock?.Sho?.name}-${stockMutation?.stock?.shoeSize?.size}-${stockMutation?.stock?.Sho?.brand?.name}`}
                   </Box>
                   <Divider />
                   <Divider />

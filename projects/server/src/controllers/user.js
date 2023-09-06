@@ -80,6 +80,7 @@ const userController = {
             name: req.query?.displayName,
             password: hashPassword,
             phone: req.query?.phoneNumber,
+            avatar_url: req.query?.photoURL,
             status: "verified",
             role: "USER",
             providerId: req.query?.providerData[0].providerId,

@@ -36,6 +36,7 @@ export default function Login() {
     try {
       const provider = new GoogleAuthProvider();
       const body = await signInWithPopup(auth, provider);
+      console.log(body.user.photoURL);
       const res = await api().post(
         "/auth/login",
         { email: body.user.email, password: "AB!@12ab" },

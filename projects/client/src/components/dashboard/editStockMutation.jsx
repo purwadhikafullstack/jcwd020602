@@ -232,13 +232,13 @@ export default function EditStockMutation(props) {
                     disabled
                   >
                     {userSelector.role != "SUPERADMIN" ? (
-                      <option value={props?.ware?.id}>
+                      <option value={props?.ware?.id} selected>
                         {props?.ware?.name}
                       </option>
                     ) : (
                       <>
                         {warehouses &&
-                          warehouses.map((val, idx) => (
+                          warehouses.map((val) => (
                             <option key={val.id} value={val.id}>
                               {val.name}
                             </option>
@@ -255,7 +255,9 @@ export default function EditStockMutation(props) {
           )}
           <ModalFooter>
             <Flex gap={5}>
-              <Button onClick={clearData}>Cancel</Button>
+              <Button isLoading={isLoadingButton} onClick={clearData}>
+                Cancel
+              </Button>
               <Button
                 isLoading={isLoadingButton}
                 onClick={() => {
