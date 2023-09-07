@@ -21,7 +21,7 @@ export default function AddStock(props) {
   const userSelector = useSelector((state) => state.auth);
   const formik = useFormik({
     initialValues: {
-      stock: 1,
+      stock: 0,
       shoe_id: "",
       shoe_size_id: "",
       warehouse_id: "",
@@ -88,9 +88,7 @@ export default function AddStock(props) {
                 isInvalid={formik.touched.stock && formik.errors.stock}
               >
                 <FormLabel>Stock:</FormLabel>
-                <NumberInput>
-                  <NumberInputField placeholder="Stock" />
-                </NumberInput>
+                <Input type="number" placeholder="Quantity"></Input>
                 <FormErrorMessage>{formik.errors.stock}</FormErrorMessage>
               </FormControl>
 

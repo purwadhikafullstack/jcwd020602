@@ -24,18 +24,18 @@ export default function StatusCard({
   };
   return (
     <>
-      <Flex
-        align={"center"}
-        maxW={"700px"}
-        w={"100vw"}
-        overflowX={"auto"}
-        py={2}
-      >
-        <Flex justify={"center"} maxW={"700px"} w={"100vw"} align="center">
+      <Flex align={"center"} maxW={"700px"} w={"100%"} py={2}>
+        <Flex
+          className="statusOrderList"
+          overflowX={"auto"}
+          maxW={"700px"}
+          w={"100%"}
+          align="center"
+        >
           {statusOptions.map((option, idx) => {
             return (
               <Box
-                fontSize={"10px"}
+                fontSize={"14px"}
                 as="button"
                 px={2}
                 py={1}

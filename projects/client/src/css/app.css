@@ -334,6 +334,14 @@
 .orderlist-card #a {
   border: 1px solid;
 }
+.statusOrderList {
+  justify-content: center;
+}
+@media (max-width: 417px) {
+  .statusOrderList {
+    justify-content: left;
+  }
+}
 /*---------------------- @media ----------------------*/
 @media (max-width: 960px) {
   #brands-section {

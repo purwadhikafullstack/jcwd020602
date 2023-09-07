@@ -1,4 +1,9 @@
-import { ModalOverlay, ModalContent, ModalHeader } from "@chakra-ui/react";
+import {
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  Input,
+} from "@chakra-ui/react";
 import { ModalFooter, ModalBody, ModalCloseButton } from "@chakra-ui/react";
 import { Button, Select, useToast, Modal, Spinner } from "@chakra-ui/react";
 import { FormControl, FormLabel, NumberInput } from "@chakra-ui/react";
@@ -85,9 +90,11 @@ export default function EditStock(props) {
                   isInvalid={formik.touched.stock && formik.errors.stock}
                 >
                   <FormLabel>Stock:</FormLabel>
-                  <NumberInput min={1} value={formik.values.stock}>
-                    <NumberInputField />
-                  </NumberInput>
+                  <Input
+                    min={1}
+                    value={formik.values.stock}
+                    placeholder="Quantity"
+                  />
                   <FormErrorMessage>{formik.errors.stock}</FormErrorMessage>
                 </FormControl>
                 <FormControl mb={2} id="shoe_id" value={formik.values.shoe_id}>

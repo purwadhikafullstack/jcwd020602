@@ -1,4 +1,10 @@
-import { FormErrorMessage, ModalOverlay, Flex, Box } from "@chakra-ui/react";
+import {
+  FormErrorMessage,
+  ModalOverlay,
+  Flex,
+  Box,
+  Input,
+} from "@chakra-ui/react";
 import { ModalContent, FormControl, ModalHeader } from "@chakra-ui/react";
 import { NumberInputField, ModalCloseButton } from "@chakra-ui/react";
 import { Button, Select, Modal, NumberInput } from "@chakra-ui/react";
@@ -136,9 +142,11 @@ export default function EditStockMutation(props) {
                       (Stock available: {maxStock || "Select a stock"})
                     </Box>
                   </FormLabel>
-                  <NumberInput min={1} value={formik.values.qty}>
-                    <NumberInputField />
-                  </NumberInput>
+                  <Input
+                    min={1}
+                    value={formik.values.qty}
+                    placeholder="Quantity"
+                  />
                   <FormErrorMessage>{formik.errors.qty}</FormErrorMessage>
                 </FormControl>
 

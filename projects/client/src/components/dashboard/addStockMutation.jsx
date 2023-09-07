@@ -16,6 +16,7 @@ import {
   ModalCloseButton,
   ModalFooter,
   Box,
+  Input,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { api } from "../../api/api";
@@ -124,9 +125,7 @@ export default function AddStockMutation(props) {
                     (Stock available: {maxStock || "Select a stock"})
                   </Box>
                 </FormLabel>
-                <NumberInput>
-                  <NumberInputField placeholder="Qty" />
-                </NumberInput>
+                <Input type="number" placeholder="Quantity" />
                 <FormErrorMessage>{formik.errors.qty}</FormErrorMessage>
               </FormControl>
 
