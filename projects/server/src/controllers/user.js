@@ -90,14 +90,6 @@ const userController = {
           { transaction: t }
         );
       }
-      if (user && req.query?.providerId) {
-        await db.User.update(
-          {
-            avatar_url: req.query?.photoURL,
-          },
-          { where: { id: user.id }, transaction: t }
-        );
-      }
       const match = await bcrypt.compare(
         salt || req.body?.password,
         user.dataValues.password
