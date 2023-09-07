@@ -24,6 +24,7 @@ const userController = {
       const findEmail = await findUser(email);
 
       if (findEmail) {
+        await t.rollback();
         return res.status(400).send({ message: "email was registered" });
       }
 
@@ -66,7 +67,9 @@ const userController = {
     const t = await db.sequelize.transaction();
     try {
       let user = await findUser(req.body?.email);
+      console.log("ini user", user.id);
       if (!user && !req.query?.providerId) {
+        await t.rollback();
         return res.status(400).send({ message: "email not found" });
       }
       const salt = req.query?.email
@@ -88,13 +91,23 @@ const userController = {
           { transaction: t }
         );
       }
+      if (user && req.query?.providerId) {
+        user = await db.User.update(
+          {
+            avatar_url: req.query?.photoURL,
+          },
+          { where: { id: user.id }, transaction: t }
+        );
+      }
       const match = await bcrypt.compare(
         salt || req.body?.password,
         user.dataValues.password
       );
       if (!match && req.body?.password == "AB!@12ab") {
+        await t.rollback();
         return res.status(400).send({ message: "email already exist" });
       } else if (!match) {
+        await t.rollback();
         return res.status(400).send({ message: "wrong password" });
       }
       const id = JSON.stringify({ id: user.dataValues.id });
@@ -158,6 +171,7 @@ const userController = {
         await t.commit();
         return res.status(200).send({ message: "check your email" });
       } else {
+        await t.rollback();
         return res.status(400).send({ message: "Email not found" });
       }
     } catch (err) {
@@ -226,6 +240,7 @@ const userController = {
         check.dataValues.password
       );
       if (!match) {
+        await t.rollback();
         return res.status(400).send({ message: "Password not match" });
       }
       await editPassword(req.body, t);
@@ -251,7 +266,8 @@ const userController = {
             console.log(err);
           }
         }
-        return res.status(400).send({ message: "email alrdy exist" });
+        await t.rollback();
+        return res.status(400).send({ message: "email already exist" });
       }
 
       await addAdmin(req.body, filename, t);

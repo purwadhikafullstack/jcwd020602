@@ -81,17 +81,15 @@ export default function Footer() {
               >
                 <Image as={GrFacebook} size={"30px"} />
               </Center>
-              <a href="https://instagram.com/fahminurk" target="_blank">
-                <Center
-                  boxSize={"50px"}
-                  border={"1px"}
-                  borderColor={"white"}
-                  color={"white"}
-                  id="logo"
-                >
-                  <Image as={GrInstagram} size={"30px"} />
-                </Center>
-              </a>
+              <Center
+                boxSize={"50px"}
+                border={"1px"}
+                borderColor={"white"}
+                color={"white"}
+                id="logo"
+              >
+                <Image as={GrInstagram} size={"30px"} />
+              </Center>
               <Center
                 boxSize={"50px"}
                 border={"1px"}
