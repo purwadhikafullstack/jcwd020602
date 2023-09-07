@@ -67,7 +67,6 @@ const userController = {
     const t = await db.sequelize.transaction();
     try {
       let user = await findUser(req.body?.email);
-      console.log("ini user", user.id);
       if (!user && !req.query?.providerId) {
         await t.rollback();
         return res.status(400).send({ message: "email not found" });
@@ -89,14 +88,6 @@ const userController = {
             providerId: req.query?.providerData[0].providerId,
           },
           { transaction: t }
-        );
-      }
-      if (user && req.query?.providerId) {
-        user = await db.User.update(
-          {
-            avatar_url: req.query?.photoURL,
-          },
-          { where: { id: user.id }, transaction: t }
         );
       }
       const match = await bcrypt.compare(

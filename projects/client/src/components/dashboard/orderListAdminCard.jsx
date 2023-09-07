@@ -24,7 +24,7 @@ export default function OrderListAdmin({ filter }) {
         <>
           {!orders?.rows?.length ? (
             <Center border={"1px"} h={"550px"}>
-              Product not found
+              Order not found
             </Center>
           ) : (
             <>
