@@ -360,16 +360,14 @@ const shoeController = {
   setBestSeller: async (req, res) => {
     const t = await db.sequelize.transaction();
     try {
+      console.log(req.body);
       const shoe_ids = req.body.shoe_ids || [];
+      console.log(shoe_ids);
       await db.Shoe.update(
         { status: "NORMAL" },
         { where: { status: "BESTSELLER" }, transaction: t }
       );
       for (const id of shoe_ids) {
-        const shoe = await db.Shoe.findOne({ where: { id } });
-        if (!shoe) {
-          return res.status(200).send({ message: "shoe not found" });
-        }
         await db.Shoe.update(
           { status: "BESTSELLER" },
           { where: { id }, transaction: t }
